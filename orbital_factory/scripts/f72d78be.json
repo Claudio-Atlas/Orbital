@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "topic": "Multiplying Binomials",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "f72d78be"
+  },
+  "steps": [
+    {
+      "narration": "Let's simplify the expression x plus three times x minus two.",
+      "latex": "(x + 3)(x - 2)"
+    },
+    {
+      "narration": "We can use the FOIL method to multiply these two binomials. FOIL stands for First, Outer, Inner, Last.",
+      "latex": "\\text{FOIL: First, Outer, Inner, Last}"
+    },
+    {
+      "narration": "First, multiply the First terms from each binomial: x from the first and x from the second.",
+      "latex": "\\text{First: } x \\cdot x = x^2"
+    },
+    {
+      "narration": "Outer, multiply the Outer terms: x from the first and negative two from the second.",
+      "latex": "\\text{Outer: } x \\cdot (-2) = -2x"
+    },
+    {
+      "narration": "Inner, multiply the Inner terms: three from the first and x from the second.",
+      "latex": "\\text{Inner: } 3 \\cdot x = 3x"
+    },
+    {
+      "narration": "Last, multiply the Last terms: three from the first and negative two from the second.",
+      "latex": "\\text{Last: } 3 \\cdot (-2) = -6"
+    },
+    {
+      "narration": "Now, let's write all four terms we got from FOIL.",
+      "latex": "x^2 + (-2x) + 3x + (-6)"
+    },
+    {
+      "narration": "We can rewrite this without the parentheses around the negative terms.",
+      "latex": "x^2 - 2x + 3x - 6"
+    },
+    {
+      "narration": "Now, we combine like terms. The like terms are negative two x and positive three x.",
+      "latex": "-2x + 3x = 1x"
+    },
+    {
+      "narration": "One x is usually just written as x.",
+      "latex": "1x = x"
+    },
+    {
+      "narration": "So, our simplified expression is x squared plus x minus six.",
+      "latex": "x^2 + x - 6"
+    }
+  ]
+}

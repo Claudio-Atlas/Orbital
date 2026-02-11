@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "brand": "Orbital",
+    "course": "MAT170",
+    "topic": "Solving Linear Equations",
+    "product_family": "Orbital Mini"
+  },
+  "steps": [
+    {
+      "narration": "Let's solve... the equation... two x... plus five... equals eleven.",
+      "latex": "2x + 5 = 11"
+    },
+    {
+      "narration": "To isolate x... we need to subtract five... from both sides.",
+      "latex": "2x + 5 - 5 = 11 - 5"
+    },
+    {
+      "narration": "This simplifies... to two x... equals six.",
+      "latex": "2x = 6"
+    },
+    {
+      "narration": "Now... we divide both sides... by two.",
+      "latex": "\\frac{2x}{2} = \\frac{6}{2}"
+    },
+    {
+      "narration": "And we get our answer... x... equals... three.",
+      "latex": "x = 3"
+    }
+  ]
+}

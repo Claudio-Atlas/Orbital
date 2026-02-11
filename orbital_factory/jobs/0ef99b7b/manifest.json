@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "topic": "Solving Linear Equations",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "0ef99b7b"
+  },
+  "intro_duration": 2.0,
+  "steps": [
+    {
+      "step": 0,
+      "narration": "Let's solve for x in the equation two x plus seven equals fifteen.",
+      "latex": "2x + 7 = 15",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_00.mp3",
+      "duration": 5.2
+    },
+    {
+      "step": 1,
+      "narration": "Our goal is to get x by itself on one side of the equation. Right now, x is being multiplied by two and then having seven added to it.",
+      "latex": "2x + 7 = 15",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_01.mp3",
+      "duration": 8.5
+    },
+    {
+      "step": 2,
+      "narration": "First, let's undo the addition of seven. We do this by subtracting seven from both sides of the equation.",
+      "latex": "2x + 7 - 7 = 15 - 7",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_02.mp3",
+      "duration": 6.55
+    },
+    {
+      "step": 3,
+      "narration": "On the left side, seven minus seven is zero, so we're left with just two x.",
+      "latex": "2x = 15 - 7",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_03.mp3",
+      "duration": 4.88
+    },
+    {
+      "step": 4,
+      "narration": "On the right side, fifteen minus seven is eight.",
+      "latex": "2x = 8",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_04.mp3",
+      "duration": 2.79
+    },
+    {
+      "step": 5,
+      "narration": "Now we have two x equals eight. Since x is being multiplied by two, we need to undo that multiplication.",
+      "latex": "2x = 8",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_05.mp3",
+      "duration": 7.48
+    },
+    {
+      "step": 6,
+      "narration": "We divide both sides of the equation by two.",
+      "latex": "\\frac{2x}{2} = \\frac{8}{2}",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_06.mp3",
+      "duration": 2.69
+    },
+    {
+      "step": 7,
+      "narration": "On the left side, two divided by two is one, so we're left with just x.",
+      "latex": "x = \\frac{8}{2}",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_07.mp3",
+      "duration": 4.88
+    },
+    {
+      "step": 8,
+      "narration": "On the right side, eight divided by two is four.",
+      "latex": "x = 4",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_08.mp3",
+      "duration": 3.34
+    },
+    {
+      "step": 9,
+      "narration": "So our solution is x equals four. Let's check our work by plugging it back into the original equation.",
+      "latex": "x = 4",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_09.mp3",
+      "duration": 6.69
+    },
+    {
+      "step": 10,
+      "narration": "Original equation: two times x plus seven equals fifteen.",
+      "latex": "2x + 7 = 15",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_10.mp3",
+      "duration": 4.37
+    },
+    {
+      "step": 11,
+      "narration": "Substitute four for x: two times four plus seven.",
+      "latex": "2(4) + 7",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_11.mp3",
+      "duration": 3.85
+    },
+    {
+      "step": 12,
+      "narration": "Two times four is eight.",
+      "latex": "8 + 7",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_12.mp3",
+      "duration": 1.72
+    },
+    {
+      "step": 13,
+      "narration": "Eight plus seven is fifteen, which matches the right side of our original equation.",
+      "latex": "15 = 15 \\quad \\checkmark",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_13.mp3",
+      "duration": 4.78
+    },
+    {
+      "step": 14,
+      "narration": "Our solution checks out! So x equals four is correct.",
+      "latex": "x = 4",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0ef99b7b/audio/step_14.mp3",
+      "duration": 3.53
+    }
+  ]
+}

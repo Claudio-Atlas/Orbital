@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "topic": "Derivatives (Power Rule)",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "e087a019"
+  },
+  "steps": [
+    {
+      "narration": "Let's find the derivative of f of x equals x cubed plus two x squared minus five x plus one.",
+      "latex": "f(x) = x^{3} + 2x^{2} - 5x + 1"
+    },
+    {
+      "narration": "We'll use the power rule for derivatives. The power rule says that the derivative of x to the n is n times x to the n minus one.",
+      "latex": "\\frac{d}{dx} x^{n} = n x^{n-1}"
+    },
+    {
+      "narration": "The derivative of a sum is the sum of the derivatives. So we can differentiate each term separately.",
+      "latex": "f'(x) = \\frac{d}{dx}(x^{3}) + \\frac{d}{dx}(2x^{2}) + \\frac{d}{dx}(-5x) + \\frac{d}{dx}(1)"
+    },
+    {
+      "narration": "Now apply the power rule. For x cubed, we get three x squared. For two x squared, we get two times two x, which is four x. For negative five x, we get negative five. And the derivative of a constant is zero.",
+      "latex": "f'(x) = 3x^{2} + 4x - 5 + 0"
+    },
+    {
+      "narration": "Simplifying, we have three x squared plus four x minus five.",
+      "latex": "f'(x) = 3x^{2} + 4x - 5"
+    }
+  ]
+}

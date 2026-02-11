@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "topic": "Integration by Parts",
+    "difficulty": "medium",
+    "brand": "Orbital",
+    "job_id": "18a38b5b"
+  },
+  "intro_duration": 2.0,
+  "steps": [
+    {
+      "step": 0,
+      "narration": "Let's evaluate the integral of x times e to the x dx using integration by parts.",
+      "latex": "\\int x e^x \\, dx",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_00.mp3",
+      "duration": 5.62
+    },
+    {
+      "step": 1,
+      "narration": "Integration by parts uses the formula: the integral of u dv equals u times v minus the integral of v du.",
+      "latex": "\\int u \\, dv = uv - \\int v \\, du",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_01.mp3",
+      "duration": 8.54
+    },
+    {
+      "step": 2,
+      "narration": "First, we need to choose u and dv. A good rule is to pick u as something that becomes simpler when we take its derivative.",
+      "latex": "\\text{Let } u = x \\quad \\text{and} \\quad dv = e^x \\, dx",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_02.mp3",
+      "duration": 8.54
+    },
+    {
+      "step": 3,
+      "narration": "Now we need to find du, which is the derivative of u, and v, which is the integral of dv.",
+      "latex": "du = \\frac{d}{dx}(x) \\, dx \\quad \\text{and} \\quad v = \\int e^x \\, dx",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_03.mp3",
+      "duration": 6.08
+    },
+    {
+      "step": 4,
+      "narration": "The derivative of x with respect to x is one, so du equals one dx.",
+      "latex": "\\frac{d}{dx}(x) = 1 \\quad \\Rightarrow \\quad du = 1 \\, dx",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_04.mp3",
+      "duration": 5.2
+    },
+    {
+      "step": 5,
+      "narration": "The integral of e to the x dx is just e to the x, so v equals e to the x.",
+      "latex": "\\int e^x \\, dx = e^x \\quad \\Rightarrow \\quad v = e^x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_05.mp3",
+      "duration": 6.73
+    },
+    {
+      "step": 6,
+      "narration": "Now we plug u, v, du, and dv into the integration by parts formula.",
+      "latex": "\\int u \\, dv = uv - \\int v \\, du",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_06.mp3",
+      "duration": 5.25
+    },
+    {
+      "step": 7,
+      "narration": "Substituting our expressions: u is x, v is e to the x, and du is one dx.",
+      "latex": "\\int x e^x \\, dx = x \\cdot e^x - \\int e^x \\cdot 1 \\, dx",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_07.mp3",
+      "duration": 6.87
+    },
+    {
+      "step": 8,
+      "narration": "We can simplify this: x times e to the x minus the integral of e to the x dx.",
+      "latex": "\\int x e^x \\, dx = x e^x - \\int e^x \\, dx",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_08.mp3",
+      "duration": 7.01
+    },
+    {
+      "step": 9,
+      "narration": "Now we need to evaluate the remaining integral. The integral of e to the x dx is e to the x.",
+      "latex": "\\int e^x \\, dx = e^x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_09.mp3",
+      "duration": 6.78
+    },
+    {
+      "step": 10,
+      "narration": "Substituting this back into our expression, we get x e to the x minus e to the x.",
+      "latex": "\\int x e^x \\, dx = x e^x - e^x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_10.mp3",
+      "duration": 6.32
+    },
+    {
+      "step": 11,
+      "narration": "Finally, we add the constant of integration, C, because this is an indefinite integral.",
+      "latex": "\\int x e^x \\, dx = x e^x - e^x + C",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_11.mp3",
+      "duration": 6.18
+    },
+    {
+      "step": 12,
+      "narration": "We can factor out e to the x if we want to write it more neatly: e to the x times the quantity x minus one, plus C.",
+      "latex": "\\int x e^x \\, dx = e^x (x - 1) + C",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/18a38b5b/audio/step_12.mp3",
+      "duration": 8.82
+    }
+  ]
+}

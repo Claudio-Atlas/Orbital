@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "topic": "Solving Linear Equations",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "0606b7ca"
+  },
+  "intro_duration": 2.0,
+  "steps": [
+    {
+      "step": 0,
+      "narration": "Let's solve the equation three x minus seven equals fourteen.",
+      "latex": "3x - 7 = 14",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0606b7ca/audio/step_00.mp3",
+      "duration": 3.81
+    },
+    {
+      "step": 1,
+      "narration": "First, add seven to both sides to get rid of the minus seven.",
+      "latex": "3x - 7 + 7 = 14 + 7",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0606b7ca/audio/step_01.mp3",
+      "duration": 4.32
+    },
+    {
+      "step": 2,
+      "narration": "This simplifies to three x equals twenty-one.",
+      "latex": "3x = 21",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0606b7ca/audio/step_02.mp3",
+      "duration": 3.11
+    },
+    {
+      "step": 3,
+      "narration": "Now divide both sides by three to solve for x.",
+      "latex": "\\frac{3x}{3} = \\frac{21}{3}",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0606b7ca/audio/step_03.mp3",
+      "duration": 3.34
+    },
+    {
+      "step": 4,
+      "narration": "And we find that x equals seven.",
+      "latex": "x = 7",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/0606b7ca/audio/step_04.mp3",
+      "duration": 2.0
+    }
+  ]
+}

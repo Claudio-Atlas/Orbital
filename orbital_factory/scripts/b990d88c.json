@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "topic": "Mathematical Induction",
+    "difficulty": "medium",
+    "brand": "Orbital",
+    "job_id": "b990d88c"
+  },
+  "steps": [
+    {
+      "narration": "Let's prove by induction that the sum of the first n natural numbers is n times n plus one over two.",
+      "latex": "1 + 2 + 3 + \\ldots + n = \\frac{n(n+1)}{2}"
+    },
+    {
+      "narration": "First, we'll check the base case where n equals one.",
+      "latex": "1 = \\frac{1(1+1)}{2}"
+    },
+    {
+      "narration": "Simplifying the right side, we get one equals one, which is true.",
+      "latex": "1 = 1"
+    },
+    {
+      "narration": "Now, assume the formula is true for some positive integer k. This is our induction hypothesis.",
+      "latex": "1 + 2 + 3 + \\ldots + k = \\frac{k(k+1)}{2}"
+    },
+    {
+      "narration": "We need to prove it's true for k plus one. So, consider the sum up to k plus one.",
+      "latex": "1 + 2 + 3 + \\ldots + k + (k+1)"
+    },
+    {
+      "narration": "Using our hypothesis, replace the sum up to k with k times k plus one over two.",
+      "latex": "\\frac{k(k+1)}{2} + (k+1)"
+    },
+    {
+      "narration": "Let's combine these terms over a common denominator.",
+      "latex": "\\frac{k(k+1) + 2(k+1)}{2}"
+    },
+    {
+      "narration": "Factor out k plus one from the numerator.",
+      "latex": "\\frac{(k+1)(k+2)}{2}"
+    },
+    {
+      "narration": "This matches the formula for n equals k plus one. So, the formula holds for k plus one.",
+      "latex": "\\frac{(k+1)((k+1)+1)}{2}"
+    },
+    {
+      "narration": "Since both the base case and the induction step are true, the formula is proven for all positive integers n.",
+      "latex": "1 + 2 + 3 + \\ldots + n = \\frac{n(n+1)}{2}"
+    }
+  ]
+}

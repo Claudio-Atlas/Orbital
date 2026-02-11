@@ -10,23 +10,46 @@ import json
 from openai import OpenAI
 
 # === PROVIDER CONFIG ===
-# Set ORBITAL_PROVIDER to "deepseek" or "openai" (default: openai)
-PROVIDER = os.environ.get("ORBITAL_PROVIDER", "openai").lower()
+# Set ORBITAL_PROVIDER to "deepseek" or "openai" (default: deepseek)
+PROVIDER = os.environ.get("ORBITAL_PROVIDER", "deepseek").lower()
 
-if PROVIDER == "deepseek":
-    client = OpenAI(
-        api_key=os.environ.get("DEEPSEEK_API_KEY"),
-        base_url="https://api.deepseek.com"
-    )
-    MODEL = "deepseek-chat"  # DeepSeek-V3 (fast, cheap, great at math)
-    print("🧠 Using DeepSeek-V3")
-else:
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    MODEL = "gpt-4o"
-    print("🧠 Using GPT-4o")
+# Lazy initialization to avoid crashes on missing keys
+client = None
+openai_client = None
+MODEL = None
 
-# For image parsing, always use OpenAI (DeepSeek doesn't have vision yet)
-openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+def get_client():
+    """Get the main LLM client (DeepSeek or OpenAI)"""
+    global client, MODEL
+    if client is None:
+        if PROVIDER == "deepseek":
+            api_key = os.environ.get("DEEPSEEK_API_KEY")
+            if not api_key:
+                raise ValueError("DEEPSEEK_API_KEY not set")
+            client = OpenAI(
+                api_key=api_key,
+                base_url="https://api.deepseek.com"
+            )
+            MODEL = "deepseek-chat"  # DeepSeek-V3 (fast, cheap, great at math)
+            print("🧠 Using DeepSeek-V3")
+        else:
+            api_key = os.environ.get("OPENAI_API_KEY")
+            if not api_key:
+                raise ValueError("OPENAI_API_KEY not set")
+            client = OpenAI(api_key=api_key)
+            MODEL = "gpt-4o"
+            print("🧠 Using GPT-4o")
+    return client, MODEL
+
+def get_openai_client():
+    """Get OpenAI client for vision tasks (image parsing)"""
+    global openai_client
+    if openai_client is None:
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not set - required for image parsing")
+        openai_client = OpenAI(api_key=api_key)
+    return openai_client
 
 SYSTEM_PROMPT = """You are a patient math tutor creating step-by-step video explanations for students who need to SEE every calculation.
 
@@ -95,9 +118,10 @@ def parse_problem(problem_text: str) -> dict:
     Returns:
         dict with 'meta' and 'steps' keys
     """
+    llm_client, model = get_client()
     
-    response = client.chat.completions.create(
-        model=MODEL,
+    response = llm_client.chat.completions.create(
+        model=model,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": f"Create a step-by-step video script for this problem:\n\n{problem_text}"}
@@ -153,7 +177,8 @@ def parse_problem_from_image(image_base64: str) -> tuple[dict, str]:
     """
     
     # First, extract the problem from the image (always use OpenAI for vision)
-    extract_response = openai_client.chat.completions.create(
+    vision_client = get_openai_client()
+    extract_response = vision_client.chat.completions.create(
         model="gpt-4o",
         messages=[
             {

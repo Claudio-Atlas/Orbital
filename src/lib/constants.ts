@@ -3,8 +3,8 @@
 export const SITE = {
   name: "Orbital",
   orgName: "Orbital",
-  domain: "orbital-solver.io",
-  url: "https://orbital-solver.io",
+  domain: "orbitalsolver.io",
+  url: "https://orbitalsolver.io",
   
   title: "Orbital — Type a problem. Get a video.",
   description: "AI-powered math video tutorials. Type any problem and watch a step-by-step video walkthrough in seconds.",
@@ -13,7 +13,7 @@ export const SITE = {
   taglineSecondary: "AI-powered math tutorials, generated in seconds.",
   
   footer: "© 2026 Orbital. All rights reserved.",
-  supportEmail: "hello@orbital-solver.io",
+  supportEmail: "hello@orbitalsolver.io",
 };
 
 // Simplified nav for focused product
@@ -29,24 +29,31 @@ export const SOCIAL_LINKS = {
   discord: "https://discord.gg/orbital",
 } as const;
 
-// Pricing tiers
+// Pricing tiers — Minutes-based token system
+// Cost breakdown: ~$0.016/min (OpenAI TTS + DeepSeek)
+// UX: User enters problem → see preview → "This will use X minutes" → accept/deny
 export const PRICING = {
-  free: {
-    name: "Free",
-    price: 0,
-    solves: "3/day",
-    features: ["Video walkthroughs", "Voice narration", "All problem types"],
+  starter: {
+    name: "Starter",
+    price: 2,
+    minutes: 10,
+    pricePerMin: "$0.20",
+    features: ["10 minutes of video", "All problem types", "HD quality", "Download videos"],
   },
-  student: {
-    name: "Student",
-    price: 9,
-    solves: "Unlimited",
-    features: ["Everything in Free", "Unlimited problems", "Priority generation", "Download videos"],
+  standard: {
+    name: "Standard",
+    price: 8,
+    minutes: 50,
+    pricePerMin: "$0.16",
+    badge: "Best Value",
+    features: ["50 minutes of video", "All problem types", "HD quality", "Download videos", "Priority generation"],
   },
   pro: {
     name: "Pro",
-    price: 19,
-    solves: "Unlimited+",
-    features: ["Everything in Student", "No watermark", "API access", "Bulk generation"],
+    price: 15,
+    minutes: 120,
+    pricePerMin: "$0.125",
+    badge: "20 min FREE",
+    features: ["120 minutes of video", "All problem types", "HD quality", "Download videos", "Priority generation", "No watermark"],
   },
 } as const;

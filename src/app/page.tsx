@@ -496,7 +496,7 @@ export default function HomePage() {
         <div className="w-full max-w-5xl mx-auto px-8 md:px-12">
           <div className="text-center mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-5">Simple pricing</h2>
-            <p className={`text-lg ${isDark ? "text-gray-500" : "text-gray-600"}`}>Start free. Upgrade when you need more.</p>
+            <p className={`text-lg ${isDark ? "text-gray-500" : "text-gray-600"}`}>Buy minutes. Use anytime. No subscription.</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
@@ -504,7 +504,7 @@ export default function HomePage() {
               <div 
                 key={key} 
                 className={`rounded-3xl p-8 border transition-all flex flex-col ${
-                  key === "student" 
+                  key === "standard" 
                     ? isDark
                       ? "bg-white text-black border-white shadow-2xl shadow-white/10 md:-mt-4 md:mb-4"
                       : "bg-gray-900 text-white border-gray-900 shadow-2xl shadow-gray-900/20 md:-mt-4 md:mb-4"
@@ -513,34 +513,36 @@ export default function HomePage() {
                       : "bg-white border-gray-200"
                 }`}
               >
-                {key === "student" && (
+                {tier.badge && (
                   <div className={`text-xs font-semibold uppercase tracking-widest mb-3 ${
-                    isDark ? "text-violet-600" : "text-violet-400"
-                  }`}>Most Popular</div>
+                    key === "standard"
+                      ? isDark ? "text-violet-600" : "text-violet-400"
+                      : "text-green-500"
+                  }`}>{tier.badge}</div>
                 )}
                 <h3 className="text-xl font-semibold mb-2">{tier.name}</h3>
                 <div className="mb-2">
                   <span className="text-5xl font-semibold">${tier.price}</span>
-                  {tier.price > 0 && <span className={
-                    key === "student" 
-                      ? isDark ? "text-gray-500" : "text-gray-400"
-                      : isDark ? "text-gray-600" : "text-gray-500"
-                  }>/month</span>}
                 </div>
-                <p className={`mb-8 ${
-                  key === "student" 
+                <p className={`mb-1 text-lg font-medium ${
+                  key === "standard" 
+                    ? isDark ? "text-gray-700" : "text-gray-300"
+                    : isDark ? "text-gray-300" : "text-gray-700"
+                }`}>{tier.minutes} minutes</p>
+                <p className={`mb-8 text-sm ${
+                  key === "standard" 
                     ? isDark ? "text-gray-500" : "text-gray-400"
                     : isDark ? "text-gray-600" : "text-gray-500"
-                }`}>{tier.solves} solves</p>
+                }`}>{tier.pricePerMin}/min</p>
                 <ul className="space-y-4 mb-10 flex-1">
                   {tier.features.map((f) => (
                     <li key={f} className="flex items-center gap-3">
-                      <span className={key === "student" 
+                      <span className={key === "standard" 
                         ? isDark ? "text-violet-600" : "text-violet-400"
                         : "text-violet-400"
                       }>{Icons.check}</span>
                       <span className={
-                        key === "student" 
+                        key === "standard" 
                           ? isDark ? "text-gray-700" : "text-gray-300"
                           : isDark ? "text-gray-400" : "text-gray-600"
                       }>{f}</span>
@@ -548,7 +550,7 @@ export default function HomePage() {
                   ))}
                 </ul>
                 <button className={`w-full py-4 rounded-xl font-semibold transition-all ${
-                  key === "student"
+                  key === "standard"
                     ? isDark
                       ? "bg-black text-white hover:bg-gray-900"
                       : "bg-white text-gray-900 hover:bg-gray-100"
@@ -556,7 +558,7 @@ export default function HomePage() {
                       ? "bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08]"
                       : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
                 }`}>
-                  {tier.price === 0 ? "Get Started" : "Start Free Trial"}
+                  Buy Now
                 </button>
               </div>
             ))}

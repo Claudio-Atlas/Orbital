@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/constants";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,28 +9,18 @@ const inter = Inter({
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: {
-    default: SITE.title,
-    template: `%s | ${SITE.name}`,
-  },
+  title: SITE.title,
   description: SITE.description,
   keywords: [
-    "STEM exam prep",
-    "college math help",
-    "calculus tutoring",
-    "physics study guide",
-    "chemistry exam prep",
-    "ASU",
-    "GCU",
-    "MAT144",
-    "MAT170",
+    "math solver",
+    "AI tutor",
+    "math video",
+    "step by step math",
+    "calculus help",
+    "algebra solver",
+    "homework help",
+    "math tutorial",
   ],
   authors: [{ name: SITE.orgName }],
   creator: SITE.orgName,
@@ -62,11 +50,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="font-sans bg-orbital-black text-orbital-white min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans antialiased">
+        {children}
       </body>
     </html>
   );

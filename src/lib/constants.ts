@@ -1,85 +1,52 @@
-// ORBITAL LEARNING — GLOBAL CONSTANTS
+// ORBITAL SOLVER — GLOBAL CONSTANTS
 
 export const SITE = {
   name: "Orbital",
-  orgName: "Orbital Learning",
-  domain: "orbitallearning.org",
-  url: "https://orbitallearning.org",
+  orgName: "Orbital",
+  domain: "orbital-solver.io",
+  url: "https://orbital-solver.io",
   
-  title: "Orbital — Precision Prep for STEM",
-  description: "Course-specific STEM exam prep with step-by-step walkthroughs, free videos, and $2 study guides.",
+  title: "Orbital — Type a problem. Get a video.",
+  description: "AI-powered math video tutorials. Type any problem and watch a step-by-step video walkthrough in seconds.",
   
-  tagline: "Precision prep for STEM.",
-  taglineSecondary: "Course-specific walkthroughs. Free videos. $2 guides.",
+  tagline: "Type a problem. Get a video.",
+  taglineSecondary: "AI-powered math tutorials, generated in seconds.",
   
-  footer: "© Orbital Learning. All rights reserved.",
-  supportEmail: "support@orbitallearning.org",
+  footer: "© 2026 Orbital. All rights reserved.",
+  supportEmail: "hello@orbital-solver.io",
 };
 
-export const PRODUCT_FAMILIES = {
-  // Free tier
-  core: {
-    name: "Orbital Core Module",
-    price: 0,
-    description: "Free foundational content",
-  },
-  // Micro products ($2)
-  mini: {
-    name: "Orbital Mini",
-    price: 2,
-    description: "Focused exam prep guide",
-  },
-  review: {
-    name: "Orbital Review",
-    price: 2,
-    description: "Topic review with practice",
-  },
-  drill: {
-    name: "Orbital Drill",
-    price: 2,
-    description: "Intensive problem practice",
-  },
-  // Bundles ($9)
-  examPack: {
-    name: "Orbital Exam Pack",
-    price: 9,
-    description: "Complete exam preparation",
-  },
-  finalSprint: {
-    name: "Orbital Final Sprint",
-    price: 9,
-    description: "Final exam intensive review",
-  },
-  // Subscription
-  vault: {
-    name: "Orbital Vault",
-    price: 19, // per month
-    description: "Unlimited access library",
-  },
-} as const;
-
-export const UNIVERSITIES = {
-  asu: {
-    id: "asu",
-    name: "Arizona State University",
-    shortName: "ASU",
-  },
-  gcu: {
-    id: "gcu",
-    name: "Grand Canyon University",
-    shortName: "GCU",
-  },
-} as const;
-
+// Simplified nav for focused product
 export const NAV_LINKS = [
-  { href: "/courses", label: "Courses" },
-  { href: "/videos", label: "Videos" },
-  { href: "/store", label: "Store" },
-  { href: "/about", label: "About" },
+  { href: "/", label: "Solve" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#how-it-works", label: "How It Works" },
 ] as const;
 
 export const SOCIAL_LINKS = {
-  twitter: "https://twitter.com/orbitallearning",
-  youtube: "https://youtube.com/@orbitallearning",
+  twitter: "https://twitter.com/orbitalsolver",
+  tiktok: "https://tiktok.com/@orbitalsolver",
   discord: "https://discord.gg/orbital",
+} as const;
+
+// Pricing tiers
+export const PRICING = {
+  free: {
+    name: "Free",
+    price: 0,
+    solves: "3/day",
+    features: ["Video walkthroughs", "Voice narration", "All problem types"],
+  },
+  student: {
+    name: "Student",
+    price: 9,
+    solves: "Unlimited",
+    features: ["Everything in Free", "Unlimited problems", "Priority generation", "Download videos"],
+  },
+  pro: {
+    name: "Pro",
+    price: 19,
+    solves: "Unlimited+",
+    features: ["Everything in Student", "No watermark", "API access", "Bulk generation"],
+  },
 } as const;

@@ -36,7 +36,8 @@ Return ONLY valid JSON in this exact format:
 {
   "meta": {
     "topic": "Brief topic name",
-    "difficulty": "easy|medium|hard"
+    "difficulty": "easy|medium|hard",
+    "latex": "The original problem in LaTeX notation (for verification display)"
   },
   "steps": [
     {
@@ -67,7 +68,7 @@ CRITICAL RULES — READ CAREFULLY:
 
 EXAMPLE — "Find the derivative of 2x³ + 5x":
 {
-  "meta": {"topic": "Derivatives using Power Rule", "difficulty": "easy"},
+  "meta": {"topic": "Derivatives using Power Rule", "difficulty": "easy", "latex": "\\\\frac{d}{dx}(2x^3 + 5x)"},
   "steps": [
     {"narration": "Let's find the derivative of two x cubed plus five x.", "latex": "f(x) = 2x^3 + 5x"},
     {"narration": "We'll use the power rule: bring down the exponent as a coefficient, then reduce the exponent by one.", "latex": "\\\\text{Power Rule: } \\\\frac{d}{dx}(x^n) = n \\\\cdot x^{n-1}"},

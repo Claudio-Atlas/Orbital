@@ -210,6 +210,69 @@ async def solve(request: SolveRequest, background_tasks: BackgroundTasks):
         raise HTTPException(500, f"Failed to parse problem: {str(e)}")
 
 
+class ParseRequest(BaseModel):
+    problem: Optional[str] = None
+    image: Optional[str] = None
+
+
+class ParseResponse(BaseModel):
+    problem: str
+    latex: Optional[str] = None
+    steps: list
+    total_characters: int
+    estimated_minutes: float
+
+
+@app.post("/parse", response_model=ParseResponse)
+async def parse_only(request: ParseRequest):
+    """
+    Parse a problem WITHOUT generating video.
+    This is FREE - used for the verification screen.
+    User sees the parsed result and cost before confirming.
+    
+    Returns:
+    - problem: The problem text (extracted if from image)
+    - latex: LaTeX representation of the problem
+    - steps: List of {narration, latex} steps
+    - total_characters: Total narration characters (for cost calc)
+    - estimated_minutes: Estimated video length (chars / 1000)
+    """
+    
+    if not request.problem and not request.image:
+        raise HTTPException(400, "Must provide either 'problem' or 'image'")
+    
+    try:
+        if request.image:
+            script_data, extracted_problem = parse_problem_from_image(request.image)
+            problem_text = extracted_problem
+        else:
+            script_data = parse_problem(request.problem)
+            problem_text = request.problem
+        
+        steps = script_data.get("steps", [])
+        
+        # Calculate total characters (for cost estimation)
+        total_chars = sum(len(step.get("narration", "")) for step in steps)
+        
+        # 1000 chars = 1 minute
+        estimated_minutes = round(total_chars / 1000, 1)
+        estimated_minutes = max(0.1, estimated_minutes)  # Minimum 0.1 min
+        
+        # Get latex for the problem if available
+        problem_latex = script_data.get("meta", {}).get("latex")
+        
+        return ParseResponse(
+            problem=problem_text,
+            latex=problem_latex,
+            steps=steps,
+            total_characters=total_chars,
+            estimated_minutes=estimated_minutes
+        )
+        
+    except Exception as e:
+        raise HTTPException(500, f"Failed to parse problem: {str(e)}")
+
+
 @app.get("/job/{job_id}", response_model=JobStatus)
 async def get_job(job_id: str):
     """Get the status of a solve job."""

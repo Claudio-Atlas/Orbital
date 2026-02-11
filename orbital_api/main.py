@@ -24,6 +24,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from routes.payments import router as payments_router
+
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "orbital_factory"))
 
@@ -92,6 +94,9 @@ app.add_middleware(
 
 # Serve generated videos
 app.mount("/videos", StaticFiles(directory=str(OUTPUT_PATH)), name="videos")
+
+# Include routers
+app.include_router(payments_router)
 
 
 def run_pipeline(job_id: str, script_data: dict, voice: str):

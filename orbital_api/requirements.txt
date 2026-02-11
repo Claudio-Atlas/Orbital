@@ -11,3 +11,7 @@ openai>=1.12.0
 # Pipeline dependencies (from orbital_factory)
 elevenlabs>=1.0.0
 pydub>=0.25.1
+
+# Payments & Database
+stripe>=7.0.0
+supabase>=2.0.0

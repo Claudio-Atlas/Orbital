@@ -1,0 +1,4 @@
+tts_test/venv/
+tts_test/fish-speech/
+orbital_factory/media/videos/*/480p15/partial_movie_files/
+*.gif

@@ -291,52 +291,39 @@ def combine_audio(manifest: list, intro_duration: float, output_path: str) -> st
 
 def create_intro_video(output_path: str, duration: float = 2.0):
     """
-    Create a simple intro video with the Orbital logo.
+    Create the Orbital animated logo intro.
+    Uses intro_final.py - the production logo animation.
     """
-    # Use the factory root for logo
     factory_root = Path(__file__).parent
-    logo_path = factory_root / "orbital-logo-with-name.png"
-    
-    intro_scene = f'''
-from manim import *
-
-class QuickIntro(Scene):
-    def construct(self):
-        self.camera.background_color = "#000000"
-        
-        # Load logo
-        try:
-            logo = ImageMobject("{logo_path}")
-            logo.scale(0.5)
-        except:
-            # Fallback: text logo
-            logo = Text("ORBITAL", font_size=72, color=WHITE)
-        
-        self.play(FadeIn(logo, scale=0.9), run_time=0.8)
-        self.wait({duration - 1.3})
-        self.play(FadeOut(logo), run_time=0.5)
-'''
-    
-    scene_dir = os.path.dirname(os.path.abspath(output_path))
-    scene_path = os.path.join(scene_dir, "quick_intro_scene.py")
-    with open(scene_path, "w") as f:
-        f.write(intro_scene)
+    intro_scene_path = factory_root / "intro_final.py"
     
     # Render
     env = os.environ.copy()
     env["PATH"] = f"{Path.home()}/Library/TinyTeX/bin/universal-darwin:{Path.home()}/Library/Python/3.9/bin:" + env.get("PATH", "")
     
-    cmd = ["manim", "-ql", "quick_intro_scene.py", "QuickIntro"]
-    subprocess.run(cmd, cwd=scene_dir, env=env, capture_output=True)
+    cmd = ["manim", "-ql", "--format", "mp4", str(intro_scene_path), "OrbitalIntro"]
+    result = subprocess.run(cmd, cwd=str(factory_root), env=env, capture_output=True, text=True)
+    
+    if result.returncode != 0:
+        print(f"  ⚠️ Intro render warning: {result.stderr[:200] if result.stderr else 'unknown'}")
     
     # Find and copy output
-    rendered = Path(scene_dir) / "media" / "videos" / "quick_intro_scene" / "480p15" / "QuickIntro.mp4"
+    rendered = factory_root / "media" / "videos" / "intro_final" / "480p15" / "OrbitalIntro.mp4"
     if rendered.exists():
         import shutil
         shutil.copy(rendered, output_path)
         print(f"  ✓ Created intro: {output_path}")
         return output_path
     
+    # Fallback: check alternate location
+    alt_rendered = factory_root / "media" / "videos" / "intro_final" / "480p15" / "OrbitalIntro.mp4"
+    if alt_rendered.exists():
+        import shutil
+        shutil.copy(alt_rendered, output_path)
+        print(f"  ✓ Created intro: {output_path}")
+        return output_path
+    
+    print(f"  ❌ Failed to create intro video")
     return None
 
 

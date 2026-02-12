@@ -177,22 +177,25 @@ async def stripe_webhook(request: Request):
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
     
+    # SECURITY: Webhook signature verification is REQUIRED
+    # Never process webhooks without verifying they came from Stripe
     if not STRIPE_WEBHOOK_SECRET:
-        # For testing without webhook secret
-        print("⚠️ Webhook secret not configured, skipping signature verification")
-        event = stripe.Event.construct_from(
-            await request.json(),
-            stripe.api_key
+        raise HTTPException(
+            status_code=500, 
+            detail="Webhook secret not configured. Cannot process webhooks securely."
         )
-    else:
-        try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, STRIPE_WEBHOOK_SECRET
-            )
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid payload")
-        except stripe.error.SignatureVerificationError:
-            raise HTTPException(status_code=400, detail="Invalid signature")
+    
+    if not sig_header:
+        raise HTTPException(status_code=400, detail="Missing stripe-signature header")
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid payload")
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
     
     supabase = get_supabase_admin()
     

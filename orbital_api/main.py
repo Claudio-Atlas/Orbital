@@ -9,6 +9,10 @@ Endpoints:
 - GET /health - Health check
 """
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 import sys
 import json
@@ -19,12 +23,13 @@ from datetime import datetime
 from typing import Optional
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from routes.payments import router as payments_router
+from utils.auth import get_current_user
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "orbital_factory"))
@@ -161,9 +166,14 @@ async def health():
 
 
 @app.post("/solve", response_model=SolveResponse)
-async def solve(request: SolveRequest, background_tasks: BackgroundTasks):
+async def solve(
+    request: SolveRequest, 
+    background_tasks: BackgroundTasks,
+    user = Depends(get_current_user)
+):
     """
     Submit a math problem to solve.
+    Requires authentication.
     
     Provide either:
     - problem: Text description of the problem
@@ -229,10 +239,12 @@ class ParseResponse(BaseModel):
 
 
 @app.post("/parse", response_model=ParseResponse)
-async def parse_only(request: ParseRequest):
+async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
     """
     Parse a problem WITHOUT generating video.
-    This is FREE - used for the verification screen.
+    Requires authentication.
+    
+    This is FREE (doesn't deduct minutes) - used for the verification screen.
     User sees the parsed result and cost before confirming.
     
     Returns:
@@ -279,19 +291,18 @@ async def parse_only(request: ParseRequest):
 
 
 @app.get("/job/{job_id}", response_model=JobStatus)
-async def get_job(job_id: str):
-    """Get the status of a solve job."""
+async def get_job(job_id: str, user = Depends(get_current_user)):
+    """Get the status of a solve job. Requires authentication."""
     
     if job_id not in jobs:
         raise HTTPException(404, f"Job {job_id} not found")
     
+    # TODO: Verify job belongs to this user when we add user_id to jobs
     return JobStatus(**jobs[job_id])
 
 
-@app.get("/jobs")
-async def list_jobs():
-    """List all jobs (for debugging)."""
-    return {"jobs": list(jobs.values())}
+# REMOVED: /jobs debug endpoint - exposed all user data
+# If needed for admin, add proper admin auth first
 
 
 if __name__ == "__main__":

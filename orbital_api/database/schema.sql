@@ -39,7 +39,7 @@ CREATE TABLE public.purchases (
     
     -- Stripe
     stripe_payment_intent_id TEXT,
-    stripe_checkout_session_id TEXT,
+    stripe_checkout_session_id TEXT UNIQUE, -- Unique for idempotency
     
     -- Status
     status TEXT DEFAULT 'completed', -- 'pending', 'completed', 'refunded'
@@ -157,7 +157,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to add minutes after purchase
+-- Function to add minutes after purchase (IDEMPOTENT)
+-- Returns existing purchase ID if already processed (safe to retry)
 CREATE OR REPLACE FUNCTION public.add_minutes(
     p_user_id UUID,
     p_minutes DECIMAL,
@@ -168,7 +169,18 @@ CREATE OR REPLACE FUNCTION public.add_minutes(
 RETURNS UUID AS $$
 DECLARE
     v_purchase_id UUID;
+    v_existing_id UUID;
 BEGIN
+    -- IDEMPOTENCY CHECK: See if this session was already processed
+    SELECT id INTO v_existing_id
+    FROM public.purchases
+    WHERE stripe_checkout_session_id = p_stripe_session_id;
+    
+    -- If already processed, return existing ID (don't duplicate)
+    IF v_existing_id IS NOT NULL THEN
+        RETURN v_existing_id;
+    END IF;
+
     -- Add to balance
     UPDATE public.profiles
     SET minutes_balance = minutes_balance + p_minutes,

@@ -88,13 +88,22 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS for frontend
+# CORS configuration
+# Only allow requests from known frontend origins
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",           # Local dev
+    "http://localhost:3001",           # Local dev alternate port
+    "https://orbital-lime.vercel.app", # Vercel production
+    "https://orbitalsolver.io",        # Custom domain (when ready)
+    "https://www.orbitalsolver.io",    # www variant
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Tighten for production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Serve generated videos

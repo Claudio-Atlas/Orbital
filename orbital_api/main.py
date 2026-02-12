@@ -31,18 +31,24 @@ from pydantic import BaseModel
 from routes.payments import router as payments_router
 from utils.auth import get_current_user
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "orbital_factory"))
-
+# Parser is local to orbital_api
 from parser import parse_problem, parse_problem_from_image
 
 # Job storage (in-memory for now, use Redis/DB for production)
 jobs = {}
 
-# Paths
+# Paths - use local directories for Railway compatibility
+# In production (Railway), orbital_factory won't exist, so use local paths
+API_DIR = Path(__file__).parent
+OUTPUT_PATH = API_DIR / "output"
+SCRIPTS_PATH = API_DIR / "scripts"
+
+# Create directories immediately (before app.mount)
+OUTPUT_PATH.mkdir(exist_ok=True)
+SCRIPTS_PATH.mkdir(exist_ok=True)
+
+# Legacy path for local dev with full factory
 FACTORY_PATH = Path(__file__).parent.parent / "orbital_factory"
-OUTPUT_PATH = FACTORY_PATH / "output"
-SCRIPTS_PATH = FACTORY_PATH / "scripts"
 
 
 class SolveRequest(BaseModel):

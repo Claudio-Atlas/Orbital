@@ -1,4 +1,31 @@
+# Environment files (contain secrets!)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# Test directories
 tts_test/venv/
 tts_test/fish-speech/
+
+# Manim output
 orbital_factory/media/videos/*/480p15/partial_movie_files/
 *.gif
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

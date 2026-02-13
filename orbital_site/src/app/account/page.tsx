@@ -1,5 +1,8 @@
 'use client';
 
+// Force dynamic rendering - this page requires auth and can't be prerendered
+export const dynamic = 'force-dynamic';
+
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';

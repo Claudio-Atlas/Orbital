@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering - uses Supabase client
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";

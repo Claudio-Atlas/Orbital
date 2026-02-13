@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/2488e575/media/videos/quick_intro_scene/480p15/partial_movie_files/QuickIntro/2737499832_25516395_223132457.mp4'
+file 'file:/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/2488e575/media/videos/quick_intro_scene/480p15/partial_movie_files/QuickIntro/4103585348_569139724_2069686895.mp4'
+file 'file:/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/2488e575/media/videos/quick_intro_scene/480p15/partial_movie_files/QuickIntro/4103585348_2977837797_302232672.mp4'

@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "topic": "TTS Quality Test - Integration by Substitution",
+    "difficulty": "intermediate",
+    "test_purpose": "Compare OpenAI vs Fish Speech vs XTTS quality and math pronunciation"
+  },
+  "steps": [
+    {
+      "narration": "Let's evaluate the integral of x squared times e to the x cubed, dx.",
+      "latex": "\\int x^2 e^{x^3} \\, dx"
+    },
+    {
+      "narration": "This is a great candidate for u-substitution. Let's let u equal x cubed.",
+      "latex": "u = x^3"
+    },
+    {
+      "narration": "Now we take the derivative. d u equals 3 x squared d x.",
+      "latex": "du = 3x^2 \\, dx"
+    },
+    {
+      "narration": "Solving for d x, we get d x equals d u over 3 x squared.",
+      "latex": "dx = \\frac{du}{3x^2}"
+    },
+    {
+      "narration": "Substituting into our integral, the x squared terms cancel beautifully.",
+      "latex": "\\int x^2 e^u \\cdot \\frac{du}{3x^2} = \\frac{1}{3} \\int e^u \\, du"
+    },
+    {
+      "narration": "The integral of e to the u with respect to u is simply e to the u.",
+      "latex": "\\frac{1}{3} e^u + C"
+    },
+    {
+      "narration": "Finally, we substitute back. Our answer is one-third e to the x cubed, plus C.",
+      "latex": "\\frac{1}{3} e^{x^3} + C"
+    }
+  ]
+}

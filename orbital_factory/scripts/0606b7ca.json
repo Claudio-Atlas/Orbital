@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "topic": "Solving Linear Equations",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "0606b7ca"
+  },
+  "steps": [
+    {
+      "narration": "Let's solve the equation three x minus seven equals fourteen.",
+      "latex": "3x - 7 = 14"
+    },
+    {
+      "narration": "First, add seven to both sides to get rid of the minus seven.",
+      "latex": "3x - 7 + 7 = 14 + 7"
+    },
+    {
+      "narration": "This simplifies to three x equals twenty-one.",
+      "latex": "3x = 21"
+    },
+    {
+      "narration": "Now divide both sides by three to solve for x.",
+      "latex": "\\frac{3x}{3} = \\frac{21}{3}"
+    },
+    {
+      "narration": "And we find that x equals seven.",
+      "latex": "x = 7"
+    }
+  ]
+}

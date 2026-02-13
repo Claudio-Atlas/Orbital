@@ -1,0 +1,53 @@
+{
+  "name": "Clayton Final",
+  "description": "3B1B-style warm tutor voice - nuclear nasal cut, natural pitch preserved",
+  "version": "1.0",
+  "created": "2026-02-11",
+  "source": "clayton_raw.mp3",
+  
+  "ffmpeg_filter": "highpass=f=80,lowpass=f=10500,equalizer=f=90:t=q:w=0.7:g=2,equalizer=f=180:t=q:w=1:g=3,equalizer=f=350:t=q:w=1:g=2,equalizer=f=550:t=q:w=2.5:g=-6,equalizer=f=800:t=q:w=2.5:g=-9,equalizer=f=1050:t=q:w=2.5:g=-8,equalizer=f=1300:t=q:w=2:g=-5,equalizer=f=1600:t=q:w=1.5:g=-2,equalizer=f=1900:t=q:w=1:g=2.5,equalizer=f=3200:t=q:w=1:g=0.5,equalizer=f=5000:t=q:w=2:g=-3.5,highshelf=f=6000:g=-3,acompressor=threshold=-23dB:ratio=2:attack=18:release=200,aecho=0.8:0.72:20:0.09,loudnorm=I=-16:TP=-1:LRA=11",
+  
+  "settings": {
+    "highpass": 80,
+    "lowpass": 10500,
+    "eq": [
+      {"freq": 90, "gain": 2, "q": 0.7, "note": "sub bass warmth"},
+      {"freq": 180, "gain": 3, "q": 1, "note": "chest resonance"},
+      {"freq": 350, "gain": 2, "q": 1, "note": "body warmth"},
+      {"freq": 550, "gain": -6, "q": 2.5, "note": "nasal cut low"},
+      {"freq": 800, "gain": -9, "q": 2.5, "note": "nasal cut mid (nuclear)"},
+      {"freq": 1050, "gain": -8, "q": 2.5, "note": "nasal cut high"},
+      {"freq": 1300, "gain": -5, "q": 2, "note": "nasal cut upper"},
+      {"freq": 1600, "gain": -2, "q": 1.5, "note": "honk reduction"},
+      {"freq": 1900, "gain": 2.5, "q": 1, "note": "presence/clarity"},
+      {"freq": 3200, "gain": 0.5, "q": 1, "note": "articulation"},
+      {"freq": 5000, "gain": -3.5, "q": 2, "note": "harshness reduction"},
+      {"freq": 6000, "gain": -3, "type": "highshelf", "note": "smooth top end"}
+    ],
+    "compression": {
+      "threshold": -23,
+      "ratio": 2,
+      "attack": 18,
+      "release": 200
+    },
+    "reverb": {
+      "in_gain": 0.8,
+      "out_gain": 0.72,
+      "delay_ms": 20,
+      "decay": 0.09
+    },
+    "normalize": {
+      "integrated_loudness": -16,
+      "true_peak": -1,
+      "loudness_range": 11
+    }
+  },
+  
+  "notes": [
+    "No pitch shift - preserves natural variation",
+    "Nuclear nasal cut at 800-1050Hz",
+    "3B1B-style warmth in 180-350Hz range",
+    "Subtle reverb for natural space",
+    "Use on Fish Audio TTS OUTPUT, not clone input"
+  ]
+}

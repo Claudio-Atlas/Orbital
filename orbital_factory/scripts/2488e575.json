@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "topic": "Polynomial Derivatives",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "2488e575"
+  },
+  "steps": [
+    {
+      "narration": "Let's find the derivative of f of x equals x cubed plus two x squared minus five x plus one.",
+      "latex": "f(x) = x^{3} + 2x^{2} - 5x + 1"
+    },
+    {
+      "narration": "We'll use the power rule for derivatives. The power rule says that the derivative of x to the n is n times x to the n minus one.",
+      "latex": "\\frac{d}{dx}(x^{n}) = nx^{n-1}"
+    },
+    {
+      "narration": "Let's apply the power rule to each term separately, starting with x cubed.",
+      "latex": "\\frac{d}{dx}(x^{3}) = 3x^{2}"
+    },
+    {
+      "narration": "Next, the derivative of two x squared is two times the derivative of x squared.",
+      "latex": "\\frac{d}{dx}(2x^{2}) = 2 \\cdot 2x^{1} = 4x"
+    },
+    {
+      "narration": "For negative five x, remember that x is x to the first power.",
+      "latex": "\\frac{d}{dx}(-5x) = -5 \\cdot 1x^{0} = -5"
+    },
+    {
+      "narration": "Finally, the derivative of a constant like one is always zero.",
+      "latex": "\\frac{d}{dx}(1) = 0"
+    },
+    {
+      "narration": "Now let's put all these derivatives together.",
+      "latex": "f'(x) = 3x^{2} + 4x - 5 + 0"
+    },
+    {
+      "narration": "We can simplify by removing the plus zero, giving us our final answer.",
+      "latex": "f'(x) = 3x^{2} + 4x - 5"
+    }
+  ]
+}

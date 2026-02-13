@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "topic": "Multiplying Binomials",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "f72d78be"
+  },
+  "intro_duration": 2.0,
+  "steps": [
+    {
+      "step": 0,
+      "narration": "Let's simplify the expression x plus three times x minus two.",
+      "latex": "(x + 3)(x - 2)",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_00.mp3",
+      "duration": 3.65
+    },
+    {
+      "step": 1,
+      "narration": "We can use the FOIL method to multiply these two binomials. FOIL stands for First, Outer, Inner, Last.",
+      "latex": "\\text{FOIL: First, Outer, Inner, Last}",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_01.mp3",
+      "duration": 5.78
+    },
+    {
+      "step": 2,
+      "narration": "First, multiply the First terms from each binomial: x from the first and x from the second.",
+      "latex": "\\text{First: } x \\cdot x = x^2",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_02.mp3",
+      "duration": 5.54
+    },
+    {
+      "step": 3,
+      "narration": "Outer, multiply the Outer terms: x from the first and negative two from the second.",
+      "latex": "\\text{Outer: } x \\cdot (-2) = -2x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_03.mp3",
+      "duration": 5.11
+    },
+    {
+      "step": 4,
+      "narration": "Inner, multiply the Inner terms: three from the first and x from the second.",
+      "latex": "\\text{Inner: } 3 \\cdot x = 3x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_04.mp3",
+      "duration": 4.61
+    },
+    {
+      "step": 5,
+      "narration": "Last, multiply the Last terms: three from the first and negative two from the second.",
+      "latex": "\\text{Last: } 3 \\cdot (-2) = -6",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_05.mp3",
+      "duration": 5.3
+    },
+    {
+      "step": 6,
+      "narration": "Now, let's write all four terms we got from FOIL.",
+      "latex": "x^2 + (-2x) + 3x + (-6)",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_06.mp3",
+      "duration": 2.81
+    },
+    {
+      "step": 7,
+      "narration": "We can rewrite this without the parentheses around the negative terms.",
+      "latex": "x^2 - 2x + 3x - 6",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_07.mp3",
+      "duration": 3.5
+    },
+    {
+      "step": 8,
+      "narration": "Now, we combine like terms. The like terms are negative two x and positive three x.",
+      "latex": "-2x + 3x = 1x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_08.mp3",
+      "duration": 5.06
+    },
+    {
+      "step": 9,
+      "narration": "One x is usually just written as x.",
+      "latex": "1x = x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_09.mp3",
+      "duration": 2.14
+    },
+    {
+      "step": 10,
+      "narration": "So, our simplified expression is x squared plus x minus six.",
+      "latex": "x^2 + x - 6",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/f72d78be/audio/step_10.mp3",
+      "duration": 3.79
+    }
+  ]
+}

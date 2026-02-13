@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "topic": "Solving Linear Equations",
+    "difficulty": "easy",
+    "brand": "Orbital",
+    "job_id": "0ef99b7b"
+  },
+  "steps": [
+    {
+      "narration": "Let's solve for x in the equation two x plus seven equals fifteen.",
+      "latex": "2x + 7 = 15"
+    },
+    {
+      "narration": "Our goal is to get x by itself on one side of the equation. Right now, x is being multiplied by two and then having seven added to it.",
+      "latex": "2x + 7 = 15"
+    },
+    {
+      "narration": "First, let's undo the addition of seven. We do this by subtracting seven from both sides of the equation.",
+      "latex": "2x + 7 - 7 = 15 - 7"
+    },
+    {
+      "narration": "On the left side, seven minus seven is zero, so we're left with just two x.",
+      "latex": "2x = 15 - 7"
+    },
+    {
+      "narration": "On the right side, fifteen minus seven is eight.",
+      "latex": "2x = 8"
+    },
+    {
+      "narration": "Now we have two x equals eight. Since x is being multiplied by two, we need to undo that multiplication.",
+      "latex": "2x = 8"
+    },
+    {
+      "narration": "We divide both sides of the equation by two.",
+      "latex": "\\frac{2x}{2} = \\frac{8}{2}"
+    },
+    {
+      "narration": "On the left side, two divided by two is one, so we're left with just x.",
+      "latex": "x = \\frac{8}{2}"
+    },
+    {
+      "narration": "On the right side, eight divided by two is four.",
+      "latex": "x = 4"
+    },
+    {
+      "narration": "So our solution is x equals four. Let's check our work by plugging it back into the original equation.",
+      "latex": "x = 4"
+    },
+    {
+      "narration": "Original equation: two times x plus seven equals fifteen.",
+      "latex": "2x + 7 = 15"
+    },
+    {
+      "narration": "Substitute four for x: two times four plus seven.",
+      "latex": "2(4) + 7"
+    },
+    {
+      "narration": "Two times four is eight.",
+      "latex": "8 + 7"
+    },
+    {
+      "narration": "Eight plus seven is fifteen, which matches the right side of our original equation.",
+      "latex": "15 = 15 \\quad \\checkmark"
+    },
+    {
+      "narration": "Our solution checks out! So x equals four is correct.",
+      "latex": "x = 4"
+    }
+  ]
+}

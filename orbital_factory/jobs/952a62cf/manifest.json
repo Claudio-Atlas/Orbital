@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "topic": "Finding Derivatives",
+    "difficulty": "medium",
+    "brand": "Orbital",
+    "job_id": "952a62cf"
+  },
+  "intro_duration": 2.0,
+  "steps": [
+    {
+      "step": 0,
+      "narration": "Let's find the derivative of the function x squared plus three x.",
+      "latex": "f(x) = x^{2} + 3x",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/952a62cf/audio/step_00.mp3",
+      "duration": 4.27
+    },
+    {
+      "step": 1,
+      "narration": "To find the derivative, we'll use the power rule. The power rule says to bring down the exponent and decrease it by one.",
+      "latex": "\\text{Power Rule: } \\frac{d}{dx}(x^{n}) = nx^{n-1}",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/952a62cf/audio/step_01.mp3",
+      "duration": 7.11
+    },
+    {
+      "step": 2,
+      "narration": "First, apply the power rule to x squared. Bring down the two and decrease the exponent by one.",
+      "latex": "\\frac{d}{dx}(x^{2}) = 2x^{1}",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/952a62cf/audio/step_02.mp3",
+      "duration": 6.13
+    },
+    {
+      "step": 3,
+      "narration": "Next, apply the power rule to three x. The derivative of x is one, so multiply three by one.",
+      "latex": "\\frac{d}{dx}(3x) = 3 \\cdot 1",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/952a62cf/audio/step_03.mp3",
+      "duration": 6.32
+    },
+    {
+      "step": 4,
+      "narration": "Now, combine the derivatives. We have two x plus three.",
+      "latex": "f'(x) = 2x + 3",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/952a62cf/audio/step_04.mp3",
+      "duration": 3.71
+    },
+    {
+      "step": 5,
+      "narration": "So, the derivative of x squared plus three x is two x plus three.",
+      "latex": "f'(x) = 2x + 3",
+      "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/952a62cf/audio/step_05.mp3",
+      "duration": 5.34
+    }
+  ]
+}

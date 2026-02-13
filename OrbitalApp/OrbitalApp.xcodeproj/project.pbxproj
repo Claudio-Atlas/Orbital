@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,7 @@
 		7134E4918AEF3645C5C4D363 /* AccentTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB35E900C1D740625DD9D09 /* AccentTheme.swift */; };
 		9F3A8137CC613C4C240454CF /* OrbitalLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283511E10D37F70487947108 /* OrbitalLogo.swift */; };
 		AF50DD34A388F9ED88BB33C8 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB49B18F2BFB4E9C3399832D /* AuthManager.swift */; };
+		B1551AFD2F3FD3B00001420B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B1551AFC2F3FD3B00001420B /* Info.plist */; };
 		B1B6C460341B072CF9894DB3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E539AB7C295ABDE2A3D6F9E /* ContentView.swift */; };
 		BB473D57E0EA151C7CA60841 /* SolverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C249320E87D434AAE9413561 /* SolverView.swift */; };
 		CEF29660279163B51AA37A0C /* OrbitalColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74507F573F4E70621ACC45FF /* OrbitalColors.swift */; };
@@ -36,6 +37,7 @@
 		8BC6AFA201B1CE6E3E5CB867 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9B799A2B444FC53510B0B468 /* AccentColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentColorPicker.swift; sourceTree = "<group>"; };
 		A6075CF026151D4CFE675D00 /* OrbitalApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OrbitalApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1551AFC2F3FD3B00001420B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C249320E87D434AAE9413561 /* SolverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolverView.swift; sourceTree = "<group>"; };
 		DBB35E900C1D740625DD9D09 /* AccentTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentTheme.swift; sourceTree = "<group>"; };
 		FB49B18F2BFB4E9C3399832D /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
@@ -47,11 +49,6 @@
 			children = (
 				8BC6AFA201B1CE6E3E5CB867 /* Assets.xcassets */,
 				27FA68F928154B0941A0E39B /* OrbitalApp.swift */,
-				72EA24FFE10AC9EC1443FE61 /* Components */,
-				BB5B884C23B0500B3582B837 /* Managers */,
-				724B0D3AA0D326A5EF4F112C /* Models */,
-				F5DA46A2B94AB53C77D5A5AA /* Theme */,
-				F4D4CF7D9ED7205FCF1E77C8 /* Views */,
 			);
 			name = OrbitalApp;
 			path = .;
@@ -78,6 +75,7 @@
 		B382B7F1F40AF3D26F30A419 = {
 			isa = PBXGroup;
 			children = (
+				B1551AFC2F3FD3B00001420B /* Info.plist */,
 				72EA24FFE10AC9EC1443FE61 /* Components */,
 				BB5B884C23B0500B3582B837 /* Managers */,
 				724B0D3AA0D326A5EF4F112C /* Models */,
@@ -170,7 +168,6 @@
 			);
 			mainGroup = B382B7F1F40AF3D26F30A419;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -184,6 +181,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1551AFD2F3FD3B00001420B /* Info.plist in Resources */,
 				5E70ADA71BA1DFAD36D290F6 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

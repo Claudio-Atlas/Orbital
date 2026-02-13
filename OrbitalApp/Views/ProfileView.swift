@@ -4,144 +4,243 @@ struct ProfileView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var authManager: AuthManager
     @AppStorage("isDarkMode") private var isDarkMode = true
-    @State private var showingPurchaseSheet = false
     @State private var showingSignOutAlert = false
+    
+    // Animation states
+    @State private var headerOpacity = 0.0
+    @State private var headerOffset: CGFloat = 20
+    @State private var contentOpacity = 0.0
+    @State private var contentOffset: CGFloat = 20
     
     var body: some View {
         NavigationStack {
-            List {
-                // Account Section
-                Section {
-                    HStack {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Breathing logo
+                    BreathingLogo()
+                        .frame(height: 50)
+                        .padding(.top, 10)
+                        .opacity(headerOpacity)
+                        .offset(y: headerOffset)
+                    
+                    // Profile header
+                    VStack(spacing: 16) {
                         // Avatar
                         Circle()
-                            .fill(OrbitalColors.accent.opacity(0.2))
-                            .frame(width: 60, height: 60)
+                            .fill(
+                                LinearGradient(
+                                    colors: [OrbitalColors.accentLight, OrbitalColors.accent],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 80, height: 80)
                             .overlay(
                                 Text(authManager.userEmail.prefix(1).uppercased())
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(OrbitalColors.accent)
+                                    .font(.system(size: 32, weight: .bold))
+                                    .foregroundStyle(.white)
                             )
+                            .shadow(color: OrbitalColors.accent.opacity(0.4), radius: 12)
                         
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(spacing: 4) {
                             Text(authManager.userEmail)
                                 .font(.headline)
+                                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
+                            
                             Text("Member since \(authManager.memberSince)")
                                 .font(.caption)
-                                .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                                .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                         }
                     }
-                    .padding(.vertical, 8)
-                }
-                
-                // Balance Section
-                Section("Balance") {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("\(authManager.minutesBalance, specifier: "%.1f") minutes")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            Text("remaining")
-                                .font(.caption)
-                                .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
-                        }
-                        
-                        Spacer()
-                        
-                        Button(action: { showingPurchaseSheet = true }) {
-                            HStack {
-                                Image(systemName: "plus")
-                                Text("Buy More")
+                    .opacity(headerOpacity)
+                    .offset(y: headerOffset)
+                    
+                    // Minutes balance card with purple glow
+                    VStack(spacing: 16) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Minutes Left")
+                                    .font(.subheadline)
+                                    .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
+                                
+                                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                    Text("\(authManager.minutesBalance, specifier: "%.1f")")
+                                        .font(.system(size: 42, weight: .bold))
+                                        .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
+                                    Text("minutes")
+                                        .font(.headline)
+                                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
+                                }
                             }
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .background(OrbitalColors.accent)
+                            
+                            Spacer()
+                            
+                            // Circular indicator
+                            ZStack {
+                                Circle()
+                                    .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 6)
+                                    .frame(width: 60, height: 60)
+                                
+                                Circle()
+                                    .trim(from: 0, to: min(authManager.minutesBalance / 100, 1))
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [OrbitalColors.accentLight, OrbitalColors.accent],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                                    )
+                                    .frame(width: 60, height: 60)
+                                    .rotationEffect(.degrees(-90))
+                                
+                                if authManager.minutesBalance == 0 {
+                                    Text("⛽")
+                                        .font(.system(size: 20))
+                                }
+                            }
+                        }
+                        
+                        // Manage Minutes button
+                        Button(action: openManageMinutes) {
+                            HStack {
+                                Text("Manage Minutes")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Spacer()
+                                Image(systemName: "arrow.up.right")
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+                            .padding()
+                            .background(
+                                LinearGradient(
+                                    colors: [OrbitalColors.accentLight, OrbitalColors.accent],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
                             .foregroundStyle(.white)
-                            .clipShape(Capsule())
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: OrbitalColors.accent.opacity(0.4), radius: 10, x: 0, y: 4)
                         }
                     }
-                    .padding(.vertical, 8)
-                }
-                
-                // Preferences Section
-                Section("Preferences") {
-                    Toggle(isOn: $isDarkMode) {
-                        Label("Dark Mode", systemImage: isDarkMode ? "moon.fill" : "sun.max.fill")
-                    }
-                    .tint(OrbitalColors.accent)
+                    .padding(20)
+                    .background(OrbitalColors.card(colorScheme))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(OrbitalColors.accent.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: OrbitalColors.accent.opacity(0.15), radius: 15, x: 0, y: 5)
+                    .padding(.horizontal)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
                     
-                    NavigationLink {
-                        Text("Voice Settings") // TODO: Implement
-                    } label: {
-                        Label("Default Voice", systemImage: "waveform")
+                    // Settings sections
+                    VStack(spacing: 12) {
+                        // Preferences
+                        ProfileSettingsSection(title: "Preferences", colorScheme: colorScheme) {
+                            ProfileSettingsRow(
+                                icon: "moon.fill",
+                                title: "Dark Mode",
+                                colorScheme: colorScheme,
+                                trailing: {
+                                    Toggle("", isOn: $isDarkMode)
+                                        .tint(OrbitalColors.accent)
+                                }
+                            )
+                            
+                            ProfileSettingsRow(
+                                icon: "bell.fill",
+                                title: "Notifications",
+                                colorScheme: colorScheme,
+                                trailing: {
+                                    Image(systemName: "chevron.right")
+                                        .foregroundStyle(OrbitalColors.accent)
+                                }
+                            )
+                        }
+                        
+                        // Support
+                        ProfileSettingsSection(title: "Support", colorScheme: colorScheme) {
+                            ProfileSettingsRow(
+                                icon: "questionmark.circle.fill",
+                                title: "Help Center",
+                                colorScheme: colorScheme,
+                                trailing: {
+                                    Image(systemName: "arrow.up.right")
+                                        .foregroundStyle(OrbitalColors.accent)
+                                }
+                            )
+                            
+                            ProfileSettingsRow(
+                                icon: "envelope.fill",
+                                title: "Contact Us",
+                                colorScheme: colorScheme,
+                                trailing: {
+                                    Image(systemName: "arrow.up.right")
+                                        .foregroundStyle(OrbitalColors.accent)
+                                }
+                            )
+                        }
+                        
+                        // Legal
+                        ProfileSettingsSection(title: "Legal", colorScheme: colorScheme) {
+                            ProfileSettingsRow(
+                                icon: "doc.text.fill",
+                                title: "Terms of Service",
+                                colorScheme: colorScheme,
+                                trailing: {
+                                    Image(systemName: "arrow.up.right")
+                                        .foregroundStyle(OrbitalColors.accent)
+                                }
+                            )
+                            
+                            ProfileSettingsRow(
+                                icon: "hand.raised.fill",
+                                title: "Privacy Policy",
+                                colorScheme: colorScheme,
+                                trailing: {
+                                    Image(systemName: "arrow.up.right")
+                                        .foregroundStyle(OrbitalColors.accent)
+                                }
+                            )
+                        }
                     }
+                    .padding(.horizontal)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
                     
-                    NavigationLink {
-                        Text("Notifications") // TODO: Implement
-                    } label: {
-                        Label("Notifications", systemImage: "bell")
+                    // Sign out button
+                    Button(action: { showingSignOutAlert = true }) {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                            Text("Sign Out")
+                        }
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(Color(red: 1, green: 0.4, blue: 0.4))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(OrbitalColors.card(colorScheme))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(red: 1, green: 0.4, blue: 0.4).opacity(0.2), lineWidth: 1)
+                        )
                     }
-                }
-                
-                // History Section
-                Section("History") {
-                    NavigationLink {
-                        PurchaseHistoryView()
-                    } label: {
-                        Label("Purchase History", systemImage: "creditcard")
-                    }
+                    .padding(.horizontal)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
                     
-                    NavigationLink {
-                        Text("Usage Stats") // TODO: Implement
-                    } label: {
-                        Label("Usage Stats", systemImage: "chart.bar")
-                    }
-                }
-                
-                // Support Section
-                Section("Support") {
-                    Link(destination: URL(string: "https://orbitalsolver.io/help")!) {
-                        Label("Help Center", systemImage: "questionmark.circle")
-                    }
-                    
-                    Link(destination: URL(string: "mailto:support@orbitalsolver.io")!) {
-                        Label("Contact Support", systemImage: "envelope")
-                    }
-                    
-                    NavigationLink {
-                        Text("Terms of Service") // TODO: Link to web
-                    } label: {
-                        Label("Terms of Service", systemImage: "doc.text")
-                    }
-                    
-                    NavigationLink {
-                        Text("Privacy Policy") // TODO: Link to web
-                    } label: {
-                        Label("Privacy Policy", systemImage: "hand.raised")
-                    }
-                }
-                
-                // Sign Out
-                Section {
-                    Button(role: .destructive, action: { showingSignOutAlert = true }) {
-                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
-                    }
-                }
-                
-                // App Info
-                Section {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
-                    }
+                    Spacer(minLength: 50)
                 }
             }
+            .orbitalGradientBackground()
             .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(colorScheme, for: .navigationBar)
+            .onAppear {
+                startEntranceAnimations()
+            }
             .alert("Sign Out", isPresented: $showingSignOutAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Sign Out", role: .destructive) {
@@ -150,134 +249,87 @@ struct ProfileView: View {
             } message: {
                 Text("Are you sure you want to sign out?")
             }
-            .sheet(isPresented: $showingPurchaseSheet) {
-                PurchaseSheet()
-            }
+        }
+        .preferredColorScheme(isDarkMode ? .dark : .light)
+    }
+    
+    func startEntranceAnimations() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            headerOpacity = 1
+            headerOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.5).delay(0.15)) {
+            contentOpacity = 1
+            contentOffset = 0
+        }
+    }
+    
+    func openManageMinutes() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
+        let baseURL = "https://orbitalsolver.io/account"
+        let token = authManager.accessToken
+        
+        if let url = URL(string: "\(baseURL)?token=\(token)") {
+            UIApplication.shared.open(url)
         }
     }
 }
 
-// MARK: - Purchase Sheet
-struct PurchaseSheet: View {
-    @Environment(\.dismiss) var dismiss
-    @Environment(\.colorScheme) var colorScheme
-    @State private var selectedTier: PricingTier = .standard
+// MARK: - Settings Section
+struct ProfileSettingsSection<Content: View>: View {
+    let title: String
+    let colorScheme: ColorScheme
+    @ViewBuilder let content: Content
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Text("Buy Minutes")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                Text("Choose a pack to start creating videos")
-                    .font(.subheadline)
-                    .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
-                
-                // Pricing tiers
-                VStack(spacing: 12) {
-                    ForEach(PricingTier.allCases) { tier in
-                        PricingTierCard(tier: tier, isSelected: selectedTier == tier) {
-                            selectedTier = tier
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                
-                // Purchase button
-                Button(action: purchaseMinutes) {
-                    Text("Purchase \(selectedTier.minutes) minutes — $\(selectedTier.price, specifier: "%.2f")")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(OrbitalColors.accent)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .padding(.horizontal)
-                
-                Spacer()
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title.uppercased())
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
+                .tracking(1)
+                .padding(.horizontal, 4)
+            
+            VStack(spacing: 0) {
+                content
             }
-            .padding(.top, 24)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-    }
-    
-    func purchaseMinutes() {
-        // TODO: Implement Stripe checkout
-        dismiss()
-    }
-}
-
-// MARK: - Pricing Tier Card
-struct PricingTierCard: View {
-    let tier: PricingTier
-    let isSelected: Bool
-    let action: () -> Void
-    @Environment(\.colorScheme) var colorScheme
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(tier.name)
-                            .font(.headline)
-                        
-                        if tier == .standard {
-                            Text("Best Value")
-                                .font(.caption2)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(OrbitalColors.accent)
-                                .foregroundStyle(.white)
-                                .clipShape(Capsule())
-                        }
-                    }
-                    
-                    Text("\(tier.minutes) minutes")
-                        .font(.subheadline)
-                        .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing) {
-                    Text("$\(tier.price, specifier: "%.2f")")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    
-                    Text("$\(tier.pricePerMinute, specifier: "%.2f")/min")
-                        .font(.caption)
-                        .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
-                }
-            }
-            .padding()
-            .background(isSelected ? OrbitalColors.accent.opacity(0.1) : (colorScheme == .dark ? OrbitalColors.cardDark : OrbitalColors.cardLight))
+            .background(OrbitalColors.card(colorScheme))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? OrbitalColors.accent : (colorScheme == .dark ? OrbitalColors.cardBorderDark : OrbitalColors.cardBorderLight), lineWidth: isSelected ? 2 : 1)
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 1)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-        .buttonStyle(.plain)
     }
 }
 
-// MARK: - Purchase History View
-struct PurchaseHistoryView: View {
+// MARK: - Settings Row
+struct ProfileSettingsRow<Trailing: View>: View {
+    let icon: String
+    let title: String
+    let colorScheme: ColorScheme
+    @ViewBuilder let trailing: Trailing
+    
     var body: some View {
-        List {
-            Text("Purchase history will appear here")
-                .foregroundStyle(.secondary)
+        HStack {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundStyle(OrbitalColors.accent)
+                .frame(width: 28)
+            
+            Text(title)
+                .font(.system(size: 16))
+                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
+            
+            Spacer()
+            
+            trailing
         }
-        .navigationTitle("Purchase History")
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 }
 

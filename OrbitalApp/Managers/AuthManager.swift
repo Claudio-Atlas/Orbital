@@ -12,12 +12,15 @@ class AuthManager: ObservableObject {
     private let supabaseURL = "https://pqwhfiuvcsjfevjwljml.supabase.co"
     private let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxd2hmaXV2Y3NqZmV2andsam1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3ODUwNzIsImV4cCI6MjA4NjM2MTA3Mn0.aKjsKhSDwJLaPknRct37eoQl5SFVo7S528yS9inJB-A"
     
-    @AppStorage("accessToken") private var accessToken: String = ""
+    @AppStorage("accessToken") private var storedAccessToken: String = ""
     @AppStorage("refreshToken") private var refreshToken: String = ""
+    
+    // Public getter for token (used by ProfileView for web redirect)
+    var accessToken: String { storedAccessToken }
     
     init() {
         // Check if we have a stored session
-        if !accessToken.isEmpty {
+        if !storedAccessToken.isEmpty {
             Task {
                 await validateSession()
             }
@@ -52,7 +55,7 @@ class AuthManager: ObservableObject {
         let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
         
         // Store tokens
-        accessToken = authResponse.accessToken
+        storedAccessToken = authResponse.accessToken
         refreshToken = authResponse.refreshToken
         
         // Update state
@@ -93,7 +96,7 @@ class AuthManager: ObservableObject {
     
     // MARK: - Sign Out
     func signOut() {
-        accessToken = ""
+        storedAccessToken = ""
         refreshToken = ""
         userEmail = ""
         minutesBalance = 0
@@ -102,7 +105,7 @@ class AuthManager: ObservableObject {
     
     // MARK: - Validate Session
     func validateSession() async {
-        guard !accessToken.isEmpty else { return }
+        guard !storedAccessToken.isEmpty else { return }
         
         let url = URL(string: "\(supabaseURL)/auth/v1/user")!
         var request = URLRequest(url: url)
@@ -153,7 +156,7 @@ class AuthManager: ObservableObject {
             }
             
             let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-            accessToken = authResponse.accessToken
+            storedAccessToken = authResponse.accessToken
             refreshToken = authResponse.refreshToken
             userEmail = authResponse.user.email ?? ""
             isAuthenticated = true

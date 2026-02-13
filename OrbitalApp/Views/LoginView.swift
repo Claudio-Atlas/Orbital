@@ -339,24 +339,7 @@ struct LoginView: View {
     }
 }
 
-// MARK: - Breathing Logo
-struct BreathingLogo: View {
-    @State private var glowIntensity: Double = 0.6
-    
-    var body: some View {
-        Image("OrbitalLogo")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .shadow(color: OrbitalColors.accent.opacity(0.6 * glowIntensity), radius: 25, x: 0, y: 0)
-            .shadow(color: OrbitalColors.accent.opacity(0.4 * glowIntensity), radius: 45, x: 0, y: 0)
-            .shadow(color: OrbitalColors.accent.opacity(0.2 * glowIntensity), radius: 70, x: 0, y: 0)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
-                    glowIntensity = 1.0
-                }
-            }
-    }
-}
+// BreathingLogo is defined in Components/OrbitalLogo.swift
 
 #Preview {
     LoginView()

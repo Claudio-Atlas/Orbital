@@ -10,31 +10,33 @@ struct OrbitalColors {
     static let neonWhite = Color(white: 0.9)
     static let dimWhite = Color(white: 0.45)
     
-    // Borders
-    static let inputBorder = Color(white: 0.2)
-    
-    // Backgrounds
+    // Backgrounds - Dark mode
     static let backgroundDark = Color.black
     static let cardDark = Color(white: 0.05)
     static let cardBorderDark = Color(white: 0.15)
     
-    // Light mode
+    // Backgrounds - Light mode
     static let backgroundLight = Color(white: 0.98)
     static let cardLight = Color.white
-    static let cardBorderLight = Color(white: 0.9)
+    static let cardBorderLight = Color(white: 0.88)
     
-    // Text
+    // Text - Dark mode
     static let textPrimaryDark = Color.white
     static let textSecondaryDark = Color(white: 0.55)
+    
+    // Text - Light mode  
     static let textPrimaryLight = Color(white: 0.1)
     static let textSecondaryLight = Color(white: 0.45)
+    
+    // Dim colors for placeholders
+    static let dimWhiteLight = Color(white: 0.6)
     
     // Status
     static let warning = Color(red: 245/255, green: 158/255, blue: 11/255)
     static let success = Color(red: 34/255, green: 197/255, blue: 94/255)
     static let error = Color(red: 239/255, green: 68/255, blue: 68/255)
     
-    // Deep Space gradient
+    // Deep Space gradient (dark mode)
     static var deepSpaceGradient: LinearGradient {
         LinearGradient(
             colors: [
@@ -44,6 +46,44 @@ struct OrbitalColors {
             startPoint: .top,
             endPoint: .bottom
         )
+    }
+    
+    // Light gradient (light mode)
+    static var lightGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(white: 0.98),
+                Color(white: 0.94),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+    
+    // MARK: - Adaptive Colors
+    
+    static func card(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? cardDark : cardLight
+    }
+    
+    static func cardBorder(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? cardBorderDark : cardBorderLight
+    }
+    
+    static func textPrimary(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? textPrimaryDark : textPrimaryLight
+    }
+    
+    static func textSecondary(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? textSecondaryDark : textSecondaryLight
+    }
+    
+    static func dim(_ colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? dimWhite : dimWhiteLight
+    }
+    
+    static func background(_ colorScheme: ColorScheme) -> AnyShapeStyle {
+        colorScheme == .dark ? AnyShapeStyle(deepSpaceGradient) : AnyShapeStyle(lightGradient)
     }
 }
 
@@ -55,23 +95,11 @@ extension View {
     }
     
     func orbitalGradientBackground() -> some View {
-        self.background(OrbitalColors.deepSpaceGradient)
+        self.modifier(OrbitalGradientBackgroundModifier())
     }
     
     func orbitalCard() -> some View {
         self.modifier(OrbitalCardModifier())
-    }
-    
-    func neonInputStyle() -> some View {
-        self.modifier(NeonInputModifier())
-    }
-    
-    func silverButtonStyle() -> some View {
-        self.modifier(SilverButtonModifier())
-    }
-    
-    func outlineButtonStyle() -> some View {
-        self.modifier(OutlineButtonModifier())
     }
 }
 
@@ -84,75 +112,25 @@ struct OrbitalBackgroundModifier: ViewModifier {
     }
 }
 
+struct OrbitalGradientBackgroundModifier: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    func body(content: Content) -> some View {
+        content
+            .background(OrbitalColors.background(colorScheme))
+    }
+}
+
 struct OrbitalCardModifier: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     
     func body(content: Content) -> some View {
         content
-            .background(colorScheme == .dark ? OrbitalColors.cardDark : OrbitalColors.cardLight)
+            .background(OrbitalColors.card(colorScheme))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(colorScheme == .dark ? OrbitalColors.cardBorderDark : OrbitalColors.cardBorderLight, lineWidth: 1)
-            )
-    }
-}
-
-struct NeonInputModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .background(OrbitalColors.cardDark)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(OrbitalColors.accent.opacity(0.2), lineWidth: 1)
-            )
-            // Purple glow at bottom - turned up slightly
-            .shadow(color: OrbitalColors.accent.opacity(0.2), radius: 10, x: 0, y: 5)
-            .shadow(color: OrbitalColors.accent.opacity(0.1), radius: 16, x: 0, y: 8)
-    }
-}
-
-struct SilverButtonModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .background(
-                ZStack {
-                    LinearGradient(
-                        stops: [
-                            .init(color: Color(white: 0.95), location: 0),
-                            .init(color: Color(white: 0.85), location: 0.3),
-                            .init(color: Color(white: 0.75), location: 0.7),
-                            .init(color: Color(white: 0.65), location: 1),
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    VStack {
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.4), Color.clear],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 20)
-                        Spacer()
-                    }
-                }
-            )
-            .foregroundStyle(.black)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-struct OutlineButtonModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .background(OrbitalColors.cardDark)
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                    .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 1)
             )
     }
 }

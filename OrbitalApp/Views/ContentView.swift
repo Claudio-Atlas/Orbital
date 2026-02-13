@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthManager
+    @AppStorage("isDarkMode") private var isDarkMode = true
     @State private var selectedTab = 0
     
     var body: some View {
@@ -12,6 +13,7 @@ struct ContentView: View {
                 LoginView()
             }
         }
+        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 }
 
@@ -31,14 +33,14 @@ struct MainTabView: View {
             LibraryView()
                 .tabItem {
                     Image(systemName: "play.rectangle.on.rectangle")
-                    Text("Library")
+                    Text("Solves")
                 }
                 .tag(1)
             
             ProfileView()
                 .tabItem {
                     Image(systemName: "person.circle")
-                    Text("Profile")
+                    Text("Me")
                 }
                 .tag(2)
         }

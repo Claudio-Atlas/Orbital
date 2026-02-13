@@ -1,11 +1,21 @@
 import SwiftUI
 
 struct SolverView: View {
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var authManager: AuthManager
     @State private var problemText = ""
     @State private var isGenerating = false
     @State private var showingImagePicker = false
     @FocusState private var isInputFocused: Bool
+    
+    // Animation states
+    @State private var logoOpacity = 0.0
+    @State private var logoOffset: CGFloat = 20
+    @State private var contentOpacity = 0.0
+    @State private var contentOffset: CGFloat = 20
+    @State private var buttonsOpacity = 0.0
+    @State private var buttonsOffset: CGFloat = 20
+    @State private var shimmerOffset: CGFloat = -200
     
     let exampleProblems = [
         "Solve for x: 3x - 7 = 14",
@@ -17,33 +27,37 @@ struct SolverView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Logo with glow
-                    OrbitalLogo()
-                        .frame(height: 80)
-                        .padding(.top, 20)
+                    // Logo with breathing glow
+                    BreathingLogo()
+                        .frame(height: 70)
+                        .padding(.top, 16)
+                        .opacity(logoOpacity)
+                        .offset(y: logoOffset)
                     
                     // Header
-                    Text("ENTER YOUR MATH PROBLEM")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundStyle(OrbitalColors.textSecondaryDark)
-                        .tracking(1.5)
+                    Text("What's the problem?")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
                     
                     // Input field with purple glow
                     VStack(spacing: 0) {
                         ZStack(alignment: .topLeading) {
                             TextEditor(text: $problemText)
-                                .frame(minHeight: 100, maxHeight: 150)
+                                .frame(minHeight: 120, maxHeight: 150)
                                 .padding()
                                 .scrollContentBackground(.hidden)
-                                .background(OrbitalColors.cardDark)
-                                .foregroundStyle(.white)
+                                .background(OrbitalColors.card(colorScheme))
+                                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
+                                .font(.system(size: 17))
                                 .focused($isInputFocused)
                             
                             // Placeholder
                             if problemText.isEmpty {
                                 Text("Find the derivative of x³ + 2x² - 5x + 1")
-                                    .foregroundStyle(OrbitalColors.dimWhite)
+                                    .foregroundStyle(OrbitalColors.dim(colorScheme))
+                                    .font(.system(size: 17))
                                     .padding(.leading, 20)
                                     .padding(.top, 24)
                                     .allowsHitTesting(false)
@@ -52,74 +66,131 @@ struct SolverView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(OrbitalColors.accent.opacity(0.3), lineWidth: 1)
+                                .stroke(OrbitalColors.accent.opacity(isInputFocused ? 0.4 : 0.2), lineWidth: 1)
                         )
                         // Purple glow at bottom edge
-                        .shadow(color: OrbitalColors.accent.opacity(0.4), radius: 12, x: 0, y: 6)
-                        .shadow(color: OrbitalColors.accent.opacity(0.25), radius: 20, x: 0, y: 10)
+                        .shadow(color: OrbitalColors.accent.opacity(isInputFocused ? 0.4 : 0.25), radius: isInputFocused ? 15 : 10, x: 0, y: isInputFocused ? 8 : 5)
+                        .shadow(color: OrbitalColors.accent.opacity(isInputFocused ? 0.2 : 0.1), radius: 20, x: 0, y: 10)
+                        .animation(.easeInOut(duration: 0.2), value: isInputFocused)
                     }
                     .padding(.horizontal)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
                     
                     // Action buttons
                     VStack(spacing: 12) {
-                        // Generate Video button - Metallic silver
+                        // Generate Video - Purple gradient primary CTA
                         Button(action: generateVideo) {
-                            HStack {
+                            HStack(spacing: 10) {
                                 if isGenerating {
                                     ProgressView()
-                                        .tint(.black)
+                                        .tint(.white)
                                 } else {
                                     Image(systemName: "sparkles")
+                                        .font(.system(size: 16, weight: .semibold))
                                 }
-                                Text(isGenerating ? "Generating..." : "Generate Video")
-                                    .fontWeight(.semibold)
+                                Text(isGenerating ? "Cooking up your solution..." : "Generate Video")
+                                    .font(.system(size: 17, weight: .bold))
+                                    .tracking(0.3)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .silverButtonStyle()
+                            .background(
+                                ZStack {
+                                    LinearGradient(
+                                        colors: [OrbitalColors.accentLight, OrbitalColors.accent],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                    
+                                    // Shimmer
+                                    LinearGradient(
+                                        colors: [.clear, .white.opacity(0.3), .clear],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                    .frame(width: 100)
+                                    .offset(x: shimmerOffset)
+                                    .blur(radius: 8)
+                                }
+                            )
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: OrbitalColors.accent.opacity(0.5), radius: 12, x: 0, y: 6)
+                            .shadow(color: OrbitalColors.accent.opacity(0.3), radius: 20, x: 0, y: 10)
                         }
                         .disabled(problemText.isEmpty || isGenerating)
-                        .opacity(problemText.isEmpty ? 0.6 : 1)
+                        .opacity(problemText.isEmpty ? 0.5 : 1)
+                        .onAppear {
+                            withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
+                                shimmerOffset = 400
+                            }
+                        }
                         
-                        // Upload Photo button - Outline style
-                        Button(action: { showingImagePicker = true }) {
-                            HStack {
-                                Image(systemName: "camera")
+                        // Upload Photo - Outline style
+                        Button(action: { 
+                            let generator = UIImpactFeedbackGenerator(style: .light)
+                            generator.impactOccurred()
+                            showingImagePicker = true 
+                        }) {
+                            HStack(spacing: 10) {
+                                Text("📸")
+                                    .font(.system(size: 18))
                                 Text("Upload Photo")
-                                    .fontWeight(.medium)
+                                    .font(.system(size: 16, weight: .semibold))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .outlineButtonStyle()
+                            .background(OrbitalColors.card(colorScheme))
+                            .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 1)
+                            )
                         }
                     }
                     .padding(.horizontal)
+                    .opacity(buttonsOpacity)
+                    .offset(y: buttonsOffset)
                     
                     // Tagline
-                    Text("Explained step-by-step in minutes")
+                    Text("Math in minutes. Value your time.")
                         .font(.subheadline)
-                        .foregroundStyle(OrbitalColors.textSecondaryDark)
+                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                         .padding(.top, 8)
+                        .opacity(buttonsOpacity)
+                        .offset(y: buttonsOffset)
                     
-                    // Example problems
-                    VStack(spacing: 8) {
-                        ForEach(exampleProblems, id: \.self) { example in
-                            Button(action: { problemText = example }) {
-                                Text(example)
-                                    .font(.caption)
-                                    .foregroundStyle(OrbitalColors.textSecondaryDark)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                    .background(OrbitalColors.cardDark)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(OrbitalColors.cardBorderDark, lineWidth: 1)
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    // Example problems - horizontal scroll
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(exampleProblems, id: \.self) { example in
+                                Button(action: { 
+                                    let generator = UIImpactFeedbackGenerator(style: .light)
+                                    generator.impactOccurred()
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        problemText = example 
+                                    }
+                                }) {
+                                    Text(example)
+                                        .font(.caption)
+                                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 10)
+                                        .background(OrbitalColors.card(colorScheme))
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 1)
+                                        )
+                                }
                             }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                    .opacity(buttonsOpacity)
+                    .offset(y: buttonsOffset)
                     
                     Spacer(minLength: 50)
                 }
@@ -127,30 +198,59 @@ struct SolverView: View {
             .orbitalGradientBackground()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    // Minutes balance
+                    // Minutes balance pill
                     HStack(spacing: 6) {
                         Circle()
                             .fill(OrbitalColors.accent)
                             .frame(width: 8, height: 8)
+                            .shadow(color: OrbitalColors.accent.opacity(0.5), radius: 4)
                         Text("\(authManager.minutesBalance, specifier: "%.1f")")
                             .fontWeight(.semibold)
+                            .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
                         Text("min")
-                            .foregroundStyle(OrbitalColors.textSecondaryDark)
+                            .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                     }
                     .font(.subheadline)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(OrbitalColors.cardDark)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(OrbitalColors.card(colorScheme))
                     .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 1)
+                    )
                 }
             }
             .onTapGesture {
                 isInputFocused = false
             }
+            .onAppear {
+                startEntranceAnimations()
+            }
+        }
+    }
+    
+    func startEntranceAnimations() {
+        withAnimation(.easeOut(duration: 0.6)) {
+            logoOpacity = 1
+            logoOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.6).delay(0.15)) {
+            contentOpacity = 1
+            contentOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
+            buttonsOpacity = 1
+            buttonsOffset = 0
         }
     }
     
     func generateVideo() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
         isGenerating = true
         // TODO: Call API to generate video
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

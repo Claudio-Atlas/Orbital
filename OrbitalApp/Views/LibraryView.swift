@@ -6,6 +6,12 @@ struct LibraryView: View {
     @State private var showingSteps = false
     @State private var searchText = ""
     
+    // Animation states
+    @State private var headerOpacity = 0.0
+    @State private var headerOffset: CGFloat = 20
+    @State private var contentOpacity = 0.0
+    @State private var contentOffset: CGFloat = 20
+    
     var filteredVideos: [Video] {
         if searchText.isEmpty {
             return videos
@@ -18,84 +24,126 @@ struct LibraryView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     // Logo
-                    OrbitalLogo()
-                        .frame(height: 60)
+                    BreathingLogo()
+                        .frame(height: 50)
                         .padding(.top, 10)
+                        .opacity(headerOpacity)
+                        .offset(y: headerOffset)
                     
                     // Header
                     VStack(spacing: 4) {
-                        Text(showingSteps ? "Solution Library" : "Video Library")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                        Text("Your Solves")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
                         Text("Your explained problems")
                             .font(.subheadline)
-                            .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                            .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                     }
+                    .opacity(headerOpacity)
+                    .offset(y: headerOffset)
                     
-                    // Toggle: Solver | Solution Library
+                    // Toggle: Videos | Steps
                     Picker("View Mode", selection: $showingSteps) {
-                        Text("Solver").tag(false)
-                        Text("Solution Library").tag(true)
+                        Text("Videos").tag(false)
+                        Text("Steps").tag(true)
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
                     
-                    // Search bar
+                    // Search bar with purple glow
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
-                        TextField("Search problems...", text: $searchText)
+                            .foregroundStyle(OrbitalColors.dim(colorScheme))
+                        
+                        ZStack(alignment: .leading) {
+                            if searchText.isEmpty {
+                                Text("Search problems...")
+                                    .foregroundStyle(OrbitalColors.dim(colorScheme))
+                            }
+                            TextField("", text: $searchText)
+                                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
+                                .tint(OrbitalColors.accent)
+                        }
                     }
                     .padding()
-                    .background(colorScheme == .dark ? OrbitalColors.cardDark : OrbitalColors.cardLight)
+                    .background(OrbitalColors.card(colorScheme))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(colorScheme == .dark ? OrbitalColors.cardBorderDark : OrbitalColors.cardBorderLight, lineWidth: 1)
+                            .stroke(OrbitalColors.accent.opacity(0.2), lineWidth: 1)
                     )
+                    .shadow(color: OrbitalColors.accent.opacity(0.15), radius: 8, x: 0, y: 4)
                     .padding(.horizontal)
-                    
-                    // Continue section (most recent)
-                    if let lastVideo = videos.first {
-                        ContinueCard(video: lastVideo, showingSteps: showingSteps)
-                            .padding(.horizontal)
-                    }
-                    
-                    // Video list
-                    LazyVStack(spacing: 12) {
-                        ForEach(filteredVideos.dropFirst()) { video in
-                            VideoCard(video: video, showingSteps: showingSteps)
-                        }
-                    }
-                    .padding(.horizontal)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
                     
                     if filteredVideos.isEmpty {
-                        EmptyStateView()
-                            .padding(.top, 40)
+                        // Empty state
+                        LibraryEmptyStateView(colorScheme: colorScheme)
+                            .padding(.top, 60)
+                            .opacity(contentOpacity)
+                            .offset(y: contentOffset)
+                    } else {
+                        // Continue section (most recent)
+                        if let lastVideo = filteredVideos.first {
+                            LibraryContinueCard(video: lastVideo, showingSteps: showingSteps, colorScheme: colorScheme)
+                                .padding(.horizontal)
+                                .opacity(contentOpacity)
+                                .offset(y: contentOffset)
+                        }
+                        
+                        // Video list
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredVideos.dropFirst()) { video in
+                                LibraryVideoCard(video: video, showingSteps: showingSteps, colorScheme: colorScheme)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
                     }
                     
                     Spacer(minLength: 50)
                 }
             }
-            .orbitalBackground()
+            .orbitalGradientBackground()
+            .onAppear {
+                startEntranceAnimations()
+            }
+        }
+    }
+    
+    func startEntranceAnimations() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            headerOpacity = 1
+            headerOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.5).delay(0.15)) {
+            contentOpacity = 1
+            contentOffset = 0
         }
     }
 }
 
-// MARK: - Continue Card (Featured/Last Watched)
-struct ContinueCard: View {
+// MARK: - Continue Card
+struct LibraryContinueCard: View {
     let video: Video
     let showingSteps: Bool
-    @Environment(\.colorScheme) var colorScheme
+    let colorScheme: ColorScheme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Continue")
                 .font(.caption)
-                .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                .fontWeight(.medium)
+                .foregroundStyle(OrbitalColors.accent)
             
             Text(video.problem)
                 .font(.headline)
+                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
                 .lineLimit(2)
             
             HStack {
@@ -104,40 +152,39 @@ struct ContinueCard: View {
                     .foregroundStyle(OrbitalColors.accent)
                 
                 Text("•")
-                    .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                    .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                 
                 Text(video.subcategory)
                     .font(.caption)
-                    .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                    .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                 
                 Spacer()
                 
                 Text(video.durationFormatted)
                     .font(.caption)
-                    .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                    .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
             }
             
             if showingSteps {
                 Divider()
-                    .background(colorScheme == .dark ? OrbitalColors.cardBorderDark : OrbitalColors.cardBorderLight)
+                    .background(OrbitalColors.cardBorder(colorScheme))
                 
-                // Show step preview
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(Array(video.stepPreview.prefix(2).enumerated()), id: \.offset) { index, step in
                         Text("\(index + 1). \(step)")
                             .font(.caption)
-                            .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                            .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                     }
                     
                     if let result = video.result {
                         Text("Result: \(result)")
                             .font(.caption)
                             .fontWeight(.medium)
+                            .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
                     }
                 }
             }
             
-            // Expiration warning if < 24h
             if video.hoursUntilExpiration < 24 {
                 HStack {
                     Image(systemName: "clock")
@@ -148,30 +195,49 @@ struct ContinueCard: View {
             }
         }
         .padding()
-        .background(colorScheme == .dark ? Color(white: 0.12) : Color(white: 0.95))
-        .orbitalCard()
+        .background(OrbitalColors.card(colorScheme))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(OrbitalColors.accent.opacity(0.2), lineWidth: 1)
+        )
+        .shadow(color: OrbitalColors.accent.opacity(0.2), radius: 12, x: 0, y: 4)
     }
 }
 
 // MARK: - Video Card
-struct VideoCard: View {
+struct LibraryVideoCard: View {
     let video: Video
     let showingSteps: Bool
-    @Environment(\.colorScheme) var colorScheme
+    let colorScheme: ColorScheme
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 14) {
             // Play button
-            Image(systemName: "play.fill")
-                .font(.caption)
-                .foregroundStyle(OrbitalColors.accent)
-                .frame(width: 24, height: 24)
-                .padding(.top, 4)
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [OrbitalColors.accentLight, OrbitalColors.accent],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 36, height: 36)
+                    .shadow(color: OrbitalColors.accent.opacity(0.4), radius: 6)
+                
+                Image(systemName: "play.fill")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.white)
+                    .offset(x: 1)
+            }
+            .padding(.top, 2)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(video.problem)
                     .font(.subheadline)
                     .fontWeight(.medium)
+                    .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
                     .lineLimit(2)
                 
                 HStack {
@@ -180,32 +246,32 @@ struct VideoCard: View {
                         .foregroundStyle(OrbitalColors.accent)
                     
                     Text("•")
-                        .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                     
                     Text(video.subcategory)
                         .font(.caption)
-                        .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                     
                     Spacer()
                     
                     Text(video.durationFormatted)
                         .font(.caption)
-                        .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                        .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                 }
                 
                 if showingSteps {
-                    // Show step preview
                     VStack(alignment: .leading, spacing: 2) {
                         ForEach(Array(video.stepPreview.prefix(2).enumerated()), id: \.offset) { index, step in
                             Text("\(index + 1). \(step)")
                                 .font(.caption2)
-                                .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                                .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
                         }
                         
                         if let result = video.result {
                             Text("Result: \(result)")
                                 .font(.caption2)
                                 .fontWeight(.medium)
+                                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
                         }
                     }
                     .padding(.top, 4)
@@ -213,26 +279,38 @@ struct VideoCard: View {
             }
         }
         .padding()
-        .orbitalCard()
+        .background(OrbitalColors.card(colorScheme))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(OrbitalColors.cardBorder(colorScheme), lineWidth: 1)
+        )
     }
 }
 
 // MARK: - Empty State
-struct EmptyStateView: View {
-    @Environment(\.colorScheme) var colorScheme
+struct LibraryEmptyStateView: View {
+    let colorScheme: ColorScheme
     
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "play.rectangle.on.rectangle")
-                .font(.system(size: 48))
-                .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+            ZStack {
+                Circle()
+                    .fill(OrbitalColors.accent.opacity(0.1))
+                    .frame(width: 80, height: 80)
+                
+                Image(systemName: "play.rectangle.on.rectangle")
+                    .font(.system(size: 32))
+                    .foregroundStyle(OrbitalColors.accent)
+            }
             
-            Text("No videos yet")
+            Text("No solves yet")
                 .font(.headline)
+                .foregroundStyle(OrbitalColors.textPrimary(colorScheme))
             
-            Text("Solve your first problem to see it here")
+            Text("Go crush some math! 💪")
                 .font(.subheadline)
-                .foregroundStyle(colorScheme == .dark ? OrbitalColors.textSecondaryDark : OrbitalColors.textSecondaryLight)
+                .foregroundStyle(OrbitalColors.textSecondary(colorScheme))
         }
     }
 }

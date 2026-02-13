@@ -19,6 +19,7 @@ import SwiftUI
 struct SolverView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var authManager: AuthManager
+    @ObservedObject var accentTheme = AccentTheme.shared
     @State private var problemText = ""
     @State private var isGenerating = false
     @State private var showingImagePicker = false

@@ -19,6 +19,7 @@ import SwiftUI
 /// Login and signup view with premium animations and styling.
 struct LoginView: View {
     @EnvironmentObject var authManager: AuthManager
+    @ObservedObject var accentTheme = AccentTheme.shared
     
     @State private var email = ""
     @State private var password = ""

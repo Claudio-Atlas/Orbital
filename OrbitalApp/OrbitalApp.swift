@@ -12,12 +12,15 @@ import SwiftUI
 @main
 struct OrbitalApp: App {
     @StateObject private var authManager = AuthManager()
+    @ObservedObject private var accentTheme = AccentTheme.shared
     @AppStorage("isDarkMode") private var isDarkMode = true
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(authManager)
+                .environmentObject(accentTheme)
+                .tint(accentTheme.color)
                 .preferredColorScheme(isDarkMode ? .dark : .light)
         }
     }

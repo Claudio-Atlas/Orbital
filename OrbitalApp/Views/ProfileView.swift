@@ -21,8 +21,10 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var authManager: AuthManager
+    @ObservedObject var accentTheme = AccentTheme.shared
     @AppStorage("isDarkMode") private var isDarkMode = true
     @State private var showingSignOutAlert = false
+    @State private var showingAccentPicker = false
     
     // Animation states
     @State private var headerOpacity = 0.0
@@ -167,6 +169,25 @@ struct ProfileView: View {
                                 }
                             )
                             
+                            // Accent Color Picker
+                            Button(action: { showingAccentPicker = true }) {
+                                ProfileSettingsRow(
+                                    icon: "paintpalette.fill",
+                                    title: "Accent Color",
+                                    colorScheme: colorScheme,
+                                    trailing: {
+                                        HStack(spacing: 8) {
+                                            Circle()
+                                                .fill(accentTheme.gradient)
+                                                .frame(width: 24, height: 24)
+                                            Image(systemName: "chevron.right")
+                                                .foregroundStyle(OrbitalColors.accent)
+                                        }
+                                    }
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            
                             ProfileSettingsRow(
                                 icon: "bell.fill",
                                 title: "Notifications",
@@ -266,6 +287,9 @@ struct ProfileView: View {
                 }
             } message: {
                 Text("Are you sure you want to sign out?")
+            }
+            .sheet(isPresented: $showingAccentPicker) {
+                AccentColorPickerSheet()
             }
         }
         .preferredColorScheme(isDarkMode ? .dark : .light)

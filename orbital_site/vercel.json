@@ -1,0 +1,48 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "orbitalsolver.com"
+        }
+      ],
+      "destination": "https://orbitalsolver.io/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.orbitalsolver.com"
+        }
+      ],
+      "destination": "https://orbitalsolver.io/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "orbitalsolver.org"
+        }
+      ],
+      "destination": "https://orbitalsolver.io/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.orbitalsolver.org"
+        }
+      ],
+      "destination": "https://orbitalsolver.io/:path*",
+      "permanent": true
+    }
+  ]
+}

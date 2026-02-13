@@ -158,9 +158,9 @@ export default function HomePage() {
               ? "bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.08]" 
               : "bg-white border border-gray-200 shadow-xl shadow-gray-200/50"
           }`}>
-            <div className="flex flex-col items-center text-center py-8">
+            <div className="flex flex-col items-center text-center py-4">
               {/* Orbital logo/icon */}
-              <div className={`w-20 h-20 mb-8 rounded-2xl flex items-center justify-center ${
+              <div className={`w-20 h-20 mb-6 rounded-2xl flex items-center justify-center ${
                 isDark 
                   ? "bg-violet-500/10 border border-violet-500/20" 
                   : "bg-violet-100 border border-violet-200"
@@ -180,6 +180,19 @@ export default function HomePage() {
                 AI-powered math videos that explain any problem step by step. 
                 We&apos;re putting the finishing touches on something special.
               </p>
+              
+              {/* Solver Preview Image */}
+              <div className={`w-full rounded-2xl overflow-hidden mb-8 ${
+                isDark 
+                  ? "ring-1 ring-white/10" 
+                  : "ring-1 ring-gray-200 shadow-lg"
+              }`}>
+                <img 
+                  src="/solver-preview.png" 
+                  alt="Orbital Solver Preview" 
+                  className="w-full h-auto"
+                />
+              </div>
               
               {/* Example problems teaser */}
               <div className={`w-full rounded-2xl p-6 ${

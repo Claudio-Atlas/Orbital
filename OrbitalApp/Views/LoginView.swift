@@ -91,11 +91,11 @@ struct LoginView: View {
                             ZStack(alignment: .leading) {
                                 if email.isEmpty {
                                     Text("you@example.com")
-                                        .font(.system(size: 17))
+                                        .font(.system(size: 20))
                                         .foregroundColor(OrbitalColors.dimWhite)
                                 }
                                 TextField("", text: $email)
-                                    .font(.system(size: 17))
+                                    .font(.system(size: 20))
                                     .textContentType(.emailAddress)
                                     .keyboardType(.emailAddress)
                                     .autocapitalization(.none)
@@ -130,11 +130,11 @@ struct LoginView: View {
                             ZStack(alignment: .leading) {
                                 if password.isEmpty {
                                     Text("••••••••")
-                                        .font(.system(size: 17))
+                                        .font(.system(size: 20))
                                         .foregroundColor(OrbitalColors.dimWhite)
                                 }
                                 SecureField("", text: $password)
-                                    .font(.system(size: 17))
+                                    .font(.system(size: 20))
                                     .textContentType(isSignUp ? .newPassword : .password)
                                     .foregroundColor(.white)
                                     .tint(.white)

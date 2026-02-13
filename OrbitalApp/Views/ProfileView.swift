@@ -1,5 +1,23 @@
+//
+//  ProfileView.swift
+//  Orbital - AI Math Video Solver
+//
+//  User profile and settings screen. Features:
+//    - Minutes balance with circular progress indicator
+//    - "Manage Minutes" button (opens Safari to web checkout)
+//    - Dark/Light mode toggle
+//    - Settings sections (Preferences, Support, Legal)
+//    - Sign out with confirmation
+//
+//  Note: Purchases happen on web to avoid Apple's 30% cut.
+//  The "Manage Minutes" button passes the auth token to the website.
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// User profile, settings, and minute balance management.
 struct ProfileView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var authManager: AuthManager

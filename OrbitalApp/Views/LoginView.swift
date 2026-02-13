@@ -1,5 +1,22 @@
+//
+//  LoginView.swift
+//  Orbital - AI Math Video Solver
+//
+//  Premium login/signup screen with Tesla-level polish:
+//    - Deep Space gradient background
+//    - Breathing logo with purple aura animation
+//    - Staggered entrance animations
+//    - Focus-reactive input glow
+//    - Shimmer effect on primary CTA
+//    - Google OAuth button
+//    - Haptic feedback throughout
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// Login and signup view with premium animations and styling.
 struct LoginView: View {
     @EnvironmentObject var authManager: AuthManager
     

@@ -1,3 +1,12 @@
+//
+//  OrbitalApp.swift
+//  Orbital - AI Math Video Solver
+//
+//  Main app entry point. Handles global state injection and theme management.
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
 @main

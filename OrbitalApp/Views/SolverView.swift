@@ -1,5 +1,21 @@
+//
+//  SolverView.swift
+//  Orbital - AI Math Video Solver
+//
+//  Main solver interface where users input math problems.
+//  Features:
+//    - Text input with placeholder and focus glow
+//    - Photo upload button (OCR coming soon)
+//    - Example problem pills for quick input
+//    - Minutes balance display in toolbar
+//    - Animated entrance effects
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// Primary problem input screen. Users type or photograph math problems here.
 struct SolverView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var authManager: AuthManager

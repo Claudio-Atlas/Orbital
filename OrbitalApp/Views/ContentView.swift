@@ -1,5 +1,17 @@
+//
+//  ContentView.swift
+//  Orbital - AI Math Video Solver
+//
+//  Root view that switches between login and main tab navigation
+//  based on authentication state.
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// Root content view that handles auth state routing.
+/// Shows LoginView when logged out, MainTabView when authenticated.
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthManager
     @AppStorage("isDarkMode") private var isDarkMode = true

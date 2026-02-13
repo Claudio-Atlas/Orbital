@@ -1,5 +1,16 @@
+//
+//  Video.swift
+//  Orbital - AI Math Video Solver
+//
+//  Model representing a generated solution video.
+//  Videos auto-expire after 48 hours (stored in Cloudflare R2).
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import Foundation
 
+/// A generated math solution video with metadata and expiration tracking.
 struct Video: Identifiable {
     let id: UUID
     let problem: String

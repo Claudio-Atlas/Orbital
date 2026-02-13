@@ -1,5 +1,20 @@
+//
+//  LibraryView.swift
+//  Orbital - AI Math Video Solver
+//
+//  Video library showing user's solved problems. Features:
+//    - Videos/Steps toggle view mode
+//    - Search functionality
+//    - "Continue" card for most recent solve
+//    - Expiration warnings (videos auto-delete after 48h)
+//    - Empty state for new users
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// Library of user's generated solution videos.
 struct LibraryView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var videos: [Video] = Video.sampleVideos

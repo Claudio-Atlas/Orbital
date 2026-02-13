@@ -1,6 +1,18 @@
+//
+//  AuthManager.swift
+//  Orbital - AI Math Video Solver
+//
+//  Handles all authentication flows: sign in, sign up, session management,
+//  and token refresh. Uses Supabase Auth with secure token storage.
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// Manages user authentication state and Supabase Auth integration.
+/// Stores tokens in AppStorage (UserDefaults) and handles automatic session refresh.
 @MainActor
 class AuthManager: ObservableObject {
     @Published var isAuthenticated = false

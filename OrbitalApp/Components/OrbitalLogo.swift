@@ -1,5 +1,19 @@
+//
+//  OrbitalLogo.swift
+//  Orbital - AI Math Video Solver
+//
+//  Reusable logo components with adaptive dark/light mode support.
+//
+//  Components:
+//    - OrbitalLogo: Static logo that adapts to color scheme
+//    - BreathingLogo: Animated logo with pulsing purple glow
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// Static logo component that switches between light/dark variants.
 struct OrbitalLogo: View {
     @Environment(\.colorScheme) var colorScheme
     
@@ -10,6 +24,8 @@ struct OrbitalLogo: View {
     }
 }
 
+/// Animated logo with a pulsing purple glow effect (3-layer shadow).
+/// Used on login, solver, library, and profile screens.
 struct BreathingLogo: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var glowIntensity: Double = 0.6

@@ -1,5 +1,21 @@
+//
+//  OrbitalColors.swift
+//  Orbital - AI Math Video Solver
+//
+//  Design system colors and view modifiers. Tesla-inspired dark theme
+//  with purple accents and adaptive light mode support.
+//
+//  Usage:
+//    - Colors: OrbitalColors.accent, OrbitalColors.textPrimary(colorScheme)
+//    - Modifiers: .orbitalCard(), .orbitalGradientBackground()
+//
+//  Copyright © 2026 Onyx Enterprises. All rights reserved.
+//
+
 import SwiftUI
 
+/// Centralized color definitions for the Orbital design system.
+/// All colors support both dark and light mode via adaptive helper functions.
 struct OrbitalColors {
     // Primary accent - purple/violet
     static let accent = Color(red: 139/255, green: 92/255, blue: 246/255)

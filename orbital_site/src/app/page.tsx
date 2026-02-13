@@ -184,8 +184,8 @@ export default function HomePage() {
               {/* Solver Preview Image */}
               <div className={`w-full rounded-2xl overflow-hidden mb-8 ${
                 isDark 
-                  ? "ring-1 ring-white/10" 
-                  : "ring-1 ring-gray-200 shadow-lg"
+                  ? "border border-violet-500/30 shadow-[0_0_30px_rgba(139,92,246,0.25)]" 
+                  : "ring-1 ring-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
               }`}>
                 <img 
                   src="/solver-preview.png" 

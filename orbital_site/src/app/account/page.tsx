@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 
@@ -29,7 +29,7 @@ const pricingTiers = [
   },
 ];
 
-export default function AccountPage() {
+function AccountPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -241,5 +241,21 @@ export default function AccountPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <AccountPageContent />
+    </Suspense>
   );
 }

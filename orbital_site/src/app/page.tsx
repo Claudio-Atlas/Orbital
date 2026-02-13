@@ -1,51 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { SITE, PRICING } from "@/lib/constants";
-import { ProblemVerification } from "@/components/ProblemVerification";
-import { SolutionSteps } from "@/components/SolutionSteps";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
 
-type JobStatus = "idle" | "parsing" | "verifying" | "generating" | "complete" | "error";
 type Theme = "dark" | "light";
-
-interface Step {
-  narration: string;
-  latex: string;
-}
-
-interface ParsedProblem {
-  problem: string;
-  latex?: string;
-  steps: Step[];
-  totalCharacters: number;
-  estimatedMinutes: number;
-}
-
-interface Job {
-  job_id: string;
-  status: string;
-  problem?: string;
-  steps?: Step[];
-  video_url?: string;
-  error?: string;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8002";
 
 // Clean SVG Icons
 const Icons = {
-  camera: (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-    </svg>
-  ),
-  download: (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-    </svg>
-  ),
   edit: (
     <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
@@ -67,11 +29,6 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
     </svg>
   ),
-  x: (
-    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  ),
   sun: (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
@@ -85,14 +42,7 @@ const Icons = {
 };
 
 export default function HomePage() {
-  const [problem, setProblem] = useState("");
-  const [originalInput, setOriginalInput] = useState("");
-  const [status, setStatus] = useState<JobStatus>("idle");
-  const [job, setJob] = useState<Job | null>(null);
-  const [parsedProblem, setParsedProblem] = useState<ParsedProblem | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>("dark");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -108,204 +58,6 @@ export default function HomePage() {
   };
 
   const isDark = theme === "dark";
-
-  // Step 1: Parse the problem (FREE - shows verification screen)
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!problem.trim()) return;
-
-    setOriginalInput(problem.trim());
-    setStatus("parsing");
-    setError(null);
-    setJob(null);
-    setParsedProblem(null);
-
-    try {
-      // First, just parse the problem (FREE preview)
-      const res = await fetch(`${API_URL}/parse`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ problem: problem.trim() }),
-      });
-
-      if (!res.ok) throw new Error("Failed to parse problem");
-
-      const data = await res.json();
-      
-      // Calculate total characters and minutes
-      const steps = data.steps || [];
-      const totalChars = steps.reduce((sum: number, s: Step) => sum + (s.narration?.length || 0), 0);
-      const minutes = Math.round((totalChars / 1000) * 10) / 10; // 1000 chars = 1 min
-      
-      setParsedProblem({
-        problem: data.problem || problem.trim(),
-        latex: data.latex,
-        steps: steps,
-        totalCharacters: totalChars,
-        estimatedMinutes: Math.max(0.1, minutes), // Minimum 0.1 min
-      });
-      setStatus("verifying");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setOriginalInput("[Uploaded Image]");
-    setStatus("parsing");
-    setError(null);
-    setJob(null);
-    setParsedProblem(null);
-
-    try {
-      const base64 = await fileToBase64(file);
-      const res = await fetch(`${API_URL}/parse`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
-
-      if (!res.ok) throw new Error("Failed to process image");
-
-      const data = await res.json();
-      const steps = data.steps || [];
-      const totalChars = steps.reduce((sum: number, s: Step) => sum + (s.narration?.length || 0), 0);
-      const minutes = Math.round((totalChars / 1000) * 10) / 10;
-      
-      setProblem(data.problem || "Problem from image");
-      setParsedProblem({
-        problem: data.problem || "Problem from image",
-        latex: data.latex,
-        steps: steps,
-        totalCharacters: totalChars,
-        estimatedMinutes: Math.max(0.1, minutes),
-      });
-      setStatus("verifying");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
-    }
-  };
-
-  // Step 2: User confirmed - now generate the video
-  const handleConfirmGenerate = async () => {
-    if (!parsedProblem) return;
-    
-    setStatus("generating");
-    setError(null);
-
-    try {
-      const res = await fetch(`${API_URL}/solve`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ problem: parsedProblem.problem }),
-      });
-
-      if (!res.ok) throw new Error("Failed to generate video");
-
-      const data = await res.json();
-      setJob(data);
-      pollJob(data.job_id);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
-    }
-  };
-
-  // Re-parse with edited problem text
-  const handleEditProblem = async (newProblem: string) => {
-    setProblem(newProblem);
-    setOriginalInput(newProblem);
-    setStatus("parsing");
-    setParsedProblem(null);
-
-    try {
-      const res = await fetch(`${API_URL}/parse`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ problem: newProblem }),
-      });
-
-      if (!res.ok) throw new Error("Failed to parse problem");
-
-      const data = await res.json();
-      const steps = data.steps || [];
-      const totalChars = steps.reduce((sum: number, s: Step) => sum + (s.narration?.length || 0), 0);
-      const minutes = Math.round((totalChars / 1000) * 10) / 10;
-      
-      setParsedProblem({
-        problem: data.problem || newProblem,
-        latex: data.latex,
-        steps: steps,
-        totalCharacters: totalChars,
-        estimatedMinutes: Math.max(0.1, minutes),
-      });
-      setStatus("verifying");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
-    }
-  };
-
-  const pollJob = async (jobId: string) => {
-    const maxAttempts = 120;
-    let attempts = 0;
-
-    const poll = async () => {
-      try {
-        const res = await fetch(`${API_URL}/job/${jobId}`);
-        const data: Job = await res.json();
-        setJob(data);
-
-        if (data.status === "complete") {
-          setStatus("complete");
-          return;
-        }
-        if (data.status === "failed") {
-          setError(data.error || "Video generation failed");
-          setStatus("error");
-          return;
-        }
-
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(poll, 1000);
-        } else {
-          setError("Timeout: Video generation took too long");
-          setStatus("error");
-        }
-      } catch {
-        setError("Failed to check job status");
-        setStatus("error");
-      }
-    };
-    poll();
-  };
-
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        resolve(result.split(",")[1]);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const reset = () => {
-    setProblem("");
-    setOriginalInput("");
-    setStatus("idle");
-    setJob(null);
-    setParsedProblem(null);
-    setError(null);
-  };
 
   return (
     <div className={`min-h-screen overflow-x-hidden w-full flex flex-col items-center transition-colors duration-300 ${
@@ -398,243 +150,68 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Solver Interface */}
+      {/* Coming Soon */}
       <section className="w-full pb-32">
         <div className="w-full max-w-2xl mx-auto px-6">
-          <div className={`rounded-[2rem] p-8 md:p-10 ${
+          <div className={`rounded-[2rem] p-8 md:p-12 ${
             isDark 
               ? "bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.08]" 
               : "bg-white border border-gray-200 shadow-xl shadow-gray-200/50"
           }`}>
-            
-            {status === "idle" && (
-              <>
-                <form onSubmit={handleSubmit}>
-                  <label className={`block mb-4 text-xs font-medium uppercase tracking-widest text-center ${
-                    isDark ? "text-gray-500" : "text-gray-500"
-                  }`}>
-                    Enter your math problem
-                  </label>
-                  
-                  {/* Textarea with neon glow */}
-                  <textarea
-                    value={problem}
-                    onChange={(e) => setProblem(e.target.value)}
-                    placeholder="e.g., Find the derivative of f(x) = x³ + 2x² - 5x + 1"
-                    className={`w-full p-5 rounded-2xl transition-all resize-none text-lg text-center ${
-                      isDark 
-                        ? "bg-black/40 text-white placeholder-gray-600 border border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.15)] focus:border-violet-500/60 focus:shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
-                        : "bg-gray-50 text-gray-900 placeholder-gray-400 border border-violet-300/50 shadow-[0_0_15px_rgba(139,92,246,0.1)] focus:border-violet-400 focus:shadow-[0_0_25px_rgba(139,92,246,0.2)]"
-                    } focus:outline-none`}
-                    rows={3}
-                  />
-
-                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                    <button
-                      type="submit"
-                      disabled={!problem.trim()}
-                      className={`flex-1 py-4 px-8 rounded-2xl font-semibold text-base transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
-                        isDark 
-                          ? "bg-white text-black hover:bg-gray-100" 
-                          : "bg-gray-900 text-white hover:bg-gray-800"
-                      }`}
-                    >
-                      Generate Video
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className={`flex-1 py-4 px-8 rounded-2xl font-semibold text-base transition-all flex items-center justify-center gap-3 ${
-                        isDark 
-                          ? "bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08]" 
-                          : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
-                      }`}
-                    >
-                      {Icons.camera}
-                      <span>Upload Photo</span>
-                    </button>
-                  </div>
-                </form>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-
-                <div className={`mt-10 pt-8 border-t ${isDark ? "border-white/[0.05]" : "border-gray-100"}`}>
-                  <p className={`text-xs uppercase tracking-widest mb-4 text-center ${
-                    isDark ? "text-gray-600" : "text-gray-400"
-                  }`}>Try an example</p>
-                  <div className="flex flex-wrap gap-3 justify-center">
-                    {[
-                      "Solve for x: 3x - 7 = 14",
-                      "Find the derivative of x² + 3x",
-                      "Prove by induction: 1+2+...+n = n(n+1)/2",
-                    ].map((ex) => (
-                      <button
-                        key={ex}
-                        onClick={() => setProblem(ex)}
-                        className={`px-5 py-2.5 text-sm rounded-full transition-all ${
-                          isDark 
-                            ? "bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.05] hover:border-white/[0.1] text-gray-400 hover:text-white" 
-                            : "bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600 hover:text-gray-900"
-                        }`}
-                      >
-                        {ex}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {status === "parsing" && (
-              <div className="flex flex-col items-center py-16">
-                <div className={`w-10 h-10 border-2 rounded-full animate-spin mb-10 ${
-                  isDark ? "border-white/10 border-t-white" : "border-gray-200 border-t-gray-900"
-                }`} />
-                
-                <h3 className="text-2xl font-medium mb-3 text-center">
-                  Analyzing problem
-                </h3>
-                
-                <p className={`text-center max-w-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-                  Breaking down the problem into clear steps
-                </p>
+            <div className="flex flex-col items-center text-center py-8">
+              {/* Orbital logo/icon */}
+              <div className={`w-20 h-20 mb-8 rounded-2xl flex items-center justify-center ${
+                isDark 
+                  ? "bg-violet-500/10 border border-violet-500/20" 
+                  : "bg-violet-100 border border-violet-200"
+              }`}>
+                <OrbitalLogo className="w-10 h-10 text-violet-500" />
               </div>
-            )}
-
-            {status === "verifying" && parsedProblem && (
-              <ProblemVerification
-                originalInput={originalInput}
-                parsedProblem={parsedProblem.problem}
-                parsedLatex={parsedProblem.latex}
-                steps={parsedProblem.steps}
-                estimatedMinutes={parsedProblem.estimatedMinutes}
-                characterCount={parsedProblem.totalCharacters}
-                isDark={isDark}
-                onConfirm={handleConfirmGenerate}
-                onEdit={handleEditProblem}
-                onCancel={reset}
-              />
-            )}
-
-            {status === "generating" && (
-              <div className="flex flex-col items-center py-16">
-                <div className={`w-10 h-10 border-2 rounded-full animate-spin mb-10 ${
-                  isDark ? "border-white/10 border-t-white" : "border-gray-200 border-t-gray-900"
-                }`} />
-                
-                <h3 className="text-2xl font-medium mb-3 text-center">
-                  Generating video
-                </h3>
-                
-                <p className={`text-center max-w-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-                  Creating animations and narration — about 30 seconds
+              
+              <h2 className={`text-3xl sm:text-4xl font-semibold mb-4 ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}>
+                Coming Soon
+              </h2>
+              
+              <p className={`text-lg max-w-md mb-8 ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}>
+                AI-powered math videos that explain any problem step by step. 
+                We&apos;re putting the finishing touches on something special.
+              </p>
+              
+              {/* Example problems teaser */}
+              <div className={`w-full rounded-2xl p-6 ${
+                isDark 
+                  ? "bg-black/40 border border-violet-500/20" 
+                  : "bg-gray-50 border border-gray-200"
+              }`}>
+                <p className={`text-xs uppercase tracking-widest mb-4 ${
+                  isDark ? "text-gray-500" : "text-gray-400"
+                }`}>
+                  Soon you&apos;ll be able to solve
                 </p>
-
-                {job?.steps && (
-                  <div className="mt-10 w-full max-w-md">
-                    <p className={`text-xs uppercase tracking-widest mb-4 text-center ${
-                      isDark ? "text-gray-600" : "text-gray-400"
-                    }`}>{job.steps.length} steps identified</p>
-                    <div className="space-y-3 max-h-48 overflow-y-auto">
-                      {job.steps.slice(0, 5).map((step, i) => (
-                        <div key={i} className="flex items-start gap-4 text-sm">
-                          <span className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-medium ${
-                            isDark ? "bg-white/[0.05] text-gray-500" : "bg-gray-100 text-gray-500"
-                          }`}>
-                            {i + 1}
-                          </span>
-                          <span className={`pt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>{step.narration}</span>
-                        </div>
-                      ))}
-                      {job.steps.length > 5 && (
-                        <p className={`text-xs pl-11 ${isDark ? "text-gray-600" : "text-gray-400"}`}>+{job.steps.length - 5} more</p>
-                      )}
+                <div className="space-y-3">
+                  {[
+                    "Solve for x: 3x - 7 = 14",
+                    "Find the derivative of x² + 3x",
+                    "Prove by induction: 1+2+...+n = n(n+1)/2",
+                  ].map((ex) => (
+                    <div 
+                      key={ex}
+                      className={`px-4 py-3 rounded-xl text-sm ${
+                        isDark 
+                          ? "bg-white/[0.03] border border-white/[0.05] text-gray-400" 
+                          : "bg-white border border-gray-200 text-gray-600"
+                      }`}
+                    >
+                      {ex}
                     </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            )}
-
-            {status === "complete" && job?.video_url && (
-              <div className="flex flex-col">
-                {/* Video Player */}
-                <div className={`w-full aspect-video rounded-2xl overflow-hidden mb-6 ring-1 ${
-                  isDark ? "bg-black ring-white/[0.08]" : "bg-gray-100 ring-gray-200"
-                }`}>
-                  <video
-                    src={`${API_URL}${job.video_url}`}
-                    controls
-                    autoPlay
-                    className="w-full h-full"
-                  />
-                </div>
-
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-medium mb-2">
-                    Video ready
-                  </h3>
-                  <p className={`max-w-md mx-auto ${isDark ? "text-gray-500" : "text-gray-600"}`}>
-                    {job.problem}
-                  </p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-4 justify-center mb-2">
-                  <a
-                    href={`${API_URL}${job.video_url}`}
-                    download
-                    className={`py-3.5 px-6 rounded-xl font-medium transition-all flex items-center gap-2.5 ${
-                      isDark 
-                        ? "bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08]" 
-                        : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
-                    }`}
-                  >
-                    {Icons.download}
-                    <span>Download</span>
-                  </a>
-                  <button 
-                    onClick={reset} 
-                    className={`py-3.5 px-8 rounded-xl font-medium transition-all ${
-                      isDark 
-                        ? "bg-white text-black hover:bg-gray-100" 
-                        : "bg-gray-900 text-white hover:bg-gray-800"
-                    }`}
-                  >
-                    Solve Another
-                  </button>
-                </div>
-
-                {/* Text Solution Steps - The PhotoMath Killer Feature */}
-                {job.steps && job.steps.length > 0 && (
-                  <SolutionSteps steps={job.steps} isDark={isDark} />
-                )}
-              </div>
-            )}
-
-            {status === "error" && (
-              <div className="flex flex-col items-center py-16">
-                <div className="w-14 h-14 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mb-8">
-                  {Icons.x}
-                </div>
-                <h3 className="text-2xl font-medium mb-3 text-center">Something went wrong</h3>
-                <p className={`text-center mb-8 ${isDark ? "text-gray-500" : "text-gray-600"}`}>{error || "Please try again."}</p>
-                <button onClick={reset} className={`py-3.5 px-8 rounded-xl font-medium transition-all ${
-                  isDark 
-                    ? "bg-white text-black hover:bg-gray-100" 
-                    : "bg-gray-900 text-white hover:bg-gray-800"
-                }`}>
-                  Try Again
-                </button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </section>

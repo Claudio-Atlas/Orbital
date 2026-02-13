@@ -17,6 +17,7 @@ import SwiftUI
 /// Library of user's generated solution videos.
 struct LibraryView: View {
     @Environment(\.colorScheme) var colorScheme
+    @ObservedObject var accentTheme = AccentTheme.shared
     @State private var videos: [Video] = Video.sampleVideos
     @State private var showingSteps = false
     @State private var searchText = ""

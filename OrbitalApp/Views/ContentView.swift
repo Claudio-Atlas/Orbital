@@ -32,6 +32,7 @@ struct ContentView: View {
 struct MainTabView: View {
     @Binding var selectedTab: Int
     @EnvironmentObject var authManager: AuthManager
+    @ObservedObject var accentTheme = AccentTheme.shared
     
     var body: some View {
         TabView(selection: $selectedTab) {

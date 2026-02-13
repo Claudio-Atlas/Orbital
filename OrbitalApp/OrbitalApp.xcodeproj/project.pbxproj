@@ -10,8 +10,10 @@
 		346B6DC544A5AB5DE3E73D71 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DD78C03F0E10148ABFC28E /* ProfileView.swift */; };
 		4D536F05641A4752151ACCA2 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609E5A9C20E201AFEF54D8FF /* Video.swift */; };
 		502B8A838DF3036A93E3DCA0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C18CF04E3A73450C7AB7660 /* LibraryView.swift */; };
+		5777BE0186CC49941ED30F65 /* AccentColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B799A2B444FC53510B0B468 /* AccentColorPicker.swift */; };
 		5E70ADA71BA1DFAD36D290F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BC6AFA201B1CE6E3E5CB867 /* Assets.xcassets */; };
 		64DB2C6FDB37D2AB9C271C0A /* PricingTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9596CF4A45E2D33218D9A1 /* PricingTier.swift */; };
+		7134E4918AEF3645C5C4D363 /* AccentTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB35E900C1D740625DD9D09 /* AccentTheme.swift */; };
 		9F3A8137CC613C4C240454CF /* OrbitalLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283511E10D37F70487947108 /* OrbitalLogo.swift */; };
 		AF50DD34A388F9ED88BB33C8 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB49B18F2BFB4E9C3399832D /* AuthManager.swift */; };
 		B1B6C460341B072CF9894DB3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E539AB7C295ABDE2A3D6F9E /* ContentView.swift */; };
@@ -32,8 +34,10 @@
 		74507F573F4E70621ACC45FF /* OrbitalColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrbitalColors.swift; sourceTree = "<group>"; };
 		81DD78C03F0E10148ABFC28E /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		8BC6AFA201B1CE6E3E5CB867 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9B799A2B444FC53510B0B468 /* AccentColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentColorPicker.swift; sourceTree = "<group>"; };
 		A6075CF026151D4CFE675D00 /* OrbitalApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OrbitalApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C249320E87D434AAE9413561 /* SolverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolverView.swift; sourceTree = "<group>"; };
+		DBB35E900C1D740625DD9D09 /* AccentTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentTheme.swift; sourceTree = "<group>"; };
 		FB49B18F2BFB4E9C3399832D /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,6 +69,7 @@
 		72EA24FFE10AC9EC1443FE61 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				9B799A2B444FC53510B0B468 /* AccentColorPicker.swift */,
 				283511E10D37F70487947108 /* OrbitalLogo.swift */,
 			);
 			path = Components;
@@ -114,6 +119,7 @@
 		F5DA46A2B94AB53C77D5A5AA /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				DBB35E900C1D740625DD9D09 /* AccentTheme.swift */,
 				74507F573F4E70621ACC45FF /* OrbitalColors.swift */,
 			);
 			path = Theme;
@@ -189,6 +195,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5777BE0186CC49941ED30F65 /* AccentColorPicker.swift in Sources */,
+				7134E4918AEF3645C5C4D363 /* AccentTheme.swift in Sources */,
 				AF50DD34A388F9ED88BB33C8 /* AuthManager.swift in Sources */,
 				B1B6C460341B072CF9894DB3 /* ContentView.swift in Sources */,
 				502B8A838DF3036A93E3DCA0 /* LibraryView.swift in Sources */,

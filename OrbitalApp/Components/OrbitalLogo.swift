@@ -6,7 +6,7 @@
 //
 //  Components:
 //    - OrbitalLogo: Static logo that adapts to color scheme
-//    - BreathingLogo: Animated logo with pulsing purple glow
+//    - BreathingLogo: Animated logo with pulsing glow (uses user's accent color)
 //
 //  Copyright © 2026 Onyx Enterprises. All rights reserved.
 //
@@ -24,19 +24,21 @@ struct OrbitalLogo: View {
     }
 }
 
-/// Animated logo with a pulsing purple glow effect (3-layer shadow).
+/// Animated logo with a pulsing glow effect (3-layer shadow).
+/// Glow color adapts to user's chosen accent color.
 /// Used on login, solver, library, and profile screens.
 struct BreathingLogo: View {
     @Environment(\.colorScheme) var colorScheme
+    @ObservedObject var accentTheme = AccentTheme.shared
     @State private var glowIntensity: Double = 0.6
     
     var body: some View {
         Image(colorScheme == .dark ? "OrbitalLogo" : "OrbitalLogoDark")
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .shadow(color: OrbitalColors.accent.opacity(0.6 * glowIntensity), radius: 25, x: 0, y: 0)
-            .shadow(color: OrbitalColors.accent.opacity(0.4 * glowIntensity), radius: 45, x: 0, y: 0)
-            .shadow(color: OrbitalColors.accent.opacity(0.2 * glowIntensity), radius: 70, x: 0, y: 0)
+            .shadow(color: accentTheme.color.opacity(0.6 * glowIntensity), radius: 25, x: 0, y: 0)
+            .shadow(color: accentTheme.color.opacity(0.4 * glowIntensity), radius: 45, x: 0, y: 0)
+            .shadow(color: accentTheme.color.opacity(0.2 * glowIntensity), radius: 70, x: 0, y: 0)
             .onAppear {
                 withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
                     glowIntensity = 1.0

@@ -11,29 +11,50 @@ struct LoginView: View {
     @State private var showingSuccess = false
     @FocusState private var focusedField: Field?
     
+    // Animation states
+    @State private var logoOpacity = 0.0
+    @State private var logoOffset: CGFloat = 20
+    @State private var titleOpacity = 0.0
+    @State private var titleOffset: CGFloat = 20
+    @State private var formOpacity = 0.0
+    @State private var formOffset: CGFloat = 20
+    @State private var buttonsOpacity = 0.0
+    @State private var buttonsOffset: CGFloat = 20
+    @State private var shimmerOffset: CGFloat = -200
+    
     enum Field {
         case email, password
     }
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 32) {
-                // Logo
-                OrbitalLogo()
-                    .frame(height: 120)
-                    .padding(.top, 60)
+            VStack(spacing: 28) {
+                // Logo with breathing glow + ORBITAL text
+                VStack(spacing: 12) {
+                    BreathingLogo()
+                        .frame(height: 100)
+                    
+                    Text("ORBITAL")
+                        .font(.system(size: 14, weight: .medium))
+                        .tracking(6)
+                        .foregroundStyle(OrbitalColors.dimWhite)
+                }
+                .padding(.top, 50)
+                .opacity(logoOpacity)
+                .offset(y: logoOffset)
                 
                 // Title
                 VStack(spacing: 8) {
                     Text(isSignUp ? "Create Account" : "Welcome back")
-                        .font(.title)
-                        .fontWeight(.bold)
+                        .font(.system(size: 32, weight: .bold))
                         .foregroundStyle(.white)
                     
                     Text(isSignUp ? "Start solving problems today" : "Sign in to continue solving")
                         .font(.subheadline)
                         .foregroundStyle(OrbitalColors.textSecondaryDark)
                 }
+                .opacity(titleOpacity)
+                .offset(y: titleOffset)
                 
                 // Form
                 VStack(spacing: 20) {
@@ -64,7 +85,14 @@ struct LoginView: View {
                             }
                         }
                         .padding()
-                        .neonInputStyle()
+                        .background(OrbitalColors.cardDark)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(OrbitalColors.accent.opacity(focusedField == .email ? 0.4 : 0.15), lineWidth: 1)
+                        )
+                        .shadow(color: OrbitalColors.accent.opacity(focusedField == .email ? 0.35 : 0.15), radius: focusedField == .email ? 15 : 8, x: 0, y: focusedField == .email ? 8 : 4)
+                        .animation(.easeInOut(duration: 0.2), value: focusedField)
                     }
                     
                     // Password
@@ -92,7 +120,14 @@ struct LoginView: View {
                             }
                         }
                         .padding()
-                        .neonInputStyle()
+                        .background(OrbitalColors.cardDark)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(OrbitalColors.accent.opacity(focusedField == .password ? 0.4 : 0.15), lineWidth: 1)
+                        )
+                        .shadow(color: OrbitalColors.accent.opacity(focusedField == .password ? 0.35 : 0.15), radius: focusedField == .password ? 15 : 8, x: 0, y: focusedField == .password ? 8 : 4)
+                        .animation(.easeInOut(duration: 0.2), value: focusedField)
                     }
                     
                     if !isSignUp {
@@ -107,75 +142,142 @@ struct LoginView: View {
                     }
                 }
                 .padding(.horizontal)
+                .opacity(formOpacity)
+                .offset(y: formOffset)
                 
-                // Sign In button - Metallic silver
-                Button(action: submitForm) {
-                    HStack {
-                        if authManager.isLoading {
-                            ProgressView()
-                                .tint(.black)
+                // Buttons section
+                VStack(spacing: 16) {
+                    // Sign In button - Purple gradient primary CTA
+                    Button(action: submitForm) {
+                        HStack(spacing: 8) {
+                            if authManager.isLoading {
+                                ProgressView()
+                                    .tint(.white)
+                            }
+                            Text(isSignUp ? "Create Account" : "Sign In")
+                                .font(.system(size: 17, weight: .bold))
+                                .tracking(0.5)
                         }
-                        Text(isSignUp ? "Create Account" : "Sign In")
-                            .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            ZStack {
+                                // Purple gradient
+                                LinearGradient(
+                                    colors: [
+                                        OrbitalColors.accentLight,
+                                        OrbitalColors.accent,
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                                
+                                // Shimmer
+                                LinearGradient(
+                                    colors: [.clear, .white.opacity(0.3), .clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                                .frame(width: 100)
+                                .offset(x: shimmerOffset)
+                                .blur(radius: 8)
+                            }
+                        )
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        // Purple glow underneath
+                        .shadow(color: OrbitalColors.accent.opacity(0.5), radius: 12, x: 0, y: 6)
+                        .shadow(color: OrbitalColors.accent.opacity(0.3), radius: 20, x: 0, y: 10)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .silverButtonStyle()
-                }
-                .disabled(email.isEmpty || password.isEmpty || authManager.isLoading)
-                .opacity(email.isEmpty || password.isEmpty ? 0.6 : 1)
-                .padding(.horizontal)
-                
-                // Divider
-                HStack {
-                    Rectangle()
-                        .fill(OrbitalColors.cardBorderDark)
-                        .frame(height: 1)
-                    Text("OR")
-                        .font(.caption)
-                        .foregroundStyle(OrbitalColors.textSecondaryDark)
-                    Rectangle()
-                        .fill(OrbitalColors.cardBorderDark)
-                        .frame(height: 1)
-                }
-                .padding(.horizontal)
-                
-                // Google Sign In
-                Button(action: signInWithGoogle) {
-                    HStack {
-                        Image(systemName: "g.circle.fill")
-                            .font(.title3)
-                        Text("Continue with Google")
-                            .fontWeight(.medium)
+                    .disabled(email.isEmpty || password.isEmpty || authManager.isLoading)
+                    .opacity(email.isEmpty || password.isEmpty ? 0.6 : 1)
+                    .onAppear {
+                        withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
+                            shimmerOffset = 400
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .outlineButtonStyle()
-                }
-                .padding(.horizontal)
-                
-                // Toggle sign up/sign in
-                HStack {
-                    Text(isSignUp ? "Already have an account?" : "Don't have an account?")
-                        .foregroundStyle(OrbitalColors.textSecondaryDark)
                     
-                    Button(isSignUp ? "Sign In" : "Sign Up") {
-                        withAnimation {
-                            isSignUp.toggle()
-                        }
+                    // Divider
+                    HStack {
+                        Rectangle()
+                            .fill(OrbitalColors.cardBorderDark)
+                            .frame(height: 1)
+                        Text("OR")
+                            .font(.caption)
+                            .foregroundStyle(OrbitalColors.textSecondaryDark)
+                        Rectangle()
+                            .fill(OrbitalColors.cardBorderDark)
+                            .frame(height: 1)
                     }
-                    .foregroundColor(.white)
-                    .fontWeight(.bold)
+                    
+                    // Google Sign In with actual G logo
+                    Button(action: signInWithGoogle) {
+                        HStack(spacing: 12) {
+                            Image("GoogleLogo")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .shadow(color: OrbitalColors.accent.opacity(0.4), radius: 6, x: 0, y: 0)
+                            
+                            Text("Continue with Google")
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(OrbitalColors.cardDark)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                        )
+                    }
+                    
+                    // Toggle sign up/sign in
+                    HStack {
+                        Text(isSignUp ? "Already have an account?" : "Don't have an account?")
+                            .foregroundStyle(OrbitalColors.textSecondaryDark)
+                        
+                        Button(isSignUp ? "Sign In" : "Sign Up") {
+                            let generator = UIImpactFeedbackGenerator(style: .light)
+                            generator.impactOccurred()
+                            withAnimation {
+                                isSignUp.toggle()
+                            }
+                        }
+                        .foregroundColor(OrbitalColors.accent)
+                        .fontWeight(.bold)
+                    }
+                    .font(.subheadline)
                 }
-                .font(.subheadline)
+                .padding(.horizontal)
+                .opacity(buttonsOpacity)
+                .offset(y: buttonsOffset)
                 
-                Spacer(minLength: 50)
+                // Terms link at bottom
+                Text("By signing in, you agree to our ")
+                    .foregroundStyle(OrbitalColors.textSecondaryDark)
+                +
+                Text("Terms")
+                    .foregroundStyle(OrbitalColors.dimWhite)
+                +
+                Text(" & ")
+                    .foregroundStyle(OrbitalColors.textSecondaryDark)
+                +
+                Text("Privacy")
+                    .foregroundStyle(OrbitalColors.dimWhite)
+                
+                Spacer(minLength: 30)
             }
+            .font(.caption2)
         }
         .orbitalGradientBackground()
-        .tint(.white) // Override app tint
+        .tint(.white)
         .onTapGesture {
             focusedField = nil
+        }
+        .onAppear {
+            startEntranceAnimations()
         }
         .alert("Error", isPresented: $showingError) {
             Button("OK") { }
@@ -189,7 +291,32 @@ struct LoginView: View {
         }
     }
     
+    func startEntranceAnimations() {
+        withAnimation(.easeOut(duration: 0.6)) {
+            logoOpacity = 1
+            logoOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.6).delay(0.15)) {
+            titleOpacity = 1
+            titleOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
+            formOpacity = 1
+            formOffset = 0
+        }
+        
+        withAnimation(.easeOut(duration: 0.6).delay(0.45)) {
+            buttonsOpacity = 1
+            buttonsOffset = 0
+        }
+    }
+    
     func submitForm() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
         Task {
             do {
                 if isSignUp {
@@ -206,7 +333,28 @@ struct LoginView: View {
     }
     
     func signInWithGoogle() {
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
         // TODO: Implement
+    }
+}
+
+// MARK: - Breathing Logo
+struct BreathingLogo: View {
+    @State private var glowIntensity: Double = 0.6
+    
+    var body: some View {
+        Image("OrbitalLogo")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .shadow(color: OrbitalColors.accent.opacity(0.6 * glowIntensity), radius: 25, x: 0, y: 0)
+            .shadow(color: OrbitalColors.accent.opacity(0.4 * glowIntensity), radius: 45, x: 0, y: 0)
+            .shadow(color: OrbitalColors.accent.opacity(0.2 * glowIntensity), radius: 70, x: 0, y: 0)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                    glowIntensity = 1.0
+                }
+            }
     }
 }
 

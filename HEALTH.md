@@ -31,10 +31,10 @@
 | Performance Engineer | 6/10 | ⚠️ Flag | Render time > target |
 | Math/AI Expert | 7/10 | ⚠️ Flag | No AI output verification |
 | UX Designer | 7/10 | ⚠️ Flag | Error messages need polish |
-| DevOps Engineer | 8/10 | ⚠️ Flag | ✅ Fully deployed! Still needs monitoring/alerting |
+| DevOps Engineer | 9/10 | ✅ Pass | ✅ Deployed + monitoring/alerting |
 | Privacy Advocate | 6/10 | ⚠️ Flag | No retention policy |
 
-**Overall: D+ (3 hard vetoes)**
+**Overall: C (2 hard vetoes — Payment + Privacy for PII retention)**
 
 ---
 
@@ -58,7 +58,7 @@
 | 7 | Add minute_transactions audit table | 🔄 TODO | — | 1 hr |
 | 8 | Add idempotency to webhook | ⏸️ HOLD | After #1 | 1 hr |
 | 9 | Input sanitization for AI | ✅ DONE | — | — |
-| 10 | Basic monitoring/alerting | 🔄 TODO | — | 3-4 hrs |
+| 10 | Basic monitoring/alerting | ✅ DONE | — | — |
 
 ### P2 — Fix Before Scale
 
@@ -152,6 +152,12 @@
 - `R2_BUCKET`
 - `R2_ENDPOINT`
 
+### Monitoring/Alerting (NEW)
+- `ALERT_WEBHOOK_URL` — Discord or Slack webhook URL
+- `ALERT_LEVEL` — ERROR or CRITICAL (default: ERROR)
+- `ALERT_ENABLED` — true/false (default: true)
+- `LOG_LEVEL` — DEBUG/INFO/WARNING/ERROR (default: INFO)
+
 ---
 
 ## Database Tables
@@ -170,6 +176,7 @@
 
 | Date | Change | Impact |
 |------|--------|--------|
+| 2026-02-14 | **Added monitoring/alerting** (P1 #10) | DevOps +1 (now 9/10) |
 | 2026-02-14 | **Deployed to Railway** (P0 #2,4,5) | DevOps +3 |
 | 2026-02-14 | Added rate limiting (P0 #3) | Security +1 |
 | 2026-02-14 | Added CLAUDE.md + PERSONAS.md | Quality gates |

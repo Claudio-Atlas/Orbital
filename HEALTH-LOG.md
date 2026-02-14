@@ -74,6 +74,53 @@
 | 94782e2 | Add rate limiting to API endpoints |
 | f8eec4d | Update HEALTH.md - rate limiting complete |
 | bec66fb | Uncomment worker process in Procfile |
+| bd61fcc | Add monitoring and alerting system (P1 #10) |
+
+---
+
+### Session: P1 #10 Monitoring/Alerting (12:00-12:30)
+
+**Context:** Implementing basic monitoring and alerting as specified in P1 task list.
+
+#### ✅ Completed
+
+| Time | Task | Details |
+|------|------|---------|
+| ~12:10 | Created structured logger | `utils/logging.py` - JSON for Railway, console for local |
+| ~12:15 | Created request middleware | `middleware/request_log.py` - timing, request IDs |
+| ~12:20 | Created alerting system | `utils/alerts.py` - Discord/Slack webhooks |
+| ~12:22 | Enhanced /health endpoint | Component checks for Redis, Supabase, Celery |
+| ~12:25 | Wired existing code | Replaced print() with logger, added alerts |
+| ~12:28 | RED TEAM passed | No security issues found |
+
+#### Files Created/Modified
+
+| File | Change |
+|------|--------|
+| `utils/logging.py` | NEW - Structured JSON logging |
+| `utils/alerts.py` | NEW - Webhook alerting |
+| `middleware/request_log.py` | NEW - Request logging middleware |
+| `main.py` | Enhanced /health, added middleware |
+| `utils/rate_limit.py` | Replaced print with logger |
+| `utils/sanitize.py` | Added security event logging |
+| `requirements.txt` | Added httpx |
+
+#### Security Features
+
+- Sensitive fields auto-redacted (tokens, keys, emails, problem content)
+- User IDs masked to first 8 chars
+- Request bodies never logged
+- Alert rate limiting (60s cooldown per alert type)
+- JSON escaping prevents log injection
+
+#### To Configure Alerting
+
+Set these env vars on Railway:
+```
+ALERT_WEBHOOK_URL=https://discord.com/api/webhooks/...
+ALERT_LEVEL=ERROR
+ALERT_ENABLED=true
+```
 
 ---
 
@@ -84,6 +131,7 @@
 | 2026-02-14 AM | D+ | 5/10 | 3/10 | 4/10 | Initial audit |
 | 2026-02-14 12:00 | C+ | 6/10 | 3/10 | 8/10 | P0 complete (except Stripe) |
 | 2026-02-14 12:30 | B- | 7/10 | 3/10 | 8/10 | Input sanitization done |
+| 2026-02-14 12:21 | B | 7/10 | 3/10 | 9/10 | P1 #10 Monitoring complete |
 
 ---
 

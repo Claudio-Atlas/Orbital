@@ -3,58 +3,62 @@ Orbital Solver API
 ==================
 FastAPI backend for the Orbital video solver.
 
+Architecture (Pizza Shop Analogy):
+- This API = The waiter (takes orders, gives tickets)
+- Redis + Celery = The order rail + kitchen (processes in background)  
+- Workers = The chefs (can scale independently)
+
 Endpoints:
-- POST /solve - Submit a problem (text or image)
-- GET /job/{job_id} - Check job status and get video URL
+- POST /solve - Submit a problem → returns job ticket
+- GET /job/{job_id} - Check job status (polling)
+- POST /parse - Parse only (free, for cost preview)
 - GET /health - Health check
 """
 
-# Load environment variables from .env file
 from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import sys
-import json
 import uuid
-import asyncio
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from routes.payments import router as payments_router
 from utils.auth import get_current_user
-
-# Parser is local to orbital_api
 from parser import parse_problem, parse_problem_from_image
+from jobs import job_store
 
-# Job storage (in-memory for now, use Redis/DB for production)
-jobs = {}
-
-# Paths - use local directories for Railway compatibility
-# In production (Railway), orbital_factory won't exist, so use local paths
+# Paths
 API_DIR = Path(__file__).parent
 OUTPUT_PATH = API_DIR / "output"
 SCRIPTS_PATH = API_DIR / "scripts"
 
-# Create directories immediately (before app.mount)
+# Create directories
 OUTPUT_PATH.mkdir(exist_ok=True)
 SCRIPTS_PATH.mkdir(exist_ok=True)
 
-# Legacy path for local dev with full factory
-FACTORY_PATH = Path(__file__).parent.parent / "orbital_factory"
+# Check if Celery is available (workers running)
+CELERY_ENABLED = os.getenv("CELERY_ENABLED", "false").lower() == "true"
 
+if CELERY_ENABLED:
+    from tasks import generate_video
+
+
+# ============================================
+# Request/Response Models
+# ============================================
 
 class SolveRequest(BaseModel):
-    problem: Optional[str] = None  # Text problem
-    image: Optional[str] = None     # Base64 image
-    voice: str = "allison"          # Voice choice
+    problem: Optional[str] = None
+    image: Optional[str] = None
+    voice: str = "allison"
 
 
 class SolveResponse(BaseModel):
@@ -70,38 +74,55 @@ class JobStatus(BaseModel):
     steps: Optional[list] = None
     video_url: Optional[str] = None
     error: Optional[str] = None
+    progress: Optional[int] = None
+    progress_message: Optional[str] = None
     created_at: str
     completed_at: Optional[str] = None
 
 
+class ParseRequest(BaseModel):
+    problem: Optional[str] = None
+    image: Optional[str] = None
+
+
+class ParseResponse(BaseModel):
+    problem: str
+    latex: Optional[str] = None
+    steps: list
+    total_characters: int
+    estimated_minutes: float
+
+
+# ============================================
+# App Setup
+# ============================================
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     OUTPUT_PATH.mkdir(exist_ok=True)
     SCRIPTS_PATH.mkdir(exist_ok=True)
+    mode = "Celery workers" if CELERY_ENABLED else "BackgroundTasks (local)"
     print(f"🚀 Orbital API started")
-    print(f"   Factory: {FACTORY_PATH}")
+    print(f"   Mode: {mode}")
     print(f"   Output: {OUTPUT_PATH}")
     yield
-    # Shutdown
     print("👋 Orbital API shutting down")
 
 
 app = FastAPI(
     title="Orbital Solver API",
     description="Generate step-by-step math tutorial videos",
-    version="1.0.0",
+    version="2.0.0",
     lifespan=lifespan
 )
 
-# CORS configuration
-# Only allow requests from known frontend origins
+# CORS
 ALLOWED_ORIGINS = [
-    "http://localhost:3000",           # Local dev
-    "http://localhost:3001",           # Local dev alternate port
-    "https://orbital-lime.vercel.app", # Vercel production
-    "https://orbitalsolver.io",        # Custom domain (when ready)
-    "https://www.orbitalsolver.io",    # www variant
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://orbital-lime.vercel.app",
+    "https://orbitalsolver.io",
+    "https://www.orbitalsolver.io",
 ]
 
 app.add_middleware(
@@ -119,24 +140,33 @@ app.mount("/videos", StaticFiles(directory=str(OUTPUT_PATH)), name="videos")
 app.include_router(payments_router)
 
 
-def run_pipeline(job_id: str, script_data: dict, voice: str):
+# ============================================
+# Fallback: Local processing (no Celery)
+# ============================================
+
+def run_pipeline_sync(job_id: str, script_data: dict, voice: str):
     """
-    Run the video generation pipeline.
-    This runs in a background thread.
+    Synchronous pipeline for local dev (when Celery not running).
+    This blocks - only use for development!
     """
     import subprocess
+    import sys
+    import json
+    
+    FACTORY_PATH = API_DIR.parent / "orbital_factory"
+    store = job_store()
     
     try:
-        jobs[job_id]["status"] = "processing"
+        store.update(job_id, status="processing", started_at=datetime.now().isoformat())
         
-        # Save script to file
+        # Save script
         script_path = SCRIPTS_PATH / f"{job_id}.json"
         with open(script_path, "w") as f:
             json.dump(script_data, f, indent=2)
         
         # Run pipeline
         cmd = [
-            sys.executable,  # Current Python interpreter
+            sys.executable,
             str(FACTORY_PATH / "pipeline.py"),
             str(script_path),
             "--voice", voice,
@@ -148,126 +178,197 @@ def run_pipeline(job_id: str, script_data: dict, voice: str):
             cwd=str(FACTORY_PATH),
             capture_output=True,
             text=True,
-            timeout=300  # 5 minute timeout
+            timeout=300
         )
         
         if result.returncode != 0:
             raise Exception(f"Pipeline failed: {result.stderr}")
         
-        # Check if video was created
         video_path = OUTPUT_PATH / f"{job_id}.mp4"
         if not video_path.exists():
-            raise Exception("Video file not created")
+            factory_output = FACTORY_PATH / "output" / f"{job_id}.mp4"
+            if factory_output.exists():
+                import shutil
+                shutil.move(str(factory_output), str(video_path))
+            else:
+                raise Exception("Video file not created")
         
-        # Update job
-        jobs[job_id]["status"] = "complete"
-        jobs[job_id]["video_url"] = f"/videos/{job_id}.mp4"
-        jobs[job_id]["completed_at"] = datetime.now().isoformat()
+        store.update(
+            job_id,
+            status="complete",
+            video_url=f"/videos/{job_id}.mp4",
+            completed_at=datetime.now().isoformat()
+        )
         
     except Exception as e:
-        jobs[job_id]["status"] = "failed"
-        jobs[job_id]["error"] = str(e)
-        jobs[job_id]["completed_at"] = datetime.now().isoformat()
+        store.update(
+            job_id,
+            status="failed",
+            error=str(e),
+            completed_at=datetime.now().isoformat()
+        )
 
+
+# ============================================
+# Endpoints
+# ============================================
 
 @app.get("/health")
 async def health():
     """Health check endpoint."""
+    store = job_store()
     return {
         "status": "healthy",
         "service": "orbital-solver",
-        "jobs_in_memory": len(jobs)
+        "version": "2.0.0",
+        "celery_enabled": CELERY_ENABLED,
+        "job_store": type(store).__name__,
     }
 
 
 @app.post("/solve", response_model=SolveResponse)
-async def solve(
-    request: SolveRequest, 
-    background_tasks: BackgroundTasks,
-    user = Depends(get_current_user)
-):
+async def solve(request: SolveRequest, user = Depends(get_current_user)):
     """
     Submit a math problem to solve.
-    Requires authentication.
     
-    Provide either:
-    - problem: Text description of the problem
-    - image: Base64-encoded image of the problem
+    The "waiter taking your order":
+    1. Validates the order (parses the problem)
+    2. Writes a ticket (creates job record)
+    3. Puts ticket on the rail (queues Celery task)
+    4. Gives you a ticket number (returns job_id)
+    
+    You then poll GET /job/{job_id} to check when it's ready.
     """
     
     if not request.problem and not request.image:
         raise HTTPException(400, "Must provide either 'problem' or 'image'")
     
     job_id = str(uuid.uuid4())[:8]
+    user_id = user.get("sub", "anonymous")
     
     try:
         # Parse the problem
         if request.image:
-            # OCR + parse
             script_data, extracted_problem = parse_problem_from_image(request.image)
             problem_text = extracted_problem
         else:
-            # Direct parse
             script_data = parse_problem(request.problem)
             problem_text = request.problem
         
-        # Add meta info
+        # Add metadata
         script_data["meta"]["brand"] = "Orbital"
         script_data["meta"]["job_id"] = job_id
         
-        # Create job record
-        jobs[job_id] = {
-            "job_id": job_id,
-            "status": "pending",
-            "problem": problem_text,
-            "steps": script_data.get("steps", []),
-            "video_url": None,
-            "error": None,
-            "created_at": datetime.now().isoformat(),
-            "completed_at": None
-        }
+        steps = script_data.get("steps", [])
         
-        # Start pipeline in background
-        background_tasks.add_task(run_pipeline, job_id, script_data, request.voice)
+        # Create job record
+        store = job_store()
+        store.create(
+            job_id=job_id,
+            user_id=user_id,
+            problem=problem_text,
+            steps=steps
+        )
+        
+        # Queue the task
+        if CELERY_ENABLED:
+            # Send to Celery worker (async, non-blocking)
+            task = generate_video.delay(job_id, script_data, request.voice, user_id)
+            store.update(job_id, celery_task_id=task.id)
+        else:
+            # Local dev: run in background thread
+            import threading
+            thread = threading.Thread(
+                target=run_pipeline_sync,
+                args=(job_id, script_data, request.voice)
+            )
+            thread.start()
         
         return SolveResponse(
             job_id=job_id,
             status="pending",
-            message=f"Problem received. Generating video for: {problem_text[:50]}..."
+            message=f"Video queued: {problem_text[:50]}..."
         )
         
     except Exception as e:
         raise HTTPException(500, f"Failed to parse problem: {str(e)}")
 
 
-class ParseRequest(BaseModel):
-    problem: Optional[str] = None
-    image: Optional[str] = None
-
-
-class ParseResponse(BaseModel):
-    problem: str
-    latex: Optional[str] = None
-    steps: list
-    total_characters: int
-    estimated_minutes: float
+@app.get("/job/{job_id}", response_model=JobStatus)
+async def get_job(job_id: str, user = Depends(get_current_user)):
+    """
+    Check job status.
+    
+    The "order status board":
+    - pending: In queue, waiting for a chef
+    - processing: Chef is working on it
+    - complete: Ready! Here's your video URL
+    - failed: Something went wrong
+    """
+    
+    store = job_store()
+    job = store.get(job_id)
+    
+    if not job:
+        raise HTTPException(404, f"Job {job_id} not found")
+    
+    # Security: Verify job belongs to this user
+    user_id = user.get("sub", "anonymous")
+    if job.get("user_id") != user_id:
+        raise HTTPException(403, "Not authorized to view this job")
+    
+    # If Celery, check task status for real-time progress
+    progress = None
+    progress_message = None
+    
+    if CELERY_ENABLED and job.get("celery_task_id"):
+        from celery.result import AsyncResult
+        task_result = AsyncResult(job["celery_task_id"])
+        
+        if task_result.state == "PROCESSING":
+            info = task_result.info or {}
+            progress = info.get("progress", 0)
+            progress_message = info.get("message", "Processing...")
+        elif task_result.state == "SUCCESS":
+            result = task_result.result or {}
+            if result.get("status") == "complete":
+                store.update(
+                    job_id,
+                    status="complete",
+                    video_url=result.get("video_url"),
+                    completed_at=result.get("completed_at")
+                )
+                job = store.get(job_id)
+        elif task_result.state == "FAILURE":
+            store.update(
+                job_id,
+                status="failed",
+                error=str(task_result.result),
+                completed_at=datetime.now().isoformat()
+            )
+            job = store.get(job_id)
+    
+    return JobStatus(
+        job_id=job["job_id"],
+        status=job["status"],
+        problem=job.get("problem"),
+        steps=job.get("steps"),
+        video_url=job.get("video_url"),
+        error=job.get("error"),
+        progress=progress,
+        progress_message=progress_message,
+        created_at=job.get("created_at", datetime.now().isoformat()),
+        completed_at=job.get("completed_at")
+    )
 
 
 @app.post("/parse", response_model=ParseResponse)
 async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
     """
     Parse a problem WITHOUT generating video.
-    Requires authentication.
     
-    This is FREE (doesn't deduct minutes) - used for the verification screen.
-    User sees the parsed result and cost before confirming.
-    
-    Returns:
-    - problem: The problem text (extracted if from image)
-    - latex: LaTeX representation of the problem
-    - steps: List of {narration, latex} steps
-    - total_characters: Total narration characters (for cost calc)
-    - estimated_minutes: Estimated video length (chars / 1000)
+    This is FREE - used for the verification screen.
+    User sees the parsed steps and cost estimate before confirming.
     """
     
     if not request.problem and not request.image:
@@ -282,20 +383,12 @@ async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
             problem_text = request.problem
         
         steps = script_data.get("steps", [])
-        
-        # Calculate total characters (for cost estimation)
         total_chars = sum(len(step.get("narration", "")) for step in steps)
-        
-        # 1000 chars = 1 minute
-        estimated_minutes = round(total_chars / 1000, 1)
-        estimated_minutes = max(0.1, estimated_minutes)  # Minimum 0.1 min
-        
-        # Get latex for the problem if available
-        problem_latex = script_data.get("meta", {}).get("latex")
+        estimated_minutes = max(0.1, round(total_chars / 1000, 1))
         
         return ParseResponse(
             problem=problem_text,
-            latex=problem_latex,
+            latex=script_data.get("meta", {}).get("latex"),
             steps=steps,
             total_characters=total_chars,
             estimated_minutes=estimated_minutes
@@ -305,19 +398,15 @@ async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
         raise HTTPException(500, f"Failed to parse problem: {str(e)}")
 
 
-@app.get("/job/{job_id}", response_model=JobStatus)
-async def get_job(job_id: str, user = Depends(get_current_user)):
-    """Get the status of a solve job. Requires authentication."""
-    
-    if job_id not in jobs:
-        raise HTTPException(404, f"Job {job_id} not found")
-    
-    # TODO: Verify job belongs to this user when we add user_id to jobs
-    return JobStatus(**jobs[job_id])
-
-
-# REMOVED: /jobs debug endpoint - exposed all user data
-# If needed for admin, add proper admin auth first
+@app.get("/jobs")
+async def list_jobs(user = Depends(get_current_user), limit: int = 20):
+    """
+    List your recent jobs.
+    """
+    user_id = user.get("sub", "anonymous")
+    store = job_store()
+    jobs = store.get_user_jobs(user_id, limit=limit)
+    return {"jobs": jobs}
 
 
 if __name__ == "__main__":

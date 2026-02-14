@@ -1,1 +1,5 @@
+# API server (the "waiter")
 web: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+# Celery worker (the "chefs") - run as separate Railway service
+# worker: celery -A celery_app worker --loglevel=info --concurrency=2

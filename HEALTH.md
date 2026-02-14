@@ -24,7 +24,7 @@
 
 | Persona | Score | Status | Blocking Issues |
 |---------|-------|--------|-----------------|
-| Security Engineer | 5/10 | ❌ VETO | No rate limiting, no input sanitization |
+| Security Engineer | 6/10 | ⚠️ Flag | ✅ Rate limiting added, still needs input sanitization |
 | Payment Specialist | 3/10 | ❌ VETO | No webhook, no audit trail |
 | API Architect | 6/10 | ⚠️ Flag | No versioning |
 | Performance Engineer | 6/10 | ⚠️ Flag | Render time > target |
@@ -45,7 +45,7 @@
 |---|------|--------|-------|--------|
 | 1 | Implement Stripe webhook | ⏸️ HOLD | Waiting for bank/EIN | 2-3 hrs |
 | 2 | Deploy backend to Railway | 🔄 TODO | Claudio | 1-2 hrs |
-| 3 | Add rate limiting | 🔄 TODO | Claudio | 2-3 hrs |
+| 3 | Add rate limiting | ✅ DONE | — | — |
 | 4 | Provision Redis on Railway | 🔄 TODO | Claudio | 30 min |
 | 5 | Deploy Celery workers | 🔄 TODO | Claudio | 1 hr |
 
@@ -169,6 +169,7 @@
 
 | Date | Change | Impact |
 |------|--------|--------|
+| 2026-02-14 | Added rate limiting (P0 #3) | Security +1 |
 | 2026-02-14 | Added CLAUDE.md + PERSONAS.md | Quality gates |
 | 2026-02-14 | Scaffolded Celery task queue | Ready for deploy |
 | 2026-02-14 | Added login modal on homepage | UX fix |

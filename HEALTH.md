@@ -70,6 +70,15 @@
 | 14 | Improve error messages | 🔄 TODO | — | 2 hrs |
 | 15 | Accessibility audit | 🔄 TODO | — | 3 hrs |
 
+### Configuration TODOs (No Code — Just Setup)
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Configure alert webhook | 🔄 TODO | Add `ALERT_WEBHOOK_URL` to Railway (Discord/Slack) |
+| Stripe webhook | ⏸️ HOLD | Needs bank/EIN first |
+| Custom domain | 🔄 TODO | Connect orbitalsolver.io to Vercel |
+| Fish Audio API key | ⏸️ HOLD | Needs business bank account |
+
 ---
 
 ## Architecture Overview
@@ -91,14 +100,14 @@
 │  │   (JWT)     │    │  • profiles                         │    │
 │  └─────────────┘    │  • video_jobs                       │    │
 │                      │  • purchases                        │    │
-│                      │  • minute_transactions (TODO)       │    │
+│                      │  • minute_transactions ✅           │    │
 │                      └─────────────────────────────────────┘    │
 └────────────────────────┬────────────────────────────────────────┘
                          │
                          │ Service key (backend only)
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     RAILWAY (TODO: Deploy)                       │
+│                     RAILWAY ✅ DEPLOYED                          │
 │                                                                  │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐     │
 │  │  FastAPI    │───▶│   Redis     │───▶│  Celery Workers │     │

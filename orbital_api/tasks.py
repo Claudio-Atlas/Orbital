@@ -22,6 +22,9 @@ from datetime import datetime
 from celery import states
 from celery_app import celery_app
 
+from utils.logging import logger, log_job_event, log_error
+from utils.minutes import debit_minutes_sync
+
 # Paths
 API_DIR = Path(__file__).parent
 OUTPUT_PATH = API_DIR / "output"
@@ -120,6 +123,47 @@ def generate_video(self, job_id: str, script_data: dict, voice: str, user_id: st
         # For now, serve locally
         video_url = f"/videos/{job_id}.mp4"
         
+        # Calculate minutes used (based on narration length)
+        # ~1000 characters ≈ 1 minute of video
+        steps = script_data.get("steps", [])
+        total_chars = sum(len(step.get("narration", "")) for step in steps)
+        minutes_used = max(0.1, round(total_chars / 1000, 2))
+        
+        # Debit minutes from user's balance
+        log_job_event(job_id, "deducting_minutes", user_id, minutes=minutes_used)
+        
+        debit_result = debit_minutes_sync(
+            user_id=user_id,
+            amount=minutes_used,
+            source="job_complete",
+            reference_id=job_id,  # Idempotency: same job_id = same debit
+            metadata={
+                "total_chars": total_chars,
+                "step_count": len(steps)
+            }
+        )
+        
+        if not debit_result.success:
+            # Log but don't fail the job - video was already generated
+            # This handles edge cases like:
+            # - User ran out of balance during generation
+            # - Duplicate debit attempt (idempotent = OK)
+            if debit_result.idempotent:
+                log_job_event(job_id, "debit_idempotent", user_id, minutes=minutes_used)
+            else:
+                log_error(
+                    f"Failed to debit minutes (video still delivered)",
+                    job_id=job_id,
+                    error=debit_result.error,
+                    minutes=minutes_used
+                )
+        else:
+            log_job_event(
+                job_id, "debit_success", user_id,
+                minutes=minutes_used,
+                new_balance=debit_result.new_balance
+            )
+        
         # Update progress
         self.update_state(
             state="PROCESSING",
@@ -135,6 +179,7 @@ def generate_video(self, job_id: str, script_data: dict, voice: str, user_id: st
             "status": "complete",
             "job_id": job_id,
             "video_url": video_url,
+            "minutes_used": minutes_used,
             "completed_at": datetime.now().isoformat()
         }
         

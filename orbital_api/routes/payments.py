@@ -10,6 +10,10 @@ import os
 import stripe
 from supabase import create_client, Client
 
+from utils.logging import logger, log_error
+from utils.alerts import alert_error, alert_critical
+from utils.minutes import credit_minutes_sync
+
 router = APIRouter(prefix="/payments", tags=["payments"])
 
 # Stripe setup
@@ -211,16 +215,28 @@ async def stripe_webhook(request: Request):
         
         if user_id and minutes > 0:
             try:
-                # Add minutes to balance
-                result = supabase.rpc("add_minutes", {
-                    "p_user_id": user_id,
-                    "p_minutes": minutes,
-                    "p_amount_cents": amount_cents,
-                    "p_tier": tier_name,
-                    "p_stripe_session_id": session["id"]
-                }).execute()
+                # Credit minutes using safe, atomic function
+                result = credit_minutes_sync(
+                    user_id=user_id,
+                    amount=minutes,
+                    source="stripe",
+                    reference_id=session["id"],  # Idempotency: same session = same credit
+                    metadata={
+                        "tier": tier_name,
+                        "amount_cents": amount_cents,
+                        "mode": mode
+                    }
+                )
                 
-                print(f"✅ Added {minutes} minutes to user {user_id}")
+                if result.success:
+                    if result.idempotent:
+                        logger.info(f"Idempotent: Already credited {minutes} minutes for session {session['id'][:20]}")
+                    else:
+                        logger.info(f"✅ Credited {minutes} minutes to user {user_id[:8]}... (new balance: {result.new_balance})")
+                else:
+                    log_error(f"Failed to credit minutes: {result.error}", user_id=user_id[:8])
+                    alert_critical("Stripe webhook: Failed to credit minutes", 
+                                 session_id=session["id"][:20], error=result.error)
                 
                 # If subscription, store the subscription info
                 if mode == "subscription" and session.get("subscription"):
@@ -230,10 +246,11 @@ async def stripe_webhook(request: Request):
                         "subscription_tier": tier_name
                     }).eq("id", user_id).execute()
                     
-                    print(f"✅ Updated subscription info for user {user_id}")
+                    logger.info(f"✅ Updated subscription info for user {user_id[:8]}...")
                 
             except Exception as e:
-                print(f"❌ Failed to process checkout: {e}")
+                log_error(f"Failed to process checkout", error=e, session_id=session["id"][:20])
+                alert_critical("Stripe webhook processing failed", error=str(e)[:200])
     
     # Handle subscription renewal (invoice.paid for recurring payments)
     elif event["type"] == "invoice.paid":
@@ -262,19 +279,29 @@ async def stripe_webhook(request: Request):
                     minutes = tier["minutes"]
                     amount_cents = invoice.get("amount_paid", tier["amount_cents"])
                     
-                    # Add monthly minutes
-                    supabase.rpc("add_minutes", {
-                        "p_user_id": user_id,
-                        "p_minutes": minutes,
-                        "p_amount_cents": amount_cents,
-                        "p_tier": tier_name,
-                        "p_stripe_session_id": invoice["id"]
-                    }).execute()
+                    # Credit monthly minutes using safe, atomic function
+                    result = credit_minutes_sync(
+                        user_id=user_id,
+                        amount=minutes,
+                        source="stripe_renewal",
+                        reference_id=invoice["id"],  # Idempotency
+                        metadata={
+                            "tier": tier_name,
+                            "amount_cents": amount_cents,
+                            "billing_reason": invoice.get("billing_reason")
+                        }
+                    )
                     
-                    print(f"✅ Monthly renewal: Added {minutes} minutes to user {user_id}")
+                    if result.success:
+                        logger.info(f"✅ Monthly renewal: Credited {minutes} minutes to user {user_id[:8]}...")
+                    else:
+                        log_error(f"Failed to credit renewal minutes: {result.error}", user_id=user_id[:8])
+                        alert_critical("Subscription renewal: Failed to credit minutes",
+                                     invoice_id=invoice["id"][:20], error=result.error)
                     
             except Exception as e:
-                print(f"❌ Failed to process renewal: {e}")
+                log_error(f"Failed to process renewal", error=e, invoice_id=invoice.get("id", "?")[:20])
+                alert_critical("Subscription renewal processing failed", error=str(e)[:200])
     
     # Handle subscription cancellation
     elif event["type"] == "customer.subscription.deleted":

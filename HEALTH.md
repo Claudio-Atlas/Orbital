@@ -25,7 +25,7 @@
 
 | Persona | Score | Status | Blocking Issues |
 |---------|-------|--------|-----------------|
-| Security Engineer | 6/10 | ⚠️ Flag | ✅ Rate limiting added, still needs input sanitization |
+| Security Engineer | 7/10 | ⚠️ Flag | ✅ Rate limiting + input sanitization done |
 | Payment Specialist | 3/10 | ❌ VETO | No webhook, no audit trail |
 | API Architect | 6/10 | ⚠️ Flag | No versioning |
 | Performance Engineer | 6/10 | ⚠️ Flag | Render time > target |
@@ -57,7 +57,7 @@
 | 6 | Make minutes deduction transactional | 🔄 TODO | — | 2 hrs |
 | 7 | Add minute_transactions audit table | 🔄 TODO | — | 1 hr |
 | 8 | Add idempotency to webhook | ⏸️ HOLD | After #1 | 1 hr |
-| 9 | Input sanitization for AI | 🔄 TODO | — | 2 hrs |
+| 9 | Input sanitization for AI | ✅ DONE | — | — |
 | 10 | Basic monitoring/alerting | 🔄 TODO | — | 3-4 hrs |
 
 ### P2 — Fix Before Scale

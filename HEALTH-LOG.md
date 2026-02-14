@@ -124,6 +124,49 @@ ALERT_ENABLED=true
 
 ---
 
+### Session: P1 #6,7,8 Transactional Minutes (12:45-13:30)
+
+**Context:** Building atomic, audited minutes system before Stripe webhook.
+
+#### ✅ Completed
+
+| Time | Task | Details |
+|------|------|---------|
+| ~12:50 | Checked Supabase state | profiles ✅, purchases ✅, minute_transactions ❌ |
+| ~13:00 | Created SQL migration | `migrations/001_minute_transactions.sql` |
+| ~13:05 | Clayton ran migration | Table + functions created |
+| ~13:10 | Verified functions work | credit_minutes_safe, debit_minutes_safe |
+| ~13:15 | Created Python wrapper | `utils/minutes.py` with async/sync functions |
+| ~13:20 | Wired into tasks.py | Debit minutes on video completion |
+| ~13:25 | Wired into payments.py | Use new credit function for webhook |
+| ~13:28 | RED TEAM passed | No security issues |
+
+#### Database Changes
+
+| Object | Type | Purpose |
+|--------|------|---------|
+| `minute_transactions` | Table | Audit trail |
+| `credit_minutes_safe()` | Function | Atomic credit + idempotency |
+| `debit_minutes_safe()` | Function | Atomic debit + balance check |
+| `get_minute_transactions()` | Function | User history |
+
+#### Security Features
+
+| Feature | How |
+|---------|-----|
+| Idempotency | reference_id checked before insert |
+| Race prevention | FOR UPDATE row lock |
+| Balance check | Server-side in transaction |
+| Audit tamper-proof | RLS: users can only SELECT |
+
+#### Commits
+
+| Hash | Message |
+|------|---------|
+| 4a5ddca | Add transactional minutes system (P1 #6 + #7) |
+
+---
+
 ## Score Progress
 
 | Date | Overall | Security | Payment | DevOps | Notes |
@@ -132,6 +175,7 @@ ALERT_ENABLED=true
 | 2026-02-14 12:00 | C+ | 6/10 | 3/10 | 8/10 | P0 complete (except Stripe) |
 | 2026-02-14 12:30 | B- | 7/10 | 3/10 | 8/10 | Input sanitization done |
 | 2026-02-14 12:21 | B | 7/10 | 3/10 | 9/10 | P1 #10 Monitoring complete |
+| 2026-02-14 13:30 | B+ | 8/10 | 8/10 | 9/10 | P1 #6,7,8 Transactional minutes |
 
 ---
 

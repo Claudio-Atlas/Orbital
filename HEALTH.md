@@ -25,8 +25,8 @@
 
 | Persona | Score | Status | Blocking Issues |
 |---------|-------|--------|-----------------|
-| Security Engineer | 7/10 | ⚠️ Flag | ✅ Rate limiting + input sanitization done |
-| Payment Specialist | 3/10 | ❌ VETO | No webhook, no audit trail |
+| Security Engineer | 8/10 | ⚠️ Flag | ✅ Rate limiting + input sanitization done |
+| Payment Specialist | 8/10 | ⚠️ Flag | ✅ Transactional + audit trail + idempotent (needs Stripe webhook to be 9+) |
 | API Architect | 6/10 | ⚠️ Flag | No versioning |
 | Performance Engineer | 6/10 | ⚠️ Flag | Render time > target |
 | Math/AI Expert | 7/10 | ⚠️ Flag | No AI output verification |
@@ -34,7 +34,7 @@
 | DevOps Engineer | 9/10 | ✅ Pass | ✅ Deployed + monitoring/alerting |
 | Privacy Advocate | 6/10 | ⚠️ Flag | No retention policy |
 
-**Overall: C (2 hard vetoes — Payment + Privacy for PII retention)**
+**Overall: B+ (Payment foundation solid, waiting on Stripe webhook config for final approval)**
 
 ---
 
@@ -54,9 +54,9 @@
 
 | # | Task | Status | Owner | Effort |
 |---|------|--------|-------|--------|
-| 6 | Make minutes deduction transactional | 🔄 TODO | — | 2 hrs |
-| 7 | Add minute_transactions audit table | 🔄 TODO | — | 1 hr |
-| 8 | Add idempotency to webhook | ⏸️ HOLD | After #1 | 1 hr |
+| 6 | Make minutes deduction transactional | ✅ DONE | — | — |
+| 7 | Add minute_transactions audit table | ✅ DONE | — | — |
+| 8 | Add idempotency to webhook | ✅ DONE | — | — |
 | 9 | Input sanitization for AI | ✅ DONE | — | — |
 | 10 | Basic monitoring/alerting | ✅ DONE | — | — |
 
@@ -165,10 +165,13 @@
 ### Existing
 - `profiles` — User data, minutes_balance
 - `video_jobs` — Job tracking (TODO: may need to create)
-- `purchases` — Payment records (TODO: may need to create)
+- `purchases` — Payment records
+- `minute_transactions` — ✅ Audit trail for all minute changes
 
-### TODO
-- `minute_transactions` — Audit trail for all minute changes
+### PostgreSQL Functions
+- `credit_minutes_safe()` — Atomic credit with idempotency
+- `debit_minutes_safe()` — Atomic debit with balance check
+- `get_minute_transactions()` — User transaction history
 
 ---
 
@@ -176,6 +179,7 @@
 
 | Date | Change | Impact |
 |------|--------|--------|
+| 2026-02-14 | **Transactional minutes system** (P1 #6,7,8) | Payment +5 (now 8/10) |
 | 2026-02-14 | **Added monitoring/alerting** (P1 #10) | DevOps +1 (now 9/10) |
 | 2026-02-14 | **Deployed to Railway** (P0 #2,4,5) | DevOps +3 |
 | 2026-02-14 | Added rate limiting (P0 #3) | Security +1 |

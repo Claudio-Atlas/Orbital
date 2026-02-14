@@ -19,13 +19,17 @@
 | ~10:30 | **P0 #3: Rate Limiting** | Added Redis-backed rate limiting to all endpoints |
 | ~11:00 | **P0 #4: Redis Provisioned** | Railway Redis service created |
 | ~11:05 | **P0 #2: API Deployed** | FastAPI deployed to Railway |
-| ~11:10 | **P0 #5: Worker Deploying** | Celery worker service created (fixing process type) |
+| ~11:10 | **P0 #5: Worker Created** | Celery worker service created |
+| ~11:30 | Cleaned up duplicates | Deleted orbital-api, 3 extra Redis instances |
+| ~11:45 | Fixed railway.json | Removed hardcoded startCommand |
+| ~11:55 | **P0 #5: Worker Running** | Celery worker confirmed running with 2 workers |
+| ~12:00 | **P0 COMPLETE** | All P0 items done except Stripe (waiting bank/EIN) |
 
 #### 🔄 In Progress
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Worker deployment | Redeploying | Setting RAILWAY_PROCESS_TYPE=worker |
+| P1 #9: Input Sanitization | Starting | Protect AI from prompt injection |
 
 #### ⏸️ On Hold (Waiting for Bank/EIN)
 
@@ -40,7 +44,7 @@
 |---------|-----|--------|
 | API | https://orbital-production-7c22.up.railway.app | ✅ Live |
 | Health Check | https://orbital-production-7c22.up.railway.app/health | ✅ Responding |
-| Worker | Railway internal | 🔄 Redeploying |
+| Worker | celery@railway (internal) | ✅ Running (2 workers) |
 | Redis | redis.railway.internal:6379 | ✅ Running |
 
 #### Environment Variables Set
@@ -77,7 +81,7 @@
 | Date | Overall | Security | Payment | DevOps | Notes |
 |------|---------|----------|---------|--------|-------|
 | 2026-02-14 AM | D+ | 5/10 | 3/10 | 4/10 | Initial audit |
-| 2026-02-14 PM | C+ | 6/10 | 3/10 | 7/10 | Rate limiting + deploy |
+| 2026-02-14 12:00 | C+ | 6/10 | 3/10 | 8/10 | P0 complete (except Stripe) |
 
 ---
 

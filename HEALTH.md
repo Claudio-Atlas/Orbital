@@ -1,7 +1,7 @@
 # HEALTH.md — Orbital System Health
 
 *Last audit: 2026-02-14*
-*Status: 🟡 PARTIALLY READY (P0 mostly complete, waiting on bank/EIN)*
+*Status: 🟡 PARTIALLY READY (P0 complete except Stripe, waiting on bank/EIN)*
 
 ---
 
@@ -11,7 +11,7 @@
 |-----------|--------|-------|
 | Frontend | ✅ Live | Vercel: orbital-lime.vercel.app |
 | Backend API | ✅ Live | Railway: orbital-production-7c22.up.railway.app |
-| Workers | 🔄 Deploying | Celery on Railway (fixing process type) |
+| Workers | ✅ Live | Celery on Railway (2 workers, connected to Redis) |
 | Redis | ✅ Running | Railway: redis.railway.internal:6379 |
 | Database | ✅ Live | Supabase |
 | Auth | ✅ Working | Supabase Auth |
@@ -31,7 +31,7 @@
 | Performance Engineer | 6/10 | ⚠️ Flag | Render time > target |
 | Math/AI Expert | 7/10 | ⚠️ Flag | No AI output verification |
 | UX Designer | 7/10 | ⚠️ Flag | Error messages need polish |
-| DevOps Engineer | 7/10 | ⚠️ Flag | ✅ Deployed! Still needs monitoring/alerting |
+| DevOps Engineer | 8/10 | ⚠️ Flag | ✅ Fully deployed! Still needs monitoring/alerting |
 | Privacy Advocate | 6/10 | ⚠️ Flag | No retention policy |
 
 **Overall: D+ (3 hard vetoes)**

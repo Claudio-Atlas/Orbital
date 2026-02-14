@@ -32,6 +32,7 @@ from pydantic import BaseModel
 
 from routes.payments import router as payments_router
 from utils.auth import get_current_user
+from utils.rate_limit import rate_limit
 from parser import parse_problem, parse_problem_from_image
 from jobs import job_store
 
@@ -227,6 +228,7 @@ async def health():
 
 
 @app.post("/solve", response_model=SolveResponse)
+@rate_limit(requests=5, window=60)  # 5 per minute - expensive operation
 async def solve(request: SolveRequest, user = Depends(get_current_user)):
     """
     Submit a math problem to solve.
@@ -295,6 +297,7 @@ async def solve(request: SolveRequest, user = Depends(get_current_user)):
 
 
 @app.get("/job/{job_id}", response_model=JobStatus)
+@rate_limit(requests=60, window=60)  # 60 per minute - polling endpoint
 async def get_job(job_id: str, user = Depends(get_current_user)):
     """
     Check job status.
@@ -363,6 +366,7 @@ async def get_job(job_id: str, user = Depends(get_current_user)):
 
 
 @app.post("/parse", response_model=ParseResponse)
+@rate_limit(requests=20, window=60)  # 20 per minute - AI call but no render
 async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
     """
     Parse a problem WITHOUT generating video.
@@ -399,6 +403,7 @@ async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
 
 
 @app.get("/jobs")
+@rate_limit(requests=30, window=60)  # 30 per minute - database read
 async def list_jobs(user = Depends(get_current_user), limit: int = 20):
     """
     List your recent jobs.

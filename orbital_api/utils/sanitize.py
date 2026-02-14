@@ -188,7 +188,16 @@ def sanitize_problem_input(problem: str) -> Tuple[str, Optional[str]]:
     # Check for prompt injection patterns (using normalized text + space-stripped for bypass protection)
     if check_injection_patterns(problem):
         # Log this for security monitoring
-        print(f"[SECURITY] Blocked prompt injection attempt in: {problem[:100]}...")
+        from utils.logging import log_security_event
+        from utils.alerts import alert_error
+        
+        log_security_event(
+            "prompt_injection_blocked",
+            f"Blocked injection attempt (len={len(problem)})",
+            # Note: We do NOT log the actual problem content for security
+        )
+        alert_error("Prompt injection attempt blocked", input_length=len(problem))
+        
         raise HTTPException(
             400,
             "Your input contains patterns that aren't allowed. Please enter a valid math problem."

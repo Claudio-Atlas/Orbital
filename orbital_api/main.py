@@ -33,6 +33,9 @@ from pydantic import BaseModel
 from routes.payments import router as payments_router
 from utils.auth import get_current_user
 from utils.rate_limit import rate_limit
+from utils.logging import logger, log_job_event, log_error
+from utils.alerts import alert_error_async, AlertHandler
+from middleware.request_log import RequestLoggingMiddleware
 from parser import parse_problem, parse_problem_from_image
 from jobs import job_store
 
@@ -103,11 +106,14 @@ async def lifespan(app: FastAPI):
     OUTPUT_PATH.mkdir(exist_ok=True)
     SCRIPTS_PATH.mkdir(exist_ok=True)
     mode = "Celery workers" if CELERY_ENABLED else "BackgroundTasks (local)"
-    print(f"🚀 Orbital API started")
-    print(f"   Mode: {mode}")
-    print(f"   Output: {OUTPUT_PATH}")
+    logger.info("🚀 Orbital API started", extra={
+        "event": "startup",
+        "mode": mode,
+        "celery_enabled": CELERY_ENABLED,
+        "output_path": str(OUTPUT_PATH)
+    })
     yield
-    print("👋 Orbital API shutting down")
+    logger.info("👋 Orbital API shutting down", extra={"event": "shutdown"})
 
 
 app = FastAPI(
@@ -133,6 +139,9 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+# Request logging middleware (after CORS so it sees all requests)
+app.add_middleware(RequestLoggingMiddleware)
 
 # Serve generated videos
 app.mount("/videos", StaticFiles(directory=str(OUTPUT_PATH)), name="videos")
@@ -215,16 +224,88 @@ def run_pipeline_sync(job_id: str, script_data: dict, voice: str):
 # ============================================
 
 @app.get("/health")
-async def health():
-    """Health check endpoint."""
+async def health(detailed: bool = False):
+    """
+    Health check endpoint.
+    
+    Query params:
+        detailed=true — Include component health checks (slower)
+    """
     store = job_store()
-    return {
+    
+    # Basic health info (always fast)
+    health_data = {
         "status": "healthy",
         "service": "orbital-solver",
         "version": "2.0.0",
         "celery_enabled": CELERY_ENABLED,
         "job_store": type(store).__name__,
+        "timestamp": datetime.now().isoformat()
     }
+    
+    if not detailed:
+        return health_data
+    
+    # Detailed component checks
+    components = {}
+    overall_healthy = True
+    
+    # Check Redis
+    try:
+        from utils.rate_limit import get_redis
+        redis = get_redis()
+        redis.get("health_check")  # Simple read test
+        components["redis"] = {"status": "healthy", "type": type(redis).__name__}
+    except Exception as e:
+        components["redis"] = {"status": "unhealthy", "error": str(e)[:100]}
+        overall_healthy = False
+    
+    # Check Supabase
+    try:
+        import httpx
+        supabase_url = os.getenv("SUPABASE_URL")
+        if supabase_url:
+            # Just check if URL is reachable
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(f"{supabase_url}/rest/v1/", headers={
+                    "apikey": os.getenv("SUPABASE_ANON_KEY", ""),
+                })
+                components["supabase"] = {
+                    "status": "healthy" if resp.status_code < 500 else "degraded",
+                    "response_code": resp.status_code
+                }
+        else:
+            components["supabase"] = {"status": "unconfigured"}
+    except Exception as e:
+        components["supabase"] = {"status": "unhealthy", "error": str(e)[:100]}
+        overall_healthy = False
+    
+    # Check Celery (if enabled)
+    if CELERY_ENABLED:
+        try:
+            from celery_app import celery_app
+            inspector = celery_app.control.inspect(timeout=2.0)
+            active = inspector.active()
+            if active:
+                worker_count = sum(len(tasks) for tasks in active.values())
+                components["celery"] = {
+                    "status": "healthy",
+                    "workers": len(active),
+                    "active_tasks": worker_count
+                }
+            else:
+                components["celery"] = {"status": "no_workers"}
+                # Not necessarily unhealthy - workers might be idle
+        except Exception as e:
+            components["celery"] = {"status": "unhealthy", "error": str(e)[:100]}
+            overall_healthy = False
+    else:
+        components["celery"] = {"status": "disabled"}
+    
+    health_data["components"] = components
+    health_data["status"] = "healthy" if overall_healthy else "degraded"
+    
+    return health_data
 
 
 @app.post("/solve", response_model=SolveResponse)
@@ -272,11 +353,15 @@ async def solve(request: SolveRequest, user = Depends(get_current_user)):
             steps=steps
         )
         
+        # Log job creation
+        log_job_event(job_id, "created", user_id, step_count=len(steps))
+        
         # Queue the task
         if CELERY_ENABLED:
             # Send to Celery worker (async, non-blocking)
             task = generate_video.delay(job_id, script_data, request.voice, user_id)
             store.update(job_id, celery_task_id=task.id)
+            log_job_event(job_id, "queued", user_id, celery_task_id=task.id)
         else:
             # Local dev: run in background thread
             import threading
@@ -285,6 +370,7 @@ async def solve(request: SolveRequest, user = Depends(get_current_user)):
                 args=(job_id, script_data, request.voice)
             )
             thread.start()
+            log_job_event(job_id, "queued_local", user_id)
         
         return SolveResponse(
             job_id=job_id,
@@ -293,6 +379,8 @@ async def solve(request: SolveRequest, user = Depends(get_current_user)):
         )
         
     except Exception as e:
+        log_error(f"Failed to parse/queue problem", error=e, job_id=job_id if 'job_id' in dir() else None)
+        await alert_error_async("Solve endpoint failed", error=str(e)[:200])
         raise HTTPException(500, f"Failed to parse problem: {str(e)}")
 
 

@@ -161,8 +161,16 @@ def rate_limit(
                 raise
             except Exception as e:
                 # Redis error - fail open (allow request but log warning)
-                # TODO: Add proper logging/alerting here
-                print(f"[RateLimit] WARNING: Redis error, failing open: {e}")
+                from utils.logging import logger, log_security_event
+                from utils.alerts import alert_error
+                
+                log_security_event(
+                    "rate_limit_redis_error",
+                    f"Redis error, failing open: {e}",
+                    user_id=user_id
+                )
+                alert_error("Rate limit Redis error - failing open", error=str(e)[:200])
+                
                 # In production, you might want to fail closed instead:
                 # raise HTTPException(503, "Service temporarily unavailable")
                 return await func(*args, **kwargs)

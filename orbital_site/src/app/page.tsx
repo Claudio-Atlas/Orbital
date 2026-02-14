@@ -6,6 +6,75 @@ import { OrbitalLogo } from "@/components/OrbitalLogo";
 
 type Theme = "dark" | "light";
 
+// Login Required Modal
+function LoginModal({ isOpen, onClose, isDark }: { isOpen: boolean; onClose: () => void; isDark: boolean }) {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className={`relative w-full max-w-md rounded-3xl p-8 ${
+        isDark 
+          ? "bg-zinc-900 border border-white/10" 
+          : "bg-white border border-gray-200 shadow-2xl"
+      }`}>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className={`absolute top-4 right-4 p-2 rounded-full transition-colors ${
+            isDark ? "hover:bg-white/10 text-gray-400" : "hover:bg-gray-100 text-gray-500"
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Content */}
+        <div className="text-center">
+          <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center ${
+            isDark 
+              ? "bg-violet-500/10 border border-violet-500/20" 
+              : "bg-violet-100 border border-violet-200"
+          }`}>
+            <OrbitalLogo className="w-8 h-8 text-violet-500" />
+          </div>
+          
+          <h2 className="text-2xl font-bold mb-2">Sign in to purchase</h2>
+          <p className={`mb-8 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+            Create an account or log in to buy minutes and start generating videos.
+          </p>
+          
+          <div className="flex flex-col gap-3">
+            <a
+              href="/signup"
+              className="w-full py-3.5 rounded-xl font-semibold bg-violet-600 text-white hover:bg-violet-500 transition-colors"
+            >
+              Sign up
+            </a>
+            <a
+              href="/login"
+              className={`w-full py-3.5 rounded-xl font-semibold transition-colors ${
+                isDark 
+                  ? "bg-white/5 hover:bg-white/10 border border-white/10" 
+                  : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
+              }`}
+            >
+              Log in
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Clean SVG Icons
 const Icons = {
   edit: (
@@ -43,6 +112,7 @@ const Icons = {
 
 export default function HomePage() {
   const [theme, setTheme] = useState<Theme>("dark");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -318,7 +388,9 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <button className={`w-full py-4 rounded-xl font-semibold transition-all ${
+                <button 
+                  onClick={() => setShowLoginModal(true)}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all ${
                   key === "standard"
                     ? isDark
                       ? "bg-black text-white hover:bg-gray-900"
@@ -346,6 +418,13 @@ export default function HomePage() {
           <p className={isDark ? "text-gray-600" : "text-gray-500"}>{SITE.footer}</p>
         </div>
       </footer>
+
+      {/* Login Required Modal */}
+      <LoginModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
+        isDark={isDark} 
+      />
     </div>
   );
 }

@@ -9,6 +9,9 @@ import os
 import json
 from openai import OpenAI
 
+# Import sanitization (protects against prompt injection)
+from utils.sanitize import sanitize_problem_input, sanitize_image_input
+
 # === PROVIDER CONFIG ===
 # Set ORBITAL_PROVIDER to "deepseek" or "openai" (default: deepseek)
 PROVIDER = os.environ.get("ORBITAL_PROVIDER", "deepseek").lower()
@@ -118,13 +121,18 @@ def parse_problem(problem_text: str) -> dict:
     Returns:
         dict with 'meta' and 'steps' keys
     """
+    # Sanitize input before sending to AI
+    sanitized_problem, warning = sanitize_problem_input(problem_text)
+    if warning:
+        print(f"[Sanitizer] Warning: {warning}")
+    
     llm_client, model = get_client()
     
     response = llm_client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Create a step-by-step video script for this problem:\n\n{problem_text}"}
+            {"role": "user", "content": f"Create a step-by-step video script for this problem:\n\n{sanitized_problem}"}
         ],
         temperature=0.3,  # Lower = more consistent
     )
@@ -176,6 +184,9 @@ def parse_problem_from_image(image_base64: str) -> tuple[dict, str]:
         tuple of (dict with 'meta' and 'steps' keys, extracted problem text)
     """
     
+    # Sanitize image input first
+    sanitized_image = sanitize_image_input(image_base64)
+    
     # First, extract the problem from the image (always use OpenAI for vision)
     vision_client = get_openai_client()
     extract_response = vision_client.chat.completions.create(
@@ -191,7 +202,7 @@ def parse_problem_from_image(image_base64: str) -> tuple[dict, str]:
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{image_base64}"
+                            "url": f"data:image/jpeg;base64,{sanitized_image}"
                         }
                     }
                 ]

@@ -117,7 +117,7 @@ export default function ClientComponent() {
       setSuccess(true);
       
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +131,7 @@ export default function ClientComponent() {
       // Use server action to initiate OAuth (stores PKCE verifier in cookies)
       await signInWithGoogle();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Google sign up failed");
+      setError(err instanceof Error ? err.message : "Google sign up failed. Please try again.");
       setIsGoogleLoading(false);
     }
   };

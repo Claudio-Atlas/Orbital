@@ -64,6 +64,7 @@ export default function SettingsClient() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const router = useRouter();
   const { user, profile, loading: authLoading, refreshProfile, signOut } = useAuth();
@@ -125,7 +126,7 @@ export default function SettingsClient() {
       const { error: deleteError } = await supabase.from("profiles").delete().eq("id", user?.id);
       if (deleteError) {
         console.error("Error deleting profile:", deleteError);
-        alert("Failed to delete account. Please contact support.");
+        setDeleteError("We couldn't delete your account right now. Please try again or contact hello@orbitalsolver.io");
         setIsDeleting(false);
         return;
       }
@@ -133,7 +134,7 @@ export default function SettingsClient() {
       router.push("/?deleted=true");
     } catch (err) {
       console.error("Error deleting account:", err);
-      alert("Failed to delete account. Please contact support.");
+      setDeleteError("Something went wrong. Please try again or contact hello@orbitalsolver.io");
       setIsDeleting(false);
     }
   };
@@ -268,7 +269,10 @@ export default function SettingsClient() {
             <h3 className="text-xl font-bold text-red-500 mb-2">Delete Account</h3>
             <p className={`text-sm mb-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}>This action is <strong>permanent</strong>. All your data will be deleted.</p>
             <p className={`text-sm mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>Type <strong>DELETE</strong> to confirm:</p>
-            <input type="text" value={deleteConfirmText} onChange={(e) => setDeleteConfirmText(e.target.value)} placeholder="DELETE" disabled={isDeleting} className={`w-full px-4 py-2 rounded-lg mb-4 ${isDark ? "bg-black/50 border border-white/10 text-white placeholder-gray-600" : "bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400"} focus:outline-none focus:ring-2 focus:ring-red-500/50`} />
+            <input type="text" value={deleteConfirmText} onChange={(e) => { setDeleteConfirmText(e.target.value); setDeleteError(null); }} placeholder="DELETE" disabled={isDeleting} className={`w-full px-4 py-2 rounded-lg mb-4 ${isDark ? "bg-black/50 border border-white/10 text-white placeholder-gray-600" : "bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400"} focus:outline-none focus:ring-2 focus:ring-red-500/50`} />
+            {deleteError && (
+              <p className="text-sm text-red-400 mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">{deleteError}</p>
+            )}
             <div className="flex gap-3">
               <button onClick={() => { setShowDeleteModal(false); setDeleteConfirmText(""); }} disabled={isDeleting} className={`flex-1 py-2 rounded-lg font-medium transition-colors ${isDark ? "bg-white/10 hover:bg-white/20" : "bg-gray-100 hover:bg-gray-200"}`}>Cancel</button>
               <button onClick={handleDeleteAccount} disabled={deleteConfirmText !== "DELETE" || isDeleting} className="flex-1 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">{isDeleting ? "Deleting..." : "Delete Forever"}</button>

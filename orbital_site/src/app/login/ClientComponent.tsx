@@ -94,7 +94,7 @@ export default function ClientComponent() {
       router.push("/dashboard");
       
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Login failed. Please check your credentials and try again.");
       setIsLoading(false);
     }
   };
@@ -107,7 +107,7 @@ export default function ClientComponent() {
       // Use server action to initiate OAuth (stores PKCE verifier in cookies)
       await signInWithGoogle();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Google sign in failed");
+      setError(err instanceof Error ? err.message : "Google sign in failed. Please try again.");
       setIsGoogleLoading(false);
     }
   };

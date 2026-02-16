@@ -69,7 +69,7 @@ export default function ClientComponent() {
 
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setIsLoading(false);
     }
   };

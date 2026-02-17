@@ -6,10 +6,9 @@ import { useRouter } from "next/navigation";
 import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme-context";
 import { getSupabase } from "@/lib/supabase";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
-
-type Theme = "dark" | "light";
 
 // Mock videos for now — will be replaced with Supabase queries
 const MOCK_VIDEOS = [
@@ -84,16 +83,11 @@ const Icons = {
 };
 
 export default function ClientComponent() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const { isDark, toggleTheme, accent } = useTheme();
   const [videos, setVideos] = useState(MOCK_VIDEOS);
   
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-
-  useEffect(() => {
-    const saved = localStorage.getItem("orbital-theme") as Theme;
-    if (saved) setTheme(saved);
-  }, []);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -101,14 +95,6 @@ export default function ClientComponent() {
       router.push("/login");
     }
   }, [user, authLoading, router]);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("orbital-theme", newTheme);
-  };
-
-  const isDark = theme === "dark";
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -133,16 +119,17 @@ export default function ClientComponent() {
 
   if (authLoading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? "bg-black" : "bg-white"}`}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500" />
+      <div className="min-h-screen flex items-center justify-center bg-themed">
+        <div 
+          className="animate-spin rounded-full h-8 w-8 border-b-2"
+          style={{ borderColor: accent.main }}
+        />
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900"
-    }`}>
+    <div className="min-h-screen transition-colors duration-300 bg-themed text-themed-primary">
       {/* Header */}
       <header className={`sticky top-0 z-40 backdrop-blur-xl border-b ${
         isDark ? "bg-black/80 border-white/10" : "bg-white/80 border-gray-200"
@@ -178,7 +165,7 @@ export default function ClientComponent() {
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2">All Videos</h1>
-          <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <p className="text-themed-secondary">
             {videos.length} video{videos.length !== 1 ? "s" : ""} • Videos auto-delete after 3 days
           </p>
         </div>
@@ -188,18 +175,27 @@ export default function ClientComponent() {
           {videos.map((video) => (
             <div
               key={video.id}
-              className={`rounded-2xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer group ${
+              className={`rounded-2xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer group card-glow ${
                 isDark ? "bg-white/5 hover:bg-white/10" : "bg-white hover:shadow-lg"
               }`}
             >
               {/* Thumbnail */}
-              <div className={`aspect-video relative ${
-                isDark ? "bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20" : "bg-gradient-to-br from-violet-100 to-fuchsia-100"
-              }`}>
+              <div 
+                className="aspect-video relative"
+                style={{
+                  background: isDark 
+                    ? `linear-gradient(135deg, ${accent.main}20 0%, ${accent.light}10 100%)`
+                    : `linear-gradient(135deg, ${accent.main}15 0%, ${accent.light}10 100%)`
+                }}
+              >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 ${
-                    isDark ? "bg-white/20" : "bg-black/10"
-                  }`}>
+                  <div 
+                    className="w-14 h-14 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 text-white"
+                    style={{
+                      background: `${accent.main}cc`,
+                      boxShadow: `0 4px 20px ${accent.main}40`
+                    }}
+                  >
                     {Icons.play}
                   </div>
                 </div>
@@ -215,9 +211,7 @@ export default function ClientComponent() {
 
               {/* Info */}
               <div className="p-4">
-                <div className={`text-sm mb-2 line-clamp-2 min-h-[2.5rem] ${
-                  isDark ? "text-gray-200" : "text-gray-800"
-                }`}>
+                <div className="text-sm mb-2 line-clamp-2 min-h-[2.5rem]">
                   {video.problemType === "latex" ? (
                     <InlineMath math={video.problem} />
                   ) : (
@@ -225,9 +219,7 @@ export default function ClientComponent() {
                   )}
                 </div>
                 
-                <div className={`flex items-center justify-between text-xs ${
-                  isDark ? "text-gray-500" : "text-gray-400"
-                }`}>
+                <div className="flex items-center justify-between text-xs text-themed-muted">
                   <span>{formatDate(video.createdAt)}</span>
                   <span>{video.minutesUsed} min</span>
                 </div>
@@ -237,12 +229,13 @@ export default function ClientComponent() {
         </div>
 
         {videos.length === 0 && (
-          <div className={`text-center py-16 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+          <div className="text-center py-16 text-themed-secondary">
             <p className="text-lg mb-2">No videos yet</p>
             <p className="text-sm">Solve a problem to create your first video!</p>
             <Link
               href="/dashboard"
-              className="inline-block mt-4 px-6 py-2 bg-violet-600 text-white rounded-xl hover:bg-violet-500 transition-colors"
+              className="inline-block mt-4 px-6 py-2 text-white rounded-xl transition-colors btn-glow"
+              style={{ background: accent.main }}
             >
               Go to Solver
             </Link>

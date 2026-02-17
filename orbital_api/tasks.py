@@ -24,6 +24,7 @@ from celery_app import celery_app
 
 from utils.logging import logger, log_job_event, log_error
 from utils.minutes import debit_minutes_sync
+from utils.emotion import count_total_narration_chars
 
 # Paths
 API_DIR = Path(__file__).parent
@@ -123,11 +124,13 @@ def generate_video(self, job_id: str, script_data: dict, voice: str, user_id: st
         # For now, serve locally
         video_url = f"/videos/{job_id}.mp4"
         
-        # Calculate minutes used (based on narration length)
+        # Calculate minutes used (based on SPOKEN narration length)
         # ~1000 characters ≈ 1 minute of video
+        # NOTE: We strip emotion markers like (excited) before counting
+        # because those are TTS control signals, not spoken text
         steps = script_data.get("steps", [])
-        total_chars = sum(len(step.get("narration", "")) for step in steps)
-        minutes_used = max(0.1, round(total_chars / 1000, 2))
+        spoken_chars, total_chars = count_total_narration_chars(steps)
+        minutes_used = max(0.1, round(spoken_chars / 1000, 2))
         
         # Debit minutes from user's balance
         log_job_event(job_id, "deducting_minutes", user_id, minutes=minutes_used)

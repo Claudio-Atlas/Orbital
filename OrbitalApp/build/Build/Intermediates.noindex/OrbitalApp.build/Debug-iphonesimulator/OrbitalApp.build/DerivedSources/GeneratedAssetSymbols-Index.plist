@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>colors</key>
+	<array/>
+	<key>images</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameGoogleLogo</string>
+			<key>relativePath</key>
+			<string>./GoogleLogo.imageset</string>
+			<key>swiftSymbol</key>
+			<string>googleLogo</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameOrbitalLogo</string>
+			<key>relativePath</key>
+			<string>./OrbitalLogo.imageset</string>
+			<key>swiftSymbol</key>
+			<string>orbitalLogo</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameOrbitalLogoDark</string>
+			<key>relativePath</key>
+			<string>./OrbitalLogoDark.imageset</string>
+			<key>swiftSymbol</key>
+			<string>orbitalLogoDark</string>
+		</dict>
+	</array>
+	<key>symbols</key>
+	<array/>
+</dict>
+</plist>

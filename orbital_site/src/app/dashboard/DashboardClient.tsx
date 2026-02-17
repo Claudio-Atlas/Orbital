@@ -7,10 +7,10 @@ import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
+import { useTheme } from "@/lib/theme-context";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
 import { PricingModal } from "@/components/PricingModal";
 
-type Theme = "dark" | "light";
 type JobStatus = "idle" | "parsing" | "verifying" | "generating" | "complete" | "error";
 
 const VOICES = [
@@ -125,7 +125,7 @@ function truncateText(text: string, maxLength: number = 50) {
 }
 
 export default function DashboardClient() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const { theme, toggleTheme, isDark, accent } = useTheme();
   const [problem, setProblem] = useState("");
   const [status, setStatus] = useState<JobStatus>("idle");
   const [estimatedMinutes, setEstimatedMinutes] = useState<number | null>(null);
@@ -151,9 +151,6 @@ export default function DashboardClient() {
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("orbital-theme") as Theme | null;
-    if (stored) setTheme(stored);
-
     const storedVoice = localStorage.getItem("orbital-default-voice");
     if (storedVoice) setSelectedVoice(storedVoice);
   }, []);
@@ -220,12 +217,6 @@ export default function DashboardClient() {
     window.location.href = '/';
   };
 
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("orbital-theme", next);
-  };
-
   const handleSolve = () => {
     if (!problem.trim()) return;
     setStatus("parsing");
@@ -233,26 +224,30 @@ export default function DashboardClient() {
     setTimeout(() => setStatus("idle"), 2000);
   };
 
-  const isDark = theme === "dark";
-
   if (authLoading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-black">
-        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen w-full flex items-center justify-center bg-themed">
+        <div 
+          className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+          style={{ borderColor: accent.main, borderTopColor: 'transparent' }}
+        />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-black">
-        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen w-full flex items-center justify-center bg-themed">
+        <div 
+          className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+          style={{ borderColor: accent.main, borderTopColor: 'transparent' }}
+        />
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen w-full transition-colors duration-300 ${isDark ? "bg-black text-white" : "bg-gray-50 text-gray-900"}`}>
+    <div className="min-h-screen w-full transition-colors duration-300 bg-themed text-themed-primary">
       {/* Header */}
       <header className={`sticky top-0 z-50 border-b backdrop-blur-xl ${isDark ? "bg-black/80 border-white/10" : "bg-white/80 border-gray-200"}`}>
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -262,20 +257,27 @@ export default function DashboardClient() {
           </Link>
 
           <div className="flex items-center gap-3">
+            {/* Minutes Balance */}
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${isDark ? "bg-white/10" : "bg-gray-100"}`}>
-              <div className="w-2 h-2 rounded-full bg-violet-500" />
+              <div 
+                className="w-2 h-2 rounded-full glow-accent"
+                style={{ background: accent.main }}
+              />
               <span className="font-semibold">{profile?.minutes_balance ?? 0}</span>
-              <span className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>min</span>
+              <span className="text-sm text-themed-secondary">min</span>
             </div>
 
+            {/* Buy More Button */}
             <button
               onClick={() => setShowPricingModal(true)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium text-white transition-all btn-glow"
+              style={{ background: accent.main }}
             >
               {Icons.plus}
               <span className="hidden sm:inline">Buy More</span>
             </button>
 
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-lg transition-colors ${isDark ? "hover:bg-white/10 text-gray-400 hover:text-white" : "hover:bg-gray-100 text-gray-500 hover:text-gray-900"}`}
@@ -283,6 +285,7 @@ export default function DashboardClient() {
               {isDark ? Icons.sun : Icons.moon}
             </button>
 
+            {/* User Menu */}
             <div className="relative">
               <button
                 onClick={(e) => { e.stopPropagation(); setShowUserMenu(!showUserMenu); }}
@@ -298,7 +301,7 @@ export default function DashboardClient() {
                 >
                   <div className={`px-4 py-3 border-b ${isDark ? "border-white/10" : "border-gray-100"}`}>
                     <p className="font-medium truncate">{user?.email}</p>
-                    <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                    <p className="text-sm text-themed-secondary">
                       {profile?.minutes_balance ?? 0} minutes remaining
                     </p>
                   </div>
@@ -343,12 +346,18 @@ export default function DashboardClient() {
         <div className="mb-10">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold mb-2">What would you like to solve?</h1>
-            <p className={isDark ? "text-gray-400" : "text-gray-500"}>
+            <p className="text-themed-secondary">
               Type any math problem and get a step-by-step video
             </p>
           </div>
 
-          <div className={`relative rounded-2xl ${isDark ? "bg-white/5 border border-white/10 focus-within:border-violet-500/50" : "bg-white border border-gray-200 focus-within:border-violet-500/50"} transition-all duration-300 focus-within:shadow-[0_0_30px_rgba(139,92,246,0.15)]`}>
+          {/* Input Card with Glow */}
+          <div 
+            className={`relative rounded-2xl transition-all duration-300 input-glow ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}
+            style={{ 
+              borderColor: problem.trim() ? `rgba(${accent.rgb}, 0.3)` : undefined 
+            }}
+          >
             <textarea
               value={problem}
               onChange={(e) => setProblem(e.target.value)}
@@ -359,6 +368,7 @@ export default function DashboardClient() {
             
             <div className={`flex items-center justify-between px-5 py-3 border-t ${isDark ? "border-white/10 bg-white/[0.02]" : "border-gray-100 bg-gray-50"}`}>
               <div className="flex items-center gap-4">
+                {/* Voice Selector */}
                 <div className="relative">
                   <button
                     onClick={(e) => { e.stopPropagation(); setShowVoiceSelector(!showVoiceSelector); }}
@@ -374,28 +384,34 @@ export default function DashboardClient() {
                       onClick={(e) => e.stopPropagation()}
                       className={`absolute bottom-full left-0 mb-2 w-56 rounded-xl shadow-xl border overflow-hidden z-50 ${isDark ? "bg-zinc-900 border-white/10" : "bg-white border-gray-200"}`}
                     >
-                      <div className={`px-3 py-2 text-xs font-medium ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                      <div className="px-3 py-2 text-xs font-medium text-themed-muted">
                         Choose a voice
                       </div>
                       {VOICES.map((voice) => (
                         <button
                           key={voice.id}
                           onClick={() => { setSelectedVoice(voice.id); setShowVoiceSelector(false); }}
-                          className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${selectedVoice === voice.id ? (isDark ? "bg-violet-600/20 text-white" : "bg-violet-50 text-violet-700") : (isDark ? "hover:bg-white/5 text-gray-300" : "hover:bg-gray-50 text-gray-700")}`}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
+                            selectedVoice === voice.id 
+                              ? `text-white` 
+                              : isDark ? "hover:bg-white/5 text-gray-300" : "hover:bg-gray-50 text-gray-700"
+                          }`}
+                          style={selectedVoice === voice.id ? { background: `${accent.main}30` } : undefined}
                         >
                           <span className="text-xl">{voice.avatar}</span>
                           <div className="flex-1">
                             <p className="font-medium text-sm">{voice.name}</p>
-                            <p className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>{voice.desc}</p>
+                            <p className="text-xs text-themed-muted">{voice.desc}</p>
                           </div>
-                          {selectedVoice === voice.id && <span className="text-violet-500">{Icons.check}</span>}
+                          {selectedVoice === voice.id && <span style={{ color: accent.main }}>{Icons.check}</span>}
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
 
-                <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                {/* Estimated time */}
+                <div className="text-sm text-themed-muted">
                   {estimatedMinutes && (
                     <span className="flex items-center gap-1">
                       {Icons.clock}
@@ -405,10 +421,19 @@ export default function DashboardClient() {
                 </div>
               </div>
 
+              {/* Solve Button */}
               <button
                 onClick={handleSolve}
                 disabled={!problem.trim() || status !== "idle"}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all ${problem.trim() && status === "idle" ? "bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40" : (isDark ? "bg-white/10 text-gray-500 cursor-not-allowed" : "bg-gray-200 text-gray-400 cursor-not-allowed")}`}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all ${
+                  problem.trim() && status === "idle" 
+                    ? "text-white btn-glow" 
+                    : isDark ? "bg-white/10 text-gray-500 cursor-not-allowed" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+                style={problem.trim() && status === "idle" ? { 
+                  background: accent.main,
+                  boxShadow: `0 4px 20px rgba(${accent.rgb}, 0.35)`
+                } : undefined}
               >
                 {status === "parsing" ? (
                   <>
@@ -430,19 +455,19 @@ export default function DashboardClient() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Recent Videos</h2>
-            <Link href="/videos" className={`flex items-center gap-1 text-sm font-medium transition-colors ${isDark ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
+            <Link href="/videos" className="flex items-center gap-1 text-sm font-medium transition-colors text-themed-secondary hover:text-themed-primary">
               See All
               {Icons.chevronRight}
             </Link>
           </div>
 
           {videos.length === 0 ? (
-            <div className={`rounded-xl p-8 text-center ${isDark ? "bg-white/5 border border-white/10" : "bg-gray-50 border border-gray-200"}`}>
+            <div className={`rounded-xl p-8 text-center card-glow ${isDark ? "bg-white/5 border border-white/10" : "bg-gray-50 border border-gray-200"}`}>
               <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${isDark ? "bg-white/10" : "bg-gray-200"}`}>
                 {Icons.play}
               </div>
               <h3 className="font-medium mb-2">No videos yet</h3>
-              <p className={`text-sm mb-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+              <p className="text-sm text-themed-secondary mb-4">
                 Solve your first problem to create a video
               </p>
             </div>
@@ -451,13 +476,19 @@ export default function DashboardClient() {
               {videos.map((video) => (
                 <div
                   key={video.id}
-                  className={`flex-shrink-0 w-64 rounded-xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer group ${isDark ? "bg-white/5 border border-white/10 hover:border-violet-500/30" : "bg-white border border-gray-200 hover:border-violet-300 hover:shadow-lg"}`}
+                  className={`flex-shrink-0 w-64 rounded-xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer group card-glow ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200 hover:shadow-lg"}`}
                 >
                   <div className={`relative h-36 flex items-center justify-center overflow-hidden ${isDark ? "bg-white/[0.03]" : "bg-gray-50"}`}>
                     {video.thumbnailUrl && (
                       <img src={video.thumbnailUrl} alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover" />
                     )}
-                    <div className={`relative z-10 w-14 h-14 rounded-full flex items-center justify-center transition-all group-hover:scale-110 ${isDark ? "bg-violet-600/80 text-white" : "bg-violet-600 text-white shadow-lg"}`}>
+                    <div 
+                      className="relative z-10 w-14 h-14 rounded-full flex items-center justify-center transition-all group-hover:scale-110 text-white"
+                      style={{ 
+                        background: `${accent.main}cc`,
+                        boxShadow: `0 4px 20px rgba(${accent.rgb}, 0.4)`
+                      }}
+                    >
                       {Icons.play}
                     </div>
                     <div className={`absolute bottom-2 right-2 z-10 px-2 py-0.5 rounded text-xs font-medium ${isDark ? "bg-black/60 text-white" : "bg-black/70 text-white"}`}>
@@ -473,7 +504,7 @@ export default function DashboardClient() {
                       )}
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>{timeAgo(video.createdAt)}</p>
+                      <p className="text-sm text-themed-muted">{timeAgo(video.createdAt)}</p>
                       {(() => {
                         const expiry = timeUntilExpiry(video.expiresAt);
                         return (
@@ -487,29 +518,33 @@ export default function DashboardClient() {
                 </div>
               ))}
 
-              <div className={`flex-shrink-0 w-64 h-[13.5rem] rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer ${isDark ? "bg-white/[0.02] border border-dashed border-white/10 hover:border-white/20" : "bg-gray-50 border border-dashed border-gray-200 hover:border-gray-300"}`}>
+              {/* View All Card */}
+              <Link
+                href="/videos"
+                className={`flex-shrink-0 w-64 h-[13.5rem] rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer ${isDark ? "bg-white/[0.02] border border-dashed border-white/10 hover:border-white/20" : "bg-gray-50 border border-dashed border-gray-200 hover:border-gray-300"}`}
+              >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 ${isDark ? "bg-white/10" : "bg-gray-200"}`}>
                   {Icons.arrowRight}
                 </div>
-                <span className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>View All Videos</span>
-              </div>
+                <span className="text-sm font-medium text-themed-secondary">View All Videos</span>
+              </Link>
             </div>
           )}
         </div>
 
         {/* Quick Stats */}
         <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className={`rounded-xl p-4 text-center ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}>
-            <p className="text-3xl font-bold text-violet-500">{videos.length}</p>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Videos Created</p>
+          <div className={`rounded-xl p-4 text-center card-glow ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}>
+            <p className="text-3xl font-bold" style={{ color: accent.main }}>{videos.length}</p>
+            <p className="text-sm text-themed-secondary">Videos Created</p>
           </div>
-          <div className={`rounded-xl p-4 text-center ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}>
-            <p className="text-3xl font-bold text-violet-500">{videos.reduce((acc, v) => acc + v.minutesUsed, 0).toFixed(1)}</p>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Minutes Used</p>
+          <div className={`rounded-xl p-4 text-center card-glow ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}>
+            <p className="text-3xl font-bold" style={{ color: accent.main }}>{videos.reduce((acc, v) => acc + v.minutesUsed, 0).toFixed(1)}</p>
+            <p className="text-sm text-themed-secondary">Minutes Used</p>
           </div>
-          <div className={`rounded-xl p-4 text-center ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}>
-            <p className="text-3xl font-bold text-violet-500">{profile?.minutes_balance ?? 0}</p>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Minutes Left</p>
+          <div className={`rounded-xl p-4 text-center card-glow ${isDark ? "bg-white/5 border border-white/10" : "bg-white border border-gray-200"}`}>
+            <p className="text-3xl font-bold" style={{ color: accent.main }}>{profile?.minutes_balance ?? 0}</p>
+            <p className="text-sm text-themed-secondary">Minutes Left</p>
           </div>
         </div>
       </main>

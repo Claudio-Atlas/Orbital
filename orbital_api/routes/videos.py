@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import os
 import uuid
 from supabase import create_client, Client
+from utils.emotion import count_total_narration_chars
 
 router = APIRouter(prefix="/videos", tags=["videos"])
 
@@ -129,16 +130,16 @@ async def preview_video(request: PreviewRequest, user = Depends(get_current_user
         
         steps = result.get("steps", [])
         
-        # Calculate total characters from all narrations
-        total_chars = sum(len(step.get("narration", "")) for step in steps)
+        # Calculate SPOKEN characters (excludes emotion markers like "(excited)")
+        spoken_chars, total_chars = count_total_narration_chars(steps)
         
-        # Calculate minutes
-        minutes = calculate_minutes(total_chars)
+        # Calculate minutes based on spoken text only
+        minutes = calculate_minutes(spoken_chars)
         
         return PreviewResponse(
             problem=result.get("problem", request.problem),
             steps=steps,
-            total_characters=total_chars,
+            total_characters=spoken_chars,  # Report spoken chars, not total
             estimated_minutes=minutes,
             cost_display=f"{minutes} minutes"
         )
@@ -162,8 +163,9 @@ async def generate_video(
     # First, get the preview to calculate cost
     result = await parse_problem(request.problem, request.image_base64)
     steps = result.get("steps", [])
-    total_chars = sum(len(step.get("narration", "")) for step in steps)
-    minutes_needed = calculate_minutes(total_chars)
+    # Use spoken chars (excludes emotion markers) for billing
+    spoken_chars, total_chars = count_total_narration_chars(steps)
+    minutes_needed = calculate_minutes(spoken_chars)
     
     # Check and deduct minutes
     try:
@@ -192,7 +194,7 @@ async def generate_video(
             "user_id": user.id,
             "problem_text": result.get("problem", request.problem),
             "minutes_used": minutes_needed,
-            "character_count": total_chars,
+            "character_count": spoken_chars,  # Spoken chars only, excludes emotion markers
             "steps_count": len(steps),
             "status": "generating",
             "expires_at": expires_at.isoformat()

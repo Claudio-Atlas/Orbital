@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { getSupabase } from "@/lib/supabase";
+import { useTheme } from "@/lib/theme-context";
 
 interface PricingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isDark: boolean;
+  isDark?: boolean; // Optional now, we'll use context
 }
 
 type Tier = {
@@ -40,7 +41,11 @@ const TIERS: Record<string, Tier> = {
   },
 };
 
-export function PricingModal({ isOpen, onClose, isDark }: PricingModalProps) {
+export function PricingModal({ isOpen, onClose, isDark: isDarkProp }: PricingModalProps) {
+  const theme = useTheme();
+  const isDark = isDarkProp ?? theme.isDark;
+  const accent = theme.accent;
+  
   const [billingMode, setBillingMode] = useState<"one_time" | "subscription">("one_time");
   const [loading, setLoading] = useState<string | null>(null);
   const [needsRefresh, setNeedsRefresh] = useState(false);
@@ -149,7 +154,7 @@ export function PricingModal({ isOpen, onClose, isDark }: PricingModalProps) {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold mb-2">Buy Minutes</h2>
-          <p className={`${isDark ? "text-gray-400" : "text-gray-500"}`}>
+          <p className="text-themed-secondary">
             Choose a pack to start creating videos
           </p>
         </div>
@@ -220,37 +225,40 @@ export function PricingModal({ isOpen, onClose, isDark }: PricingModalProps) {
                 key={key}
                 className={`relative rounded-2xl p-5 transition-all ${
                   isPopular
-                    ? isDark
-                      ? "bg-violet-600/20 border-2 border-violet-500"
-                      : "bg-violet-50 border-2 border-violet-500"
+                    ? "border-2"
                     : isDark
                     ? "bg-white/5 border border-white/10 hover:border-white/20"
                     : "bg-gray-50 border border-gray-200 hover:border-gray-300"
                 }`}
+                style={isPopular ? {
+                  borderColor: accent.main,
+                  background: `rgba(${accent.rgb}, 0.1)`
+                } : undefined}
               >
                 {/* Badge */}
                 {tier.badge && (
-                  <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold ${
-                    isDark ? "bg-violet-500 text-white" : "bg-violet-500 text-white"
-                  }`}>
+                  <div 
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold text-white"
+                    style={{ background: accent.main }}
+                  >
                     {tier.badge}
                   </div>
                 )}
 
                 <div className="text-center">
                   <h3 className="font-semibold text-lg mb-1">{tier.name}</h3>
-                  <p className={`text-sm mb-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                  <p className="text-sm mb-4 text-themed-secondary">
                     {tier.minutes} minutes
                   </p>
 
                   <div className="mb-4">
                     <span className="text-3xl font-bold">${price.toFixed(2)}</span>
                     {billingMode === "subscription" && (
-                      <span className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>/mo</span>
+                      <span className="text-sm text-themed-secondary">/mo</span>
                     )}
                   </div>
 
-                  <p className={`text-xs mb-4 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                  <p className="text-xs mb-4 text-themed-muted">
                     ${(price / tier.minutes).toFixed(2)}/min
                   </p>
 
@@ -259,11 +267,15 @@ export function PricingModal({ isOpen, onClose, isDark }: PricingModalProps) {
                     disabled={loading !== null}
                     className={`w-full py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 ${
                       isPopular
-                        ? "bg-violet-600 text-white hover:bg-violet-500"
+                        ? "text-white btn-glow"
                         : isDark
                         ? "bg-white text-black hover:bg-gray-100"
                         : "bg-gray-900 text-white hover:bg-gray-800"
                     }`}
+                    style={isPopular ? { 
+                      background: accent.main,
+                      boxShadow: `0 4px 20px rgba(${accent.rgb}, 0.35)`
+                    } : undefined}
                   >
                     {loading === key ? (
                       <span className="flex items-center justify-center gap-2">
@@ -284,7 +296,7 @@ export function PricingModal({ isOpen, onClose, isDark }: PricingModalProps) {
         </div>
 
         {/* Footer note */}
-        <p className={`text-center text-xs mt-6 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+        <p className="text-center text-xs mt-6 text-themed-muted">
           {billingMode === "subscription" 
             ? "Cancel anytime. Minutes refresh monthly."
             : "One-time purchase. Minutes never expire."}

@@ -35,6 +35,7 @@ from utils.auth import get_current_user
 from utils.rate_limit import rate_limit
 from utils.logging import logger, log_job_event, log_error
 from utils.alerts import alert_error_async, AlertHandler
+from utils.emotion import count_total_narration_chars
 from middleware.request_log import RequestLoggingMiddleware
 from parser import parse_problem, parse_problem_from_image
 from jobs import job_store
@@ -475,14 +476,15 @@ async def parse_only(request: ParseRequest, user = Depends(get_current_user)):
             problem_text = request.problem
         
         steps = script_data.get("steps", [])
-        total_chars = sum(len(step.get("narration", "")) for step in steps)
-        estimated_minutes = max(0.1, round(total_chars / 1000, 1))
+        # Count spoken chars (excludes emotion markers like "(excited)")
+        spoken_chars, total_chars = count_total_narration_chars(steps)
+        estimated_minutes = max(0.1, round(spoken_chars / 1000, 1))
         
         return ParseResponse(
             problem=problem_text,
             latex=script_data.get("meta", {}).get("latex"),
             steps=steps,
-            total_characters=total_chars,
+            total_characters=spoken_chars,  # Report spoken chars, not total
             estimated_minutes=estimated_minutes
         )
         

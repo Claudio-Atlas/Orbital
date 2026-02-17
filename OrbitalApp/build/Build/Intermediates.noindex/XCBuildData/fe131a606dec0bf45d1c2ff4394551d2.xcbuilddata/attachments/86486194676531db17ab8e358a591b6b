@@ -1,0 +1,149 @@
+{
+  "" : {
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp-primary.dia",
+    "emit-module-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp-primary-emit-module.dia",
+    "pch" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp-primary.swiftdeps"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Components/AccentColorPicker.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentColorPicker~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Components/OrbitalLogo.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalLogo~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Managers/AuthManager.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AuthManager~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Models/PricingTier.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/PricingTier~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Models/Video.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/Video~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/OrbitalApp.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalApp~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Theme/AccentTheme.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/AccentTheme~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Theme/OrbitalColors.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/OrbitalColors~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Views/ContentView.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Views/LibraryView.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LibraryView~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Views/LoginView.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/LoginView~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Views/ProfileView.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/ProfileView~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/Views/SolverView.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/SolverView~partial.swiftmodule"
+  },
+  "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/claudioatlas/Desktop/Orbital/OrbitalApp/build/Build/Intermediates.noindex/OrbitalApp.build/Debug-iphonesimulator/OrbitalApp.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

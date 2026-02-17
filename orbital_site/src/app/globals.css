@@ -1,14 +1,50 @@
 @import "tailwindcss";
 
+/* ==========================================
+   CSS CUSTOM PROPERTIES
+   Theme + Accent colors controlled by ThemeProvider
+   ========================================== */
+
 :root {
+  /* Accent colors - defaults, overridden by ThemeProvider */
+  --accent: #8B5CF6;
+  --accent-light: #A78BFA;
+  --accent-rgb: 139, 92, 246;
+  --accent-rgb-light: 167, 139, 250;
+
+  /* Dark theme defaults */
   --background: #000000;
-  --background-elevated: #08090d;
+  --background-elevated: #0a0a0a;
   --foreground: #ffffff;
-  --gray-1: #b6bcc6;
-  --gray-2: #6b7280;
-  --accent-violet: #8b5cf6;
-  --accent-cyan: #22d3ee;
+  --card: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-border-hover: rgba(255, 255, 255, 0.15);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.35);
+
+  /* Static colors */
+  --warning: #F59E0B;
+  --success: #22C55E;
+  --error: #EF4444;
 }
+
+/* Light theme overrides */
+:root.light {
+  --background: #f9fafb;
+  --background-elevated: #ffffff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.1);
+  --card-border-hover: rgba(0, 0, 0, 0.15);
+  --text-primary: #111827;
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-muted: rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================
+   BASE STYLES
+   ========================================== */
 
 *,
 *::before,
@@ -18,44 +54,47 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
+  color-scheme: dark;
 }
 
-html {
-  background: #000000; /* Default to dark, pages overlay with full width */
+html.light {
+  color-scheme: light;
 }
 
 body {
   width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-body {
+  background: var(--background);
+  color: var(--foreground);
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Selection */
+/* Selection with accent color */
 ::selection {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(var(--accent-rgb), 0.3);
   color: white;
 }
 
-/* Focus styles */
+.light ::selection {
+  color: var(--text-primary);
+}
+
+/* Focus styles with accent */
 :focus-visible {
-  outline: 2px solid var(--accent-violet);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Scrollbar styling */
+/* ==========================================
+   SCROLLBAR
+   ========================================== */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -66,15 +105,18 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--card-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--card-border-hover);
 }
 
-/* Link base styles */
+/* ==========================================
+   LINKS
+   ========================================== */
+
 a {
   color: inherit;
   text-decoration: none;
@@ -119,7 +161,7 @@ a {
 }
 
 .section-border-t {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--card-border);
 }
 
 /* ==========================================
@@ -148,13 +190,13 @@ a {
 
 .text-body {
   font-size: 1.125rem;
-  color: var(--gray-1);
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 
 .text-small {
   font-size: 0.875rem;
-  color: var(--gray-2);
+  color: var(--text-muted);
 }
 
 .text-balance {
@@ -186,36 +228,36 @@ a {
 }
 
 .btn-primary {
-  background: var(--accent-violet);
+  background: var(--accent);
   color: white;
 }
 
 .btn-primary:hover {
-  background: #a78bfa;
+  background: var(--accent-light);
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.35);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--card);
+  color: var(--text-primary);
+  border: 1px solid var(--card-border);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--card-border);
+  border-color: var(--card-border-hover);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--gray-1);
+  color: var(--text-secondary);
   padding: 0.5rem 1rem;
 }
 
 .btn-ghost:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  background: var(--card);
 }
 
 /* ==========================================
@@ -223,15 +265,15 @@ a {
    ========================================== */
 
 .card {
-  background: var(--background-elevated);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--card);
+  border: 1px solid var(--card-border);
   border-radius: 16px;
   padding: 1.75rem;
   transition: all 0.25s ease;
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--card-border-hover);
 }
 
 .card-interactive:hover {
@@ -240,10 +282,10 @@ a {
 }
 
 .card-highlight {
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: rgba(var(--accent-rgb), 0.3);
   background: linear-gradient(
     135deg,
-    rgba(139, 92, 246, 0.05) 0%,
+    rgba(var(--accent-rgb), 0.05) 0%,
     transparent 50%
   );
 }
@@ -259,13 +301,13 @@ a {
   font-size: 0.8125rem;
   font-weight: 500;
   border-radius: 100px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--gray-1);
+  background: var(--card);
+  color: var(--text-secondary);
 }
 
-.badge-violet {
-  background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
+.badge-accent {
+  background: rgba(var(--accent-rgb), 0.15);
+  color: var(--accent-light);
 }
 
 .badge-green {
@@ -283,10 +325,10 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
   border-radius: 12px;
-  color: var(--accent-violet);
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
@@ -300,17 +342,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
   border-radius: 50%;
-  color: var(--accent-violet);
+  color: var(--accent);
   font-weight: 600;
   font-size: 0.9375rem;
   flex-shrink: 0;
 }
 
 /* ==========================================
-   DECORATIVE ELEMENTS
+   DECORATIVE ELEMENTS & GLOW EFFECTS
    ========================================== */
 
 .glow-orb {
@@ -319,10 +361,22 @@ a {
   height: 600px;
   background: radial-gradient(
     circle,
-    rgba(139, 92, 246, 0.08) 0%,
+    rgba(var(--accent-rgb), 0.08) 0%,
     transparent 70%
   );
   pointer-events: none;
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
+}
+
+.glow-accent-lg {
+  box-shadow: 0 0 40px rgba(var(--accent-rgb), 0.4), 0 0 80px rgba(var(--accent-rgb), 0.2);
+}
+
+.glow-accent-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
 }
 
 .divider {
@@ -330,9 +384,27 @@ a {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
+    var(--card-border) 50%,
     transparent 100%
   );
+}
+
+/* Input focus glow */
+.input-glow:focus-within {
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.5),
+              0 0 20px rgba(var(--accent-rgb), 0.15);
+}
+
+/* Button glow on hover */
+.btn-glow:hover {
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.35),
+              0 0 40px rgba(var(--accent-rgb), 0.15);
+}
+
+/* Card glow on hover */
+.card-glow:hover {
+  box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.1);
+  border-color: rgba(var(--accent-rgb), 0.3);
 }
 
 /* ==========================================
@@ -350,8 +422,32 @@ a {
   }
 }
 
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(var(--accent-rgb), 0.5);
+  }
+}
+
+@keyframes breathing {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
 .animate-fade-in-up {
   animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-breathing {
+  animation: breathing 3s ease-in-out infinite;
 }
 
 /* ==========================================
@@ -368,4 +464,50 @@ a {
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
+}
+
+/* ==========================================
+   UTILITY CLASSES
+   ========================================== */
+
+.bg-themed {
+  background: var(--background);
+}
+
+.bg-themed-elevated {
+  background: var(--background-elevated);
+}
+
+.text-themed-primary {
+  color: var(--text-primary);
+}
+
+.text-themed-secondary {
+  color: var(--text-secondary);
+}
+
+.text-themed-muted {
+  color: var(--text-muted);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.bg-accent {
+  background: var(--accent);
+}
+
+.border-themed {
+  border-color: var(--card-border);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

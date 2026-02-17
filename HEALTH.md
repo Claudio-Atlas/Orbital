@@ -9,7 +9,7 @@
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Frontend | ✅ Live | Vercel: orbital-lime.vercel.app |
+| Frontend | ✅ Live | Vercel: orbitalsolver.io (custom domain) |
 | Backend API | ✅ Live | Railway: orbital-production-7c22.up.railway.app |
 | Workers | ✅ Live | Celery on Railway (2 workers, connected to Redis) |
 | Redis | ✅ Running | Railway: redis.railway.internal:6379 |
@@ -75,8 +75,8 @@
 | Task | Status | Notes |
 |------|--------|-------|
 | Configure alert webhook | 🔄 TODO | Add `ALERT_WEBHOOK_URL` to Railway (Discord/Slack) |
-| Stripe webhook | ⏸️ HOLD | Needs bank/EIN first |
-| Custom domain | 🔄 TODO | Connect orbitalsolver.io to Vercel |
+| Stripe webhook | ⏸️ HOLD | Needs bank/EIN first (EIN obtained!) |
+| Custom domain | ✅ DONE | orbitalsolver.io connected to Vercel |
 | Fish Audio API key | ⏸️ HOLD | Needs business bank account |
 
 ---
@@ -213,7 +213,8 @@ When resuming work:
 
 | Blocker | Waiting On | Affects |
 |---------|------------|---------|
-| Stripe setup | Bank account + EIN | P0 #1, P1 #8 |
+| Stripe setup | ✅ EIN obtained, ready to wire | P0 #1 |
+| Fish Audio | Business bank account | TTS generation |
 
 ---
 

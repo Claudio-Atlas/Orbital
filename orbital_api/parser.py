@@ -67,7 +67,7 @@ Return ONLY valid JSON in this exact format:
   },
   "steps": [
     {
-      "narration": "Spoken explanation (conversational, like talking to a student)",
+      "narration": "Spoken explanation with emotion markers for engaging TTS",
       "latex": "LaTeX math expression to display"
     }
   ]
@@ -92,22 +92,32 @@ CRITICAL RULES — READ CAREFULLY:
 
 6. Each step = ONE operation. Don't combine multiple operations.
 
+7. EMOTION MARKERS: Add emotion markers to make narration engaging. Place them naturally in the text.
+   Available markers (use sparingly, 1-2 per step max):
+   - (calm) — For starting explanations, setting up problems
+   - (curious) — When posing questions or exploring ideas
+   - (thoughtful) — When considering approaches or common mistakes
+   - (encouraging) — When a step might seem tricky
+   - (excited) — When revealing answers or key insights
+   - (satisfied) — When wrapping up or confirming results
+   - (cheerful) — For the final answer celebration
+
 EXAMPLE — "Find the derivative of 2x³ + 5x":
 {
   "meta": {"topic": "Derivatives using Power Rule", "difficulty": "easy", "latex": "\\\\frac{d}{dx}(2x^3 + 5x)"},
   "steps": [
-    {"narration": "Let's find the derivative of two x cubed plus five x.", "latex": "f(x) = 2x^3 + 5x"},
-    {"narration": "We'll use the power rule: bring down the exponent as a coefficient, then reduce the exponent by one.", "latex": "\\\\text{Power Rule: } \\\\frac{d}{dx}(x^n) = n \\\\cdot x^{n-1}"},
+    {"narration": "(calm) Let's find the derivative of two x cubed plus five x.", "latex": "f(x) = 2x^3 + 5x"},
+    {"narration": "(thoughtful) We'll use the power rule: bring down the exponent as a coefficient, then reduce the exponent by one.", "latex": "\\\\text{Power Rule: } \\\\frac{d}{dx}(x^n) = n \\\\cdot x^{n-1}"},
     {"narration": "For two x cubed, we bring down the three and multiply it by the two.", "latex": "2x^3 \\\\rightarrow 2 \\\\cdot 3 \\\\cdot x^{3-1}"},
-    {"narration": "Two times three is six, and three minus one is two. So we get six x squared.", "latex": "2 \\\\cdot 3 \\\\cdot x^{3-1} = 6x^2"},
-    {"narration": "For five x, remember that x is the same as x to the first power.", "latex": "5x = 5x^1"},
+    {"narration": "(satisfied) Two times three is six, and three minus one is two. So we get six x squared.", "latex": "2 \\\\cdot 3 \\\\cdot x^{3-1} = 6x^2"},
+    {"narration": "(curious) For five x, remember that x is the same as x to the first power.", "latex": "5x = 5x^1"},
     {"narration": "Bring down the one and multiply by five. One times five is five.", "latex": "5x^1 \\\\rightarrow 5 \\\\cdot 1 \\\\cdot x^{1-1}"},
     {"narration": "And x to the zero power is just one, so we get five.", "latex": "5 \\\\cdot 1 \\\\cdot x^0 = 5 \\\\cdot 1 = 5"},
-    {"narration": "Putting it all together, the derivative is six x squared plus five.", "latex": "f'(x) = 6x^2 + 5"}
+    {"narration": "(excited) Putting it all together, the derivative is six x squared plus five!", "latex": "f'(x) = 6x^2 + 5"}
   ]
 }
 
-Remember: Students are watching because they're confused. Show EVERY step. More steps = better understanding.
+Remember: Students are watching because they're confused. Show EVERY step. More steps = better understanding. Use emotions naturally — don't overdo it.
 """
 
 

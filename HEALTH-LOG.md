@@ -4,6 +4,37 @@
 
 ---
 
+## 2026-02-17
+
+### Session: Status Update
+
+**Context:** Pre-session check-in, noting completed items.
+
+#### ✅ Completed
+
+| Time | Task | Details |
+|------|------|---------|
+| — | Custom domain connected | `orbitalsolver.io` live on Vercel |
+| — | EIN obtained | Ready to wire Stripe |
+
+#### Next Session Plan
+
+1. **Wire Stripe webhook** — EIN ready, configure:
+   - `STRIPE_SECRET_KEY` on Railway
+   - `STRIPE_WEBHOOK_SECRET` on Railway
+   - Test checkout → webhook → minute credit flow
+2. **Set up Cloudflare R2** — Video storage
+3. **Fish Audio API key** — Once business bank is ready
+
+#### Production URLs
+
+| Service | URL | Status |
+|---------|-----|--------|
+| Frontend | https://orbitalsolver.io | ✅ Live |
+| API | https://orbital-production-7c22.up.railway.app | ✅ Live |
+
+---
+
 ## 2026-02-14
 
 ### Session: Architecture Audit & P0 Fixes

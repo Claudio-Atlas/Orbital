@@ -37,16 +37,109 @@ OUTPUT_PATH.mkdir(exist_ok=True)
 SCRIPTS_PATH.mkdir(exist_ok=True)
 
 
+@celery_app.task(bind=True, name="tasks.verify_proof")
+def verify_proof_task(self, job_id: str, script_data: dict):
+    """
+    Verify mathematical claims in a proof script using DeepSeek Prover + Lean 4.
+    
+    This runs BEFORE video generation for proof-type content.
+    Uses the local verification pipeline (7B prover + Lean 4 + exact?/apply? fallback).
+    
+    For non-proof content (basic problem solving), this is skipped.
+    
+    Args:
+        job_id: Unique identifier for this job
+        script_data: Parsed problem with steps, meta, etc.
+    
+    Returns:
+        dict with verification status, claims checked, and any failures
+    """
+    try:
+        self.update_state(
+            state="VERIFYING",
+            meta={
+                "job_id": job_id,
+                "step": "verification",
+                "progress": 5,
+                "message": "Verifying mathematical correctness..."
+            }
+        )
+        
+        meta = script_data.get("meta", {})
+        product_family = meta.get("product_family", "").lower()
+        
+        # Only run verification for proof/theorem content
+        if "proof" not in product_family and "theorem" not in product_family:
+            return {
+                "status": "skipped",
+                "job_id": job_id,
+                "reason": "Not a proof-type video",
+                "verified": True
+            }
+        
+        # Save script temporarily for verification
+        script_path = SCRIPTS_PATH / f"{job_id}_verify.json"
+        with open(script_path, "w") as f:
+            json.dump(script_data, f, indent=2)
+        
+        # Run verify_proof.py
+        cmd = [
+            sys.executable,
+            str(FACTORY_PATH / "verify_proof.py"),
+            "--file", str(script_path)
+        ]
+        
+        result = subprocess.run(
+            cmd,
+            cwd=str(FACTORY_PATH),
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 minute timeout for verification
+        )
+        
+        # Clean up temp file
+        if script_path.exists():
+            script_path.unlink()
+        
+        verified = result.returncode == 0
+        
+        return {
+            "status": "complete",
+            "job_id": job_id,
+            "verified": verified,
+            "output": result.stdout[-500:] if result.stdout else "",
+            "errors": result.stderr[-500:] if result.stderr and not verified else ""
+        }
+        
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timeout",
+            "job_id": job_id,
+            "verified": False,
+            "error": "Verification timed out (>5 minutes)"
+        }
+    except Exception as e:
+        # Verification failure shouldn't block video generation entirely
+        # Log the error but let the pipeline continue with a warning
+        return {
+            "status": "error",
+            "job_id": job_id,
+            "verified": False,
+            "error": str(e)
+        }
+
+
 @celery_app.task(bind=True, name="tasks.generate_video")
 def generate_video(self, job_id: str, script_data: dict, voice: str, user_id: str):
     """
     Generate a video from parsed problem data.
     
-    This is the "chef making the pizza":
-    1. Save the script to a file
-    2. Run the Manim + audio pipeline
-    3. Upload to R2 (TODO)
-    4. Return the video URL
+    Flow:
+    1. Verify mathematical correctness (proof content only)
+    2. Save the script to a file
+    3. Run the Manim + audio pipeline
+    4. Upload to R2 (TODO)
+    5. Return the video URL
     
     Args:
         job_id: Unique identifier for this job
@@ -59,6 +152,37 @@ def generate_video(self, job_id: str, script_data: dict, voice: str, user_id: st
     """
     
     try:
+        # === VERIFICATION GATE ===
+        self.update_state(
+            state="PROCESSING",
+            meta={
+                "job_id": job_id,
+                "step": "verifying",
+                "progress": 5,
+                "message": "Checking mathematical correctness..."
+            }
+        )
+        
+        # Run verification synchronously within this task
+        # (Could also be a separate chained task for parallel processing)
+        verification = verify_proof_task.apply(
+            args=[job_id, script_data]
+        ).get(timeout=300)
+        
+        if verification.get("verified") is False:
+            log_error(
+                f"Verification failed — blocking video generation",
+                job_id=job_id,
+                error=verification.get("errors", verification.get("error", ""))
+            )
+            return {
+                "status": "verification_failed",
+                "job_id": job_id,
+                "error": "Mathematical verification failed. The proof contains errors.",
+                "verification": verification,
+                "completed_at": datetime.now().isoformat()
+            }
+        
         # Update task state to "STARTED" with progress info
         self.update_state(
             state="PROCESSING",

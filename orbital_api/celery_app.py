@@ -57,5 +57,6 @@ celery_app.conf.update(
 # (for future: could have "fast" queue for parsing, "slow" queue for rendering)
 celery_app.conf.task_routes = {
     "tasks.generate_video": {"queue": "video_render"},
+    "tasks.verify_proof": {"queue": "verification"},
     "tasks.parse_problem_task": {"queue": "default"},
 }

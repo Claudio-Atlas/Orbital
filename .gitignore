@@ -30,3 +30,13 @@ Thumbs.db
 .vscode/
 .idea/
 .vercel
+
+# Orbital factory generated files
+orbital_factory/media/
+orbital_factory/jobs/*/media/
+orbital_factory/jobs/*/audio/
+orbital_factory/jobs/*/intro.mp4
+orbital_factory/jobs/*/*.mp3
+orbital_factory/output/
+orbital_factory/*_test_output.py
+orbital_factory/*_test_scene.py

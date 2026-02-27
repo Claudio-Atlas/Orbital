@@ -25,6 +25,7 @@ import subprocess
 import argparse
 from pathlib import Path
 from pydub import AudioSegment
+from scene_v2 import create_synced_scene_v2
 
 # Configuration
 INTRO_DURATION = 2.0  # seconds - will be prepended to all videos
@@ -123,6 +124,11 @@ def generate_audio_steps(steps: list, voice: str, output_dir: str) -> list:
             "step": i,
             "narration": narration,
             "latex": latex,
+            "content": step.get("content", latex),
+            "type": step.get("type", "math"),
+            "mode": step.get("mode", "replace"),
+            "label": step.get("label", ""),
+            "diagram": step.get("diagram", {}),
             "audio_path": audio_path,
             "duration": round(duration, 2)
         })
@@ -240,7 +246,7 @@ if __name__ == "__main__":
     print(f"  ✓ Created Manim scene: {output_path}")
 
 
-def render_manim_scene(scene_path: str, output_dir: str) -> str:
+def render_manim_scene(scene_path: str, output_dir: str, scene_class: str = "SyncedMathScene") -> str:
     """
     Render the Manim scene and return path to output video.
     """
@@ -256,10 +262,10 @@ def render_manim_scene(scene_path: str, output_dir: str) -> str:
         "manim", "-ql",  # Low quality for speed (change to -qm or -qh for production)
         "--format", "mp4",
         scene_file,
-        "SyncedMathScene"
+        scene_class
     ]
     
-    print(f"  Rendering Manim scene...")
+    print(f"  Rendering Manim scene ({scene_class})...")
     result = subprocess.run(cmd, cwd=scene_dir, env=env, capture_output=True, text=True)
     
     if result.returncode != 0:
@@ -268,7 +274,7 @@ def render_manim_scene(scene_path: str, output_dir: str) -> str:
     
     # Find output file
     scene_name = Path(scene_path).stem
-    video_path = Path(scene_dir) / "media" / "videos" / scene_name / "480p15" / "SyncedMathScene.mp4"
+    video_path = Path(scene_dir) / "media" / "videos" / scene_name / "480p15" / f"{scene_class}.mp4"
     
     if video_path.exists():
         print(f"  ✓ Rendered: {video_path}")
@@ -421,12 +427,20 @@ def run_pipeline(script_path: str, voice: str = "allison", output_name: str = No
     # Step 2: Create synced Manim scene
     print("🎬 Step 2: Creating synced Manim scene...")
     scene_path = job_dir / "synced_scene.py"
-    create_synced_manim_scene(manifest, str(scene_path), INTRO_DURATION)
+    # Detect v2 script (has type/mode fields) vs v1 (just latex)
+    is_v2 = any(s.get("type") and s.get("type") != "math" for s in steps)
+    if is_v2:
+        print("  → Using v2 scene generator (proof/text support)")
+        create_synced_scene_v2(manifest, str(scene_path), INTRO_DURATION)
+        scene_class = "SyncedProofScene"
+    else:
+        create_synced_manim_scene(manifest, str(scene_path), INTRO_DURATION)
+        scene_class = "SyncedMathScene"
     print()
     
     # Step 3: Render Manim
     print("🎨 Step 3: Rendering animation...")
-    math_video = render_manim_scene(str(scene_path), str(job_dir))
+    math_video = render_manim_scene(str(scene_path), str(job_dir), scene_class)
     if not math_video:
         print("❌ Failed to render Manim scene")
         return None

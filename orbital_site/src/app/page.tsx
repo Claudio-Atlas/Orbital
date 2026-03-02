@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SITE, PRICING } from "@/lib/constants";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
+import { VideoCarousel } from "@/components/VideoCarousel";
 
 type Theme = "dark" | "light";
 
@@ -220,82 +221,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Coming Soon */}
+
+      {/* Video Showcase */}
       <section className="w-full pb-32">
-        <div className="w-full max-w-2xl mx-auto px-6">
-          <div className={`rounded-[2rem] p-8 md:p-12 ${
-            isDark 
-              ? "bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.08]" 
-              : "bg-white border border-gray-200 shadow-xl shadow-gray-200/50"
-          }`}>
-            <div className="flex flex-col items-center text-center py-4">
-              {/* Orbital logo/icon */}
-              <div className={`w-20 h-20 mb-6 rounded-2xl flex items-center justify-center ${
-                isDark 
-                  ? "bg-violet-500/10 border border-violet-500/20" 
-                  : "bg-violet-100 border border-violet-200"
-              }`}>
-                <OrbitalLogo className="w-10 h-10 text-violet-500" />
-              </div>
-              
-              <h2 className={`text-3xl sm:text-4xl font-semibold mb-4 ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}>
-                Coming Soon
-              </h2>
-              
-              <p className={`text-lg max-w-md mb-8 ${
-                isDark ? "text-gray-400" : "text-gray-600"
-              }`}>
-                AI-powered math videos that explain any problem step by step. 
-                We&apos;re putting the finishing touches on something special.
-              </p>
-              
-              {/* Solver Preview Image */}
-              <div className={`w-full rounded-2xl overflow-hidden mb-8 ${
-                isDark 
-                  ? "border border-violet-500/30 shadow-[0_0_30px_rgba(139,92,246,0.25)]" 
-                  : "ring-1 ring-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
-              }`}>
-                <img 
-                  src="/solver-preview.png" 
-                  alt="Orbital Solver Preview" 
-                  className="w-full h-auto"
-                />
-              </div>
-              
-              {/* Example problems teaser */}
-              <div className={`w-full rounded-2xl p-6 ${
-                isDark 
-                  ? "bg-black/40 border border-violet-500/20" 
-                  : "bg-gray-50 border border-gray-200"
-              }`}>
-                <p className={`text-xs uppercase tracking-widest mb-4 ${
-                  isDark ? "text-gray-500" : "text-gray-400"
-                }`}>
-                  Soon you&apos;ll be able to solve
-                </p>
-                <div className="space-y-3">
-                  {[
-                    "Solve for x: 3x - 7 = 14",
-                    "Find the derivative of x² + 3x",
-                    "Prove by induction: 1+2+...+n = n(n+1)/2",
-                  ].map((ex) => (
-                    <div 
-                      key={ex}
-                      className={`px-4 py-3 rounded-xl text-sm ${
-                        isDark 
-                          ? "bg-white/[0.03] border border-white/[0.05] text-gray-400" 
-                          : "bg-white border border-gray-200 text-gray-600"
-                      }`}
-                    >
-                      {ex}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="w-full max-w-4xl mx-auto px-6">
+          <VideoCarousel isDark={isDark} />
         </div>
       </section>
 

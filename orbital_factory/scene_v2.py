@@ -37,6 +37,11 @@ def create_synced_scene_v2(manifest: list, output_path: str, intro_duration: flo
     Write a Manim scene .py file that handles all step types.
     """
 
+    # Convert audio paths to absolute so they resolve regardless of Manim's cwd
+    for step in manifest:
+        ap = step.get("audio_path", "")
+        if ap and not os.path.isabs(ap):
+            step["audio_path"] = os.path.abspath(ap)
     manifest_json = json.dumps(manifest, indent=8)
 
     scene_code = '''"""

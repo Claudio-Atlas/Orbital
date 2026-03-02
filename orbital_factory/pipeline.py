@@ -26,6 +26,7 @@ import argparse
 from pathlib import Path
 from pydub import AudioSegment
 from scene_v2 import create_synced_scene_v2
+from verify_proof import ask_deepseek_prover, verify_with_lean, extract_claims_from_script
 
 # Configuration
 INTRO_DURATION = 2.0  # seconds - will be prepended to all videos
@@ -259,7 +260,7 @@ def render_manim_scene(scene_path: str, output_dir: str, scene_class: str = "Syn
     scene_file = os.path.basename(scene_path)
     
     cmd = [
-        "manim", "-ql",  # Low quality for speed (change to -qm or -qh for production)
+        "manim", "-qh",  # High quality for production (1080p60)
         "--format", "mp4",
         scene_file,
         scene_class
@@ -274,7 +275,7 @@ def render_manim_scene(scene_path: str, output_dir: str, scene_class: str = "Syn
     
     # Find output file
     scene_name = Path(scene_path).stem
-    video_path = Path(scene_dir) / "media" / "videos" / scene_name / "480p15" / f"{scene_class}.mp4"
+    video_path = Path(scene_dir) / "media" / "videos" / scene_name / "1080p60" / f"{scene_class}.mp4"
     
     if video_path.exists():
         print(f"  ✓ Rendered: {video_path}")
@@ -385,7 +386,87 @@ def final_compose(intro_path: str, math_video_path: str, audio_path: str, output
     return output_path
 
 
-def run_pipeline(script_path: str, voice: str = "allison", output_name: str = None):
+def run_verification_gate(script_path: str, script: dict) -> bool:
+    """
+    Verification Gate: Uses DeepSeek-Prover-V2-7B + Lean 4 to verify
+    mathematical claims before rendering.
+    
+    Returns True if all claims pass (or no verifiable claims found).
+    Returns False if any claim fails verification.
+    """
+    meta = script.get("meta", {})
+    steps = script.get("steps", [])
+    product_family = meta.get("product_family", "")
+    
+    # Only run verification for proof-type videos
+    if "proof" not in product_family.lower() and "theorem" not in product_family.lower():
+        print("  ℹ️  Not a proof video — skipping verification gate")
+        return True
+    
+    print("🔬 VERIFICATION GATE — DeepSeek Prover + Lean 4")
+    print("-" * 50)
+    
+    # Extract the main theorem from the script
+    claims = []
+    
+    # Look for the main theorem in meta
+    topic = meta.get("topic", "")
+    if topic:
+        claims.append(topic)
+    
+    # Look for box/theorem steps
+    for step in steps:
+        if step.get("label", "").lower() in ("theorem", "lemma", "proposition", "claim"):
+            content = step.get("content", "")
+            if content:
+                claims.append(content)
+    
+    # Also look for "Key Fact" boxes — these are mathematical claims too
+    for step in steps:
+        if step.get("label", "").lower() == "key fact" and step.get("type") == "box":
+            content = step.get("content", "")
+            if content:
+                claims.append(content)
+    
+    if not claims:
+        print("  ⚠️  No verifiable claims found in script")
+        return True
+    
+    all_passed = True
+    
+    for i, claim in enumerate(claims, 1):
+        print(f"\n  Claim {i}/{len(claims)}: {claim}")
+        
+        # Formalize with DeepSeek Prover
+        print("  📐 Formalizing with DeepSeek-Prover-V2-7B...")
+        lean_code = ask_deepseek_prover(claim)
+        
+        if lean_code is None:
+            print("  ❌ Could not formalize — BLOCKING render")
+            all_passed = False
+            continue
+        
+        # Verify with Lean 4
+        print("  🔍 Verifying with Lean 4 + Mathlib...")
+        success, output = verify_with_lean(lean_code)
+        
+        if success:
+            print("  ✅ VERIFIED")
+        else:
+            print(f"  ❌ REJECTED: {output[:300]}")
+            all_passed = False
+    
+    print()
+    if all_passed:
+        print("✅ All claims verified — proceeding to render")
+    else:
+        print("❌ VERIFICATION FAILED — render blocked")
+    print("-" * 50)
+    
+    return all_passed
+
+
+def run_pipeline(script_path: str, voice: str = "allison", output_name: str = None, skip_verify: bool = False):
     """
     Run the full pipeline.
     """
@@ -405,6 +486,14 @@ def run_pipeline(script_path: str, voice: str = "allison", output_name: str = No
     print(f"   Steps: {len(steps)}")
     print(f"   Voice: {voice}")
     print()
+    
+    # === VERIFICATION GATE ===
+    if not skip_verify:
+        if not run_verification_gate(script_path, script):
+            print("\n🛑 Pipeline halted — fix the proof before rendering.")
+            print("   Use --skip-verify to bypass (not recommended).")
+            return None
+        print()
     
     # Setup paths
     base_dir = Path(script_path).parent.parent
@@ -478,10 +567,11 @@ if __name__ == "__main__":
     parser.add_argument("script", help="Path to problem script JSON")
     parser.add_argument("--voice", "-v", default="allison", help="Voice name or ID")
     parser.add_argument("--output", "-o", help="Output filename")
+    parser.add_argument("--skip-verify", action="store_true", help="Skip Lean 4 verification gate (not recommended)")
     
     args = parser.parse_args()
     
-    result = run_pipeline(args.script, args.voice, args.output)
+    result = run_pipeline(args.script, args.voice, args.output, skip_verify=args.skip_verify)
     
     if result:
         # Open the result

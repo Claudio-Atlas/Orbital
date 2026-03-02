@@ -1,0 +1,277 @@
+{
+  "meta": {
+    "topic": "Area Between Curves",
+    "course": "Calculus 2",
+    "course_id": "MAT-230",
+    "product_family": "explanation"
+  },
+  "steps": [
+    {
+      "type": "text",
+      "content": "Find the area enclosed by the line $y = x + 2$ and the parabola $y = x^2$.",
+      "narration": "Alright, team. Let's tackle a classic area between curves problem. We need the area of the region trapped between a straight line and a parabola. The key here is figuring out where they cross and which one is on top.",
+      "display": "replace"
+    },
+    {
+      "type": "graph",
+      "content": "",
+      "narration": "First, let's visualize the battlefield. I'll plot both functions so we can see the region we're after. The line has a slope of 1 and a y-intercept at 2. The parabola is our standard $x^2$, opening upwards.",
+      "display": "replace",
+      "graph": {
+        "kind": "function_plot",
+        "x_range": [
+          -3,
+          4,
+          1
+        ],
+        "y_range": [
+          -1,
+          8,
+          1
+        ],
+        "functions": [
+          {
+            "expr": "lambda x: x+2",
+            "color": "#22D3EE",
+            "label": "y=x+2"
+          },
+          {
+            "expr": "lambda x: x**2",
+            "color": "#8B5CF6",
+            "label": "y=x^2"
+          }
+        ],
+        "points": [],
+        "axis_labels": [
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "type": "math",
+      "content": "x+2 = x^2",
+      "narration": "To find the boundaries of our region, we need the x-coordinates where the two graphs intersect. We set the equations equal to each other.",
+      "display": "replace"
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Now, let's solve for x. We'll move all terms to one side to get a quadratic equation.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "x+2 = x^2",
+        "to_latex": "0 = x^2 - x - 2",
+        "intermediate_steps": [
+          "x^2 - x - 2 = 0"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "This factors nicely. We're looking for two numbers that multiply to -2 and add to -1. That's -2 and +1.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "0 = x^2 - x - 2",
+        "to_latex": "0 = (x - 2)(x + 1)",
+        "intermediate_steps": []
+      }
+    },
+    {
+      "type": "math",
+      "content": "x = 2 \\quad \\text{or} \\quad x = -1",
+      "narration": "So our intersection points are at x equals negative one and x equals two. These are the left and right boundaries of our area. We should find the corresponding y-values by plugging into either equation, but for the area, we just need the x-limits.",
+      "display": "replace"
+    },
+    {
+      "type": "text",
+      "content": "On the interval $[-1, 2]$, which function is on top? Let's test a point, like $x=0$.",
+      "narration": "Crucial step: which curve forms the 'ceiling' of our region? We need to know what to subtract from what. Let's check a point inside our interval, say x equals zero.",
+      "display": "replace"
+    },
+    {
+      "type": "math",
+      "content": "\\text{At } x=0: \\quad y = 0+2 = 2 \\quad \\text{and} \\quad y = 0^2 = 0.",
+      "narration": "For the line, we get 2. For the parabola, we get 0. So on this interval, the line $y=x+2$ is above the parabola $y=x^2$. The line is the top function.",
+      "display": "replace"
+    },
+    {
+      "type": "box",
+      "content": "\\text{Area Between Curves} = \\int_{a}^{b} [\\text{Top}(x) - \\text{Bottom}(x)] \\, dx",
+      "narration": "Here's the core formula. The area is the integral from the left intersection to the right intersection of (top function minus bottom function). Always subtract the lower curve from the upper one.",
+      "display": "replace",
+      "label": "Area Formula"
+    },
+    {
+      "type": "math",
+      "content": "A = \\int_{-1}^{2} \\left[ (x+2) - (x^2) \\right] \\, dx",
+      "narration": "Now we plug in our specifics. Our limits are from -1 to 2. Our top function is (x+2), our bottom function is x^2. So the integrand is (x+2) minus (x^2).",
+      "display": "replace"
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Let's simplify the expression inside the integral before we integrate. Combine like terms.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\int_{-1}^{2} \\left[ (x+2) - (x^2) \\right] \\, dx",
+        "to_latex": "A = \\int_{-1}^{2} \\left( -x^2 + x + 2 \\right) \\, dx",
+        "intermediate_steps": [
+          "A = \\int_{-1}^{2} ( -x^2 + x + 2 ) \\, dx"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Time to find the antiderivative. We'll integrate term by term. Remember the power rule: increase the exponent by one and divide by the new exponent.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\int_{-1}^{2} \\left( -x^2 + x + 2 \\right) \\, dx",
+        "to_latex": "A = \\left[ -\\frac{x^3}{3} + \\frac{x^2}{2} + 2x \\right]_{-1}^{2}",
+        "intermediate_steps": [
+          "\\int -x^2 \\, dx = -\\frac{x^3}{3}",
+          "\\int x \\, dx = \\frac{x^2}{2}",
+          "\\int 2 \\, dx = 2x"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Now we evaluate this antiderivative at the upper limit, x equals 2, and subtract its evaluation at the lower limit, x equals -1. Let's plug in 2 first.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\left[ -\\frac{x^3}{3} + \\frac{x^2}{2} + 2x \\right]_{-1}^{2}",
+        "to_latex": "A = \\left( -\\frac{8}{3} + \\frac{4}{2} + 4 \\right) - \\left( -\\frac{-1}{3} + \\frac{1}{2} + (-2) \\right)",
+        "intermediate_steps": [
+          "F(2) = -\\frac{2^3}{3} + \\frac{2^2}{2} + 2(2) = -\\frac{8}{3} + 2 + 4",
+          "F(-1) = -\\frac{(-1)^3}{3} + \\frac{(-1)^2}{2} + 2(-1) = -\\frac{-1}{3} + \\frac{1}{2} - 2"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Careful with the signs on the second part! Let's simplify each big parenthesis separately. For F(2), combine the constants 2 and 4 to get 6.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\left( -\\frac{8}{3} + \\frac{4}{2} + 4 \\right) - \\left( -\\frac{-1}{3} + \\frac{1}{2} + (-2) \\right)",
+        "to_latex": "A = \\left( -\\frac{8}{3} + 6 \\right) - \\left( \\frac{1}{3} + \\frac{1}{2} - 2 \\right)",
+        "intermediate_steps": [
+          "-\\frac{-1}{3} = \\frac{1}{3}"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Let's write 6 as 18 over 3 for the first part. For the second part, get a common denominator of 6 to combine those fractions.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\left( -\\frac{8}{3} + 6 \\right) - \\left( \\frac{1}{3} + \\frac{1}{2} - 2 \\right)",
+        "to_latex": "A = \\left( \\frac{-8 + 18}{3} \\right) - \\left( \\frac{2}{6} + \\frac{3}{6} - \\frac{12}{6} \\right)",
+        "intermediate_steps": [
+          "6 = \\frac{18}{3}",
+          "\\frac{1}{3} = \\frac{2}{6}, \\frac{1}{2} = \\frac{3}{6}, 2 = \\frac{12}{6}"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Simplify the numerators. First part becomes 10/3. Second part inside becomes (2+3-12)/6 = -7/6.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\left( \\frac{-8 + 18}{3} \\right) - \\left( \\frac{2}{6} + \\frac{3}{6} - \\frac{12}{6} \\right)",
+        "to_latex": "A = \\frac{10}{3} - \\left( -\\frac{7}{6} \\right)",
+        "intermediate_steps": [
+          "\\frac{-8+18}{3} = \\frac{10}{3}",
+          "\\frac{2+3-12}{6} = \\frac{-7}{6}"
+        ]
+      }
+    },
+    {
+      "type": "transform",
+      "content": "",
+      "narration": "Subtracting a negative is adding a positive. So we have 10/3 plus 7/6. Let's get a common denominator of 6.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "A = \\frac{10}{3} - \\left( -\\frac{7}{6} \\right)",
+        "to_latex": "A = \\frac{20}{6} + \\frac{7}{6}",
+        "intermediate_steps": [
+          "\\frac{10}{3} = \\frac{20}{6}"
+        ]
+      }
+    },
+    {
+      "type": "math",
+      "content": "A = \\frac{27}{6} = \\frac{9}{2}",
+      "narration": "Add the numerators: 20 plus 7 is 27 over 6. This simplifies to 9 halves.",
+      "display": "replace"
+    },
+    {
+      "type": "box",
+      "content": "\\text{Area} = \\frac{9}{2} \\text{ square units}",
+      "narration": "And there's our answer. The area of the region enclosed by the line and the parabola is nine-halves, or four and a half, square units.",
+      "display": "replace",
+      "label": "Answer"
+    },
+    {
+      "type": "graph",
+      "content": "",
+      "narration": "Let's look at the final picture. The shaded region between x equals -1 and 2, bounded above by the line and below by the parabola, has the area we just calculated.",
+      "display": "replace",
+      "graph": {
+        "kind": "between_curves",
+        "x_range": [
+          -3,
+          4,
+          1
+        ],
+        "y_range": [
+          -1,
+          8,
+          1
+        ],
+        "functions": [
+          {
+            "expr": "lambda x: x+2",
+            "color": "#22D3EE",
+            "label": "y=x+2"
+          },
+          {
+            "expr": "lambda x: x**2",
+            "color": "#8B5CF6",
+            "label": "y=x^2"
+          }
+        ],
+        "points": [
+          {
+            "x": -1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "shaded_area": {
+          "func_index": 0,
+          "func_index_2": 1,
+          "x_range": [
+            -1,
+            2
+          ],
+          "color": "#39FF14",
+          "opacity": 0.3
+        },
+        "axis_labels": [
+          "x",
+          "y"
+        ]
+      }
+    }
+  ]
+}

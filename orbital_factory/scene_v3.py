@@ -232,7 +232,7 @@ def _build_graph(cfg: dict) -> VGroup:
     """
     Function graphing with axes.
     cfg keys:
-        kind: "function_plot" | "tangent_line" | "area_under"
+        kind: "function_plot" | "tangent_line" | "area_under" | "between_curves"
         x_range: [min, max, step]
         y_range: [min, max, step]
         functions: [{expr, color, label, dashed}]
@@ -296,18 +296,32 @@ def _build_graph(cfg: dict) -> VGroup:
             lbl.next_to(graph, UR, buff=0.15)
             group.add(lbl)
 
-    # Shaded area under curve
+    # Shaded area — supports both "area_under" (single curve to x-axis)
+    # and "between_curves" (shades between two functions)
     if shaded and plotted_funcs:
         fi = shaded.get("func_index", 0)
+        fi2 = shaded.get("func_index_2", None)  # second function for between_curves
         sr = shaded.get("x_range", [x_range[0], x_range[1]])
         sc = shaded.get("color", NEON_GREEN)
         so = shaded.get("opacity", 0.3)
         if fi < len(plotted_funcs):
             fn_obj = plotted_funcs[fi][1]
-            area = axes.get_area(
-                axes.plot(fn_obj, color=sc),
-                x_range=sr, color=sc, opacity=so,
-            )
+            top_graph = axes.plot(fn_obj, color=sc)
+            if fi2 is not None and fi2 < len(plotted_funcs):
+                # Between curves: shade between func_index (top) and func_index_2 (bottom)
+                fn_obj2 = plotted_funcs[fi2][1]
+                bottom_graph = axes.plot(fn_obj2, color=sc)
+                area = axes.get_area(
+                    top_graph,
+                    x_range=sr, color=sc, opacity=so,
+                    bounded_graph=bottom_graph,
+                )
+            else:
+                # Area under single curve to x-axis (original behavior)
+                area = axes.get_area(
+                    top_graph,
+                    x_range=sr, color=sc, opacity=so,
+                )
             group.add(area)
 
     # Points / dots

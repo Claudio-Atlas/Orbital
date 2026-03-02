@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "topic": "Area Between Two Curves",
+    "course": "Calculus 2",
+    "course_id": "MAT-230",
+    "product_family": "explanation",
+    "difficulty": "standard",
+    "textbook_section": "6.1",
+    "description": "Find the area of the region enclosed by y = x + 2 and y = x²"
+  },
+  "steps": [
+    {
+      "type": "text",
+      "content": "Find the area enclosed by $y = x + 2$ and $y = x^2$.",
+      "narration": "Let's find the area of the region enclosed by two curves: the line y equals x plus 2, and the parabola y equals x squared.",
+      "display": "replace"
+    },
+    {
+      "type": "graph",
+      "narration": "Here are our two curves plotted together. The line y equals x plus 2 in cyan, and the parabola y equals x squared in violet. Notice the region trapped between them.",
+      "display": "replace",
+      "graph": {
+        "kind": "function_plot",
+        "x_range": [-3, 4, 1],
+        "y_range": [-1, 8, 1],
+        "functions": [
+          {"expr": "lambda x: x + 2", "color": "#22D3EE", "label": "y = x + 2"},
+          {"expr": "lambda x: x**2", "color": "#8B5CF6", "label": "y = x^2"}
+        ],
+        "axis_labels": ["x", "y"]
+      }
+    },
+    {
+      "type": "text",
+      "content": "Step 1: Find where the curves intersect.",
+      "narration": "Step 1: we need to find where these curves intersect. That tells us the bounds of integration.",
+      "display": "replace"
+    },
+    {
+      "type": "math",
+      "content": "x + 2 = x^2",
+      "narration": "Set the two functions equal: x plus 2 equals x squared.",
+      "display": "replace"
+    },
+    {
+      "type": "transform",
+      "narration": "Rearranging: move everything to one side to get x squared minus x minus 2 equals zero. This factors as x minus 2 times x plus 1 equals zero.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "x + 2 = x^2",
+        "to_latex": "(x - 2)(x + 1) = 0",
+        "intermediate_steps": [
+          "x^2 - x - 2 = 0"
+        ]
+      }
+    },
+    {
+      "type": "math",
+      "content": "x = -1 \\quad \\text{and} \\quad x = 2",
+      "narration": "So x equals negative 1 and x equals 2. These are our intersection points.",
+      "display": "replace"
+    },
+    {
+      "type": "graph",
+      "narration": "Here are the intersection points marked on the graph: negative 1 comma 1, and 2 comma 4. The shaded region between the curves is what we need to find the area of.",
+      "display": "replace",
+      "graph": {
+        "kind": "area_under",
+        "x_range": [-3, 4, 1],
+        "y_range": [-1, 8, 1],
+        "functions": [
+          {"expr": "lambda x: x + 2", "color": "#22D3EE", "label": "y = x + 2"},
+          {"expr": "lambda x: x**2", "color": "#8B5CF6", "label": "y = x^2"}
+        ],
+        "points": [
+          {"x": -1, "y": 1, "label": "(-1, 1)", "color": "#FACC15"},
+          {"x": 2, "y": 4, "label": "(2, 4)", "color": "#FACC15"}
+        ],
+        "shaded_area": {"func_index": 0, "x_range": [-1, 2], "color": "#39FF14", "opacity": 0.3},
+        "axis_labels": ["x", "y"]
+      }
+    },
+    {
+      "type": "text",
+      "content": "Step 2: Identify which curve is on top.",
+      "narration": "Step 2: we need to identify which curve is on top in the region between negative 1 and 2. A quick check: at x equals 0, the line gives y equals 2, and the parabola gives y equals 0. So the line is above the parabola in this interval.",
+      "display": "replace"
+    },
+    {
+      "type": "box",
+      "label": "Area Formula",
+      "content": "$A = \\displaystyle\\int_a^b \\left[ f(x) - g(x) \\right] \\, dx$, where $f(x) \\geq g(x)$ on $[a, b]$",
+      "narration": "We use the area formula: the integral from a to b of the top function minus the bottom function. Since the line is on top, f of x is x plus 2 and g of x is x squared.",
+      "display": "replace"
+    },
+    {
+      "type": "math",
+      "content": "A = \\int_{-1}^{2} \\left[ (x + 2) - x^2 \\right] \\, dx",
+      "narration": "So our integral is: the integral from negative 1 to 2 of x plus 2 minus x squared, d x.",
+      "display": "replace"
+    },
+    {
+      "type": "text",
+      "content": "Step 3: Evaluate the integral.",
+      "narration": "Step 3: let's evaluate this integral by finding the antiderivative.",
+      "display": "replace"
+    },
+    {
+      "type": "transform",
+      "narration": "The integrand simplifies to negative x squared plus x plus 2. Now take the antiderivative: negative x cubed over 3, plus x squared over 2, plus 2 x. Evaluate from negative 1 to 2.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "\\int_{-1}^{2} \\left( -x^2 + x + 2 \\right) dx",
+        "to_latex": "\\left[ -\\frac{x^3}{3} + \\frac{x^2}{2} + 2x \\right]_{-1}^{2}",
+        "intermediate_steps": [
+          "-\\frac{x^3}{3} + \\frac{x^2}{2} + 2x"
+        ]
+      }
+    },
+    {
+      "type": "math",
+      "content": "\\left( -\\frac{8}{3} + 2 + 4 \\right) - \\left( \\frac{1}{3} + \\frac{1}{2} - 2 \\right)",
+      "narration": "Now we plug in the bounds. At x equals 2: negative 8 thirds plus 2 plus 4. At x equals negative 1: positive 1 third plus 1 half minus 2.",
+      "display": "replace"
+    },
+    {
+      "type": "transform",
+      "narration": "Let's simplify. The first group: negative 8 thirds plus 6 gives 10 thirds. The second group: 1 third plus 1 half minus 2 gives negative 7 sixths. Subtracting: 10 thirds plus 7 sixths. Finding a common denominator: 20 sixths plus 7 sixths equals 27 sixths, which reduces to 9 halves.",
+      "display": "replace",
+      "transform": {
+        "from_latex": "\\frac{10}{3} - \\left( -\\frac{7}{6} \\right)",
+        "to_latex": "\\frac{9}{2}",
+        "intermediate_steps": [
+          "\\frac{10}{3} + \\frac{7}{6}",
+          "\\frac{20}{6} + \\frac{7}{6}",
+          "\\frac{27}{6}"
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "label": "Answer",
+      "content": "$A = \\dfrac{9}{2}$ square units",
+      "narration": "And our final answer: the area of the region enclosed by y equals x plus 2 and y equals x squared is 9 halves, or 4 and a half square units.",
+      "display": "replace"
+    },
+    {
+      "type": "graph",
+      "narration": "Here's our final picture: the shaded region with area 9 halves. The integral captured exactly the area between the line and the parabola, from x equals negative 1 to x equals 2.",
+      "display": "replace",
+      "graph": {
+        "kind": "area_under",
+        "x_range": [-3, 4, 1],
+        "y_range": [-1, 8, 1],
+        "functions": [
+          {"expr": "lambda x: x + 2", "color": "#22D3EE", "label": "y = x + 2"},
+          {"expr": "lambda x: x**2", "color": "#8B5CF6", "label": "y = x^2"}
+        ],
+        "points": [
+          {"x": -1, "y": 1, "label": "(-1, 1)", "color": "#FACC15"},
+          {"x": 2, "y": 4, "label": "(2, 4)", "color": "#FACC15"}
+        ],
+        "shaded_area": {"func_index": 0, "x_range": [-1, 2], "color": "#39FF14", "opacity": 0.3},
+        "axis_labels": ["x", "y"]
+      }
+    }
+  ]
+}

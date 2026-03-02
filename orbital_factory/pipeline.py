@@ -25,7 +25,10 @@ import subprocess
 import argparse
 from pathlib import Path
 from pydub import AudioSegment
-from scene_v2 import create_synced_scene_v2
+try:
+    from scene_v3 import create_synced_scene_v3, create_synced_scene_v3 as create_synced_scene_v2
+except ImportError:
+    from scene_v2 import create_synced_scene_v2
 from verify_proof import ask_deepseek_prover, verify_with_lean, extract_claims_from_script
 
 # Configuration
@@ -517,9 +520,16 @@ def run_pipeline(script_path: str, voice: str = "allison", output_name: str = No
     print("🎬 Step 2: Creating synced Manim scene...")
     scene_path = job_dir / "synced_scene.py"
     # Detect v2 script (has type/mode fields) vs v1 (just latex)
-    is_v2 = any(s.get("type") and s.get("type") != "math" for s in steps)
+    v3_types = {"graph", "transform", "geometric", "threed"}
+    is_v3 = any(s.get("type") in v3_types for s in steps)
+    is_v2 = is_v3 or any(s.get("type") and s.get("type") != "math" for s in steps)
     if is_v2:
-        print("  → Using v2 scene generator (proof/text support)")
+        if is_v3:
+            print("  → Using v3 scene generator (graph/transform/geometric/3D)")
+            create_synced_scene_v3(manifest, str(scene_path), INTRO_DURATION)
+        else:
+            print("  → Using v2 scene generator (proof/text support)")
+            create_synced_scene_v2(manifest, str(scene_path), INTRO_DURATION)
         create_synced_scene_v2(manifest, str(scene_path), INTRO_DURATION)
         scene_class = "SyncedProofScene"
     else:

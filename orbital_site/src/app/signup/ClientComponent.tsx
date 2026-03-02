@@ -56,6 +56,7 @@ export default function ClientComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isProfessor, setIsProfessor] = useState(false);
   const [success, setSuccess] = useState(false);
   const [theme, setTheme] = useState<Theme>("dark");
 
@@ -107,6 +108,13 @@ export default function ClientComponent() {
 
     try {
       const { data, error: signUpError } = await signUp(email, password);
+      
+      // Set role in profile after signup
+      if (data?.user && !signUpError) {
+        const { getSupabase } = await import("@/lib/supabase");
+        const supabase = getSupabase();
+        await supabase.from("profiles").update({ role: isProfessor ? "professor" : "student" }).eq("id", data.user.id);
+      }
       
       if (signUpError) {
         setError(signUpError.message);
@@ -224,6 +232,36 @@ export default function ClientComponent() {
             </div>
           ) : (
           <>
+
+          {/* Professor Toggle */}
+          <div className={`flex items-center justify-between p-4 rounded-xl ${
+            isDark
+              ? "bg-white/[0.03] border border-white/[0.08]"
+              : "bg-gray-50 border border-gray-100"
+          }`}>
+            <div>
+              <p className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}>
+                I am a professor
+              </p>
+              <p className={`text-xs mt-0.5 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                Get access to the professor dashboard
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsProfessor(!isProfessor)}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                isProfessor
+                  ? "bg-violet-600"
+                  : isDark ? "bg-white/[0.1]" : "bg-gray-300"
+              }`}
+            >
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                isProfessor ? "translate-x-5" : "translate-x-0"
+              }`} />
+            </button>
+          </div>
+
           {/* Email Field */}
           <div>
             <label className={`block text-xs font-medium uppercase tracking-widest mb-2 ${

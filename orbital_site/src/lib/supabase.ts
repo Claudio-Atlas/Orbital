@@ -12,6 +12,7 @@ export type Profile = {
   minutes_balance: number
   created_at: string
   updated_at: string
+  role: 'student' | 'professor'
 }
 
 export type Purchase = {

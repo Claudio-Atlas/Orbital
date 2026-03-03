@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
 import { CourseBuilder } from "@/components/CourseBuilder";
+import { ApiKeySettings } from "@/components/ApiKeySettings";
 import { PathSelector, type PipelinePath } from "@/components/PathSelector";
 import { ScriptEditor, type ScriptStep } from "@/components/ScriptEditor";
 import { SolutionInput, type SolutionStep } from "@/components/SolutionInput";

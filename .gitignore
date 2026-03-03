@@ -42,3 +42,4 @@ orbital_factory/*_test_output.py
 orbital_factory/*_test_scene.py
 orbital_factory/lean_verifier/.lake/
 orbital_factory/output/sizzle_audio/
+orbital_factory/.env

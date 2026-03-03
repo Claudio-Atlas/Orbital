@@ -1,0 +1,8 @@
+venv/
+media/
+output/
+logs/
+__pycache__/
+*.pyc
+.env
+lean_verifier/

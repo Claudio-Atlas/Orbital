@@ -62,18 +62,20 @@ The JSON must have this exact structure:
 }
 ```
 
-## STEP SEQUENCE PATTERN
-Follow this structure:
+## STEP SEQUENCE PATTERN (MANDATORY — DO NOT SKIP STEPS)
+You MUST follow this structure. MINIMUM 4 steps for easy, 5 for medium, 6 for hard. NEVER just show problem + answer.
 1. **Problem statement** — show the problem, narrate what we're finding (type: math or mixed)
 2. **Key rule/formula** — the rule we'll use, stated briefly (type: box or text)
-3. **Step-by-step work** — 2–5 algebraic steps (type: math or transform)
-4. **Graph** — visual if it adds insight (type: graph) — include for derivatives and integrals
+3. **Step-by-step work** — Show EACH intermediate algebraic step. DO NOT skip to the answer. (type: math or transform)
+4. **Graph** — visual if it adds insight (type: graph) — ALWAYS include for derivatives and integrals
 5. **Final answer** — clearly boxed answer (type: box, label: "Answer")
 
+⚠️ CRITICAL: The teaching IS the steps. If you skip from problem to answer, the video is useless. Show. Every. Step.
+
 ## DIFFICULTY CALIBRATION
-- `easy`: 3–4 total steps, simple narration, no graph required
-- `medium`: 4–6 steps, include a graph if visual helps
-- `hard`: 5–7 steps, include graph + transform steps for full depth
+- `easy`: 4–5 total steps minimum, include graph for derivatives/integrals
+- `medium`: 5–6 steps, include a graph
+- `hard`: 6–8 steps, include graph + transform steps for full depth
 
 ## EXAMPLE OUTPUT (for "Find the derivative of f(x) = 3x² + 2x − 5")
 ```json

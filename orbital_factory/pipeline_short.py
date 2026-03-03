@@ -29,6 +29,8 @@ from __future__ import annotations
 
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import random
 import re
 import shutil
@@ -328,6 +330,8 @@ def _render_content_scene(manifest: list, job_dir: Path) -> Optional[Path]:
     cmd = [
         "manim",
         "--config_file", str(cfg_path),
+        "--resolution", "1080,1920",
+        "--frame_rate", "60",
         "--format", "mp4",
         str(scene_path.name),
         "SyncedShortScene",
@@ -375,7 +379,8 @@ def _render_intro(job_dir: Path, hook: str) -> Optional[Path]:
     cmd = [
         "manim",
         "--config_file", str(cfg_path),
-        "-ql",
+        "--resolution", "1080,1920",
+        "--frame_rate", "60",
         "--format", "mp4",
         str(scene_path.name),
         "OrbitalIntroShort",
@@ -409,7 +414,8 @@ def _render_outro(job_dir: Path, cta: str = "Follow for more") -> Optional[Path]
     cmd = [
         "manim",
         "--config_file", str(cfg_path),
-        "-ql",
+        "--resolution", "1080,1920",
+        "--frame_rate", "60",
         "--format", "mp4",
         str(scene_path.name),
         "OrbitalOutroShort",
@@ -456,18 +462,36 @@ def _stitch_video(
         print(f"  ✓ No stitch needed — copied content directly")
         return output_path
 
+    # Normalize all segments to same resolution + add silent audio where missing
+    normalized = []
+    for i, seg in enumerate(segments):
+        norm_path = output_path.parent / f"_norm_{i}.mp4"
+        # Scale to 1080x1920, add silent audio if no audio stream exists
+        norm_cmd = [
+            "ffmpeg", "-y",
+            "-i", str(seg.resolve()),
+            "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
+            "-c:v", "libx264",
+            "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black",
+            "-r", "60",
+            "-c:a", "aac", "-b:a", "192k",
+            "-shortest",
+            "-movflags", "+faststart",
+            str(norm_path),
+        ]
+        subprocess.run(norm_cmd, capture_output=True, text=True)
+        normalized.append(norm_path)
+
     concat_list = output_path.parent / "concat_list.txt"
     with open(concat_list, "w") as fh:
-        for seg in segments:
+        for seg in normalized:
             fh.write(f"file '{seg.resolve()}'\n")
 
     cmd = [
         "ffmpeg", "-y",
         "-f", "concat", "-safe", "0",
         "-i", str(concat_list),
-        "-c:v", "libx264",
-        "-c:a", "aac",
-        "-b:a", "192k",
+        "-c", "copy",
         "-movflags", "+faststart",
         str(output_path),
     ]

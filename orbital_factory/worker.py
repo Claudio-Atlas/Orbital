@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Load .env before anything else
+from dotenv import load_dotenv
+load_dotenv()
 """
 Orbital Pipeline Worker
 Polls Supabase for queued video_jobs, runs the 6-stage pipeline, updates status.
@@ -430,29 +433,81 @@ Output ONLY the .lean file contents."""}]
         
         slug = job["problem"][:30].replace(" ", "_").lower()
         
-        # Write script to temp file for scene_v3.py
-        script_path = SCRIPTS_DIR / f"{slug}.json"
-        SCRIPTS_DIR.mkdir(parents=True, exist_ok=True)
-        script_path.write_text(json.dumps(script, indent=2))
+        # Build manifest with estimated durations (no per-step audio needed)
+        manifest = []
+        for i, step in enumerate(script):
+            narration = step.get("narration", "")
+            # Estimate duration: ~150 words/min = 2.5 words/sec
+            word_count = len(narration.split())
+            duration = max(3.0, word_count / 2.5 + 1.0)  # min 3 seconds
+            
+            stype = step.get("type", "math")
+            if stype == "text":
+                # Escape narration for LaTeX Tex() — wrap math-like content in $...$
+                import re
+                # Replace common math patterns with $...$ wrapped versions
+                escaped = narration.replace("_", r"\_").replace("%", r"\%").replace("&", r"\&").replace("#", r"\#")
+                # Wrap math expressions like f(x), x^n, a*x^n, etc in $...$
+                escaped = re.sub(r'([a-zA-Z]\([a-zA-Z0-9,\s]*\))', r'$$', escaped)  # f(x), g(x)
+                escaped = re.sub(r'(\d*[a-zA-Z]\^\{?[a-zA-Z0-9]+\}?)', r'$$', escaped)  # x^2, x^n, 3x^2
+                escaped = re.sub(r'(\d+\*[a-zA-Z]\*[a-zA-Z])', r'$$', escaped)  # a*n*x
+                content = escaped
+            elif stype == "transform":
+                content = step.get("from_latex", step.get("display_latex", ""))
+            else:
+                content = step.get("display_latex", step.get("content", step.get("latex", narration)))
+            
+            transform = {}
+            if stype == "transform":
+                transform = {"from_latex": step.get("from_latex", ""), "to_latex": step.get("to_latex", "")}
+            
+            manifest.append({
+                "step": i,
+                "narration": narration,
+                "latex": content,
+                "content": content,
+                "type": stype,
+                "mode": step.get("mode", "replace"),
+                "label": step.get("label", ""),
+                "diagram": step.get("diagram", {}),
+                "transform": transform,
+                "audio_path": "",
+                "duration": round(duration, 2)
+            })
         
-        # Run Manim render
+        # Use scene_v3 generator to create scene file
+        sys.path.insert(0, str(FACTORY_DIR))
+        from scene_v3 import create_synced_scene_v3
+        
+        scene_file = FACTORY_DIR / "generated_scene.py"
+        create_synced_scene_v3(manifest, str(scene_file), intro_duration=2.0)
+        log.info(f"  Generated scene file: {scene_file}")
+        
+        # Run Manim render on the generated scene
         env = os.environ.copy()
-        env["ORBITAL_SCRIPT"] = str(script_path)
         env["PATH"] = f"/Library/TeX/texbin:{env.get('PATH', '')}"
         
+        manim_bin = str(FACTORY_DIR / 'venv' / 'bin' / 'manim')
         result = subprocess.run([
-            sys.executable, "-m", "manim", "render",
-            "-qh", "--format", "mp4",
-            str(FACTORY_DIR / "scene_v3.py"), "OrbitalVideo"
+            manim_bin, 'render',
+            '-qh', '--format', 'mp4',
+            str(scene_file), 'SyncedProofScene'
         ], cwd=str(FACTORY_DIR), env=env, capture_output=True, text=True, timeout=600)
         
         if result.returncode != 0:
             raise Exception(f"Manim render failed: {result.stderr[:500]}")
         
-        # Find the rendered video
-        raw_video = FACTORY_DIR / "media" / "videos" / "scene_v3" / "1080p60" / "OrbitalVideo.mp4"
+        # Find the rendered video — Manim outputs to media/videos/<filename>/<quality>/
+        raw_video = FACTORY_DIR / "media" / "videos" / "generated_scene" / "1080p60" / "SyncedProofScene.mp4"
         if not raw_video.exists():
-            raise Exception("Rendered video not found")
+            # Try to find it anywhere in media/videos
+            import glob
+            matches = glob.glob(str(FACTORY_DIR / "media" / "videos" / "**" / "SyncedProofScene.mp4"), recursive=True)
+            if matches:
+                raw_video = Path(matches[0])
+                log.info(f"  Found video at: {raw_video}")
+            else:
+                raise Exception("Rendered video not found")
         
         # ffmpeg merge audio
         final_path = OUTPUT_DIR / f"{slug}_final.mp4"

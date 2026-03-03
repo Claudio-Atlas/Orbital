@@ -4,33 +4,29 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { useTheme } from "@/lib/theme-context";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
+import { PathSelector, type PipelinePath } from "@/components/PathSelector";
+import { ScriptEditor, type ScriptStep } from "@/components/ScriptEditor";
+import { SolutionInput, type SolutionStep } from "@/components/SolutionInput";
 
 type DetailLevel = "quick" | "standard" | "detailed";
-type JobStatus = "idle" | "generating" | "circle" | "rendering" | "complete" | "error";
+type JobStatus = "idle" | "generating" | "reviewing" | "processing_solution" | "circle" | "lean" | "tts" | "rendering" | "complete" | "error";
 
 type VideoItem = {
   id: string;
   problem: string;
   detailLevel: DetailLevel;
+  path: PipelinePath;
   status: JobStatus;
+  badge: "lean4_verified" | "ai_verified" | "teacher_verified";
   createdAt: string;
   duration: number | null;
   videoUrl: string | null;
 };
 
+type DashboardView = "main" | "editor" | "solution_input";
+
 const Icons = {
-  sun: (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-    </svg>
-  ),
-  moon: (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-    </svg>
-  ),
   sparkles: (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
@@ -74,25 +70,79 @@ const DETAIL_LEVELS = [
 const STATUS_LABELS: Record<JobStatus, { label: string; color: string }> = {
   idle: { label: "Ready", color: "text-gray-500" },
   generating: { label: "Writing script...", color: "text-violet-400" },
-  circle: { label: "Verifying math...", color: "text-cyan-400" },
+  reviewing: { label: "Ready for review", color: "text-amber-400" },
+  processing_solution: { label: "Processing your solution...", color: "text-violet-400" },
+  circle: { label: "Verifying mathematics...", color: "text-cyan-400" },
+  lean: { label: "Formally proving...", color: "text-cyan-400" },
+  tts: { label: "Generating narration...", color: "text-violet-400" },
   rendering: { label: "Rendering video...", color: "text-amber-400" },
   complete: { label: "Complete", color: "text-green-400" },
   error: { label: "Error", color: "text-red-400" },
 };
 
+const BADGE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
+  lean4_verified: { label: "Lean 4 Verified", icon: "🏛️", color: "text-cyan-400 bg-cyan-500/10" },
+  ai_verified: { label: "AI Verified", icon: "✅", color: "text-green-400 bg-green-500/10" },
+  teacher_verified: { label: "Teacher Verified", icon: "👨‍🏫", color: "text-amber-400 bg-amber-500/10" },
+};
+
+// Mock: convert professor solution to script steps
+function mockProfessorStepsToScript(steps: SolutionStep[], problem: string): ScriptStep[] {
+  const script: ScriptStep[] = [
+    {
+      step_number: 1,
+      type: "text",
+      narration: `Let's work through this problem: ${problem}`,
+    },
+  ];
+  steps.forEach((s, i) => {
+    script.push({
+      step_number: i + 2,
+      type: s.math ? "mixed" : "text",
+      narration: s.description || `Step ${i + 1}`,
+      display_latex: s.math || undefined,
+    });
+  });
+  script.push({
+    step_number: steps.length + 2,
+    type: "text",
+    narration: "And that's our solution! The key takeaway here is understanding each step and why it works.",
+  });
+  return script;
+}
+
+// Mock: generate AI script
+function mockAIScript(problem: string, detailLevel: DetailLevel): ScriptStep[] {
+  return [
+    { step_number: 1, type: "text", narration: `Today we're going to solve: ${problem}. Let's break it down step by step.` },
+    { step_number: 2, type: "text", narration: "First, let's understand what the problem is asking us to find." },
+    { step_number: 3, type: "math", narration: "We start by setting up our equation.", display_latex: "x^2 - x - 2 = 0" },
+    { step_number: 4, type: "transform", narration: "Let's factor this quadratic.", from_latex: "x^2 - x - 2 = 0", to_latex: "(x-2)(x+1) = 0" },
+    { step_number: 5, type: "math", narration: "Setting each factor equal to zero gives us our solutions.", display_latex: "x = 2 \\quad \\text{or} \\quad x = -1" },
+    { step_number: 6, type: "box", narration: "And there's our answer!", display_latex: "x = -1, \\quad x = 2" },
+    { step_number: 7, type: "text", narration: "Remember: when you factor a quadratic, you're looking for two numbers that multiply to give you the constant term and add to give you the middle coefficient." },
+  ];
+}
+
 export default function ProfessorDashboardClient() {
   const { user, profile, loading, signOut } = useAuth();
   const router = useRouter();
 
+  // Main state
   const [problem, setProblem] = useState("");
   const [detailLevel, setDetailLevel] = useState<DetailLevel>("standard");
+  const [selectedPath, setSelectedPath] = useState<PipelinePath | null>(null);
+  const [leanEnabled, setLeanEnabled] = useState(true);
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState("");
   const [jobStatus, setJobStatus] = useState<JobStatus>("idle");
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [activeTab, setActiveTab] = useState<"dashboard" | "library" | "settings">("dashboard");
 
-  const isDark = true; // Professor portal is always dark for now
+  // Editor state
+  const [view, setView] = useState<DashboardView>("main");
+  const [scriptSteps, setScriptSteps] = useState<ScriptStep[]>([]);
+  const [isProcessingSolution, setIsProcessingSolution] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -100,37 +150,136 @@ export default function ProfessorDashboardClient() {
     }
   }, [loading, user, router]);
 
-  const handleGenerate = async () => {
+  const getCostEstimate = () => {
+    if (!selectedPath) return detailLevel === "quick" ? "~$0.35" : detailLevel === "standard" ? "~$0.55" : "~$0.75";
+    switch (selectedPath) {
+      case "full_ai": return detailLevel === "quick" ? "~$0.82" : detailLevel === "standard" ? "~$0.98" : "~$1.26";
+      case "ai_review": return detailLevel === "quick" ? "~$0.12" : detailLevel === "standard" ? "~$0.28" : "~$0.56";
+      case "professor_source": return detailLevel === "quick" ? "~$0.13" : detailLevel === "standard" ? "~$0.30" : "~$0.62";
+    }
+  };
+
+  const getBadge = (): VideoItem["badge"] => {
+    if (selectedPath === "full_ai") return leanEnabled ? "lean4_verified" : "ai_verified";
+    return "teacher_verified";
+  };
+
+  // Path A: Full AI pipeline
+  const handleFullAI = () => {
     if (!problem.trim()) return;
-
-    // Mock pipeline stages
     setJobStatus("generating");
-    console.log("[Orbital] Generating video:", { problem, detailLevel, notes });
 
-    // Simulate pipeline progress
+    // Simulate full pipeline
     setTimeout(() => setJobStatus("circle"), 2000);
-    setTimeout(() => setJobStatus("rendering"), 5000);
+    setTimeout(() => {
+      if (leanEnabled) {
+        setJobStatus("lean");
+        setTimeout(() => setJobStatus("tts"), 3000);
+      } else {
+        setJobStatus("tts");
+      }
+    }, 5000);
+    setTimeout(() => setJobStatus("rendering"), leanEnabled ? 9000 : 7000);
     setTimeout(() => {
       setJobStatus("complete");
-      const newVideo: VideoItem = {
-        id: crypto.randomUUID(),
-        problem: problem.trim(),
-        detailLevel,
-        status: "complete",
-        createdAt: new Date().toISOString(),
-        duration: detailLevel === "quick" ? 90 : detailLevel === "standard" ? 210 : 360,
-        videoUrl: null,
-      };
-      setVideos((prev) => [newVideo, ...prev]);
-      setProblem("");
-      setNotes("");
-    }, 8000);
+      addVideo(getBadge());
+    }, leanEnabled ? 12000 : 10000);
+  };
+
+  // Path B: AI draft → editor
+  const handleAIReview = () => {
+    if (!problem.trim()) return;
+    setJobStatus("generating");
+
+    // Simulate script generation, then open editor
+    setTimeout(() => {
+      const script = mockAIScript(problem, detailLevel);
+      setScriptSteps(script);
+      setJobStatus("reviewing");
+      setView("editor");
+    }, 2000);
+  };
+
+  // Path C: Professor provides solution
+  const handleProfessorSource = () => {
+    if (!problem.trim()) return;
+    setView("solution_input");
+  };
+
+  // Handle solution submission (Path C)
+  const handleSolutionSubmit = (steps: SolutionStep[], images: File[]) => {
+    setIsProcessingSolution(true);
+
+    if (images.length > 0) {
+      // TODO: OCR processing — for now mock it
+      setTimeout(() => {
+        const mockExtracted: SolutionStep[] = [
+          { description: "Set up the equation", math: "x^2 + 2x - 3 = 0" },
+          { description: "Factor", math: "(x+3)(x-1) = 0" },
+          { description: "Solve", math: "x = -3, \\quad x = 1" },
+        ];
+        const script = mockProfessorStepsToScript(mockExtracted, problem);
+        setScriptSteps(script);
+        setIsProcessingSolution(false);
+        setView("editor");
+      }, 3000);
+    } else {
+      // Convert typed steps to script
+      setTimeout(() => {
+        const script = mockProfessorStepsToScript(steps, problem);
+        setScriptSteps(script);
+        setIsProcessingSolution(false);
+        setView("editor");
+      }, 1500);
+    }
+  };
+
+  // Handle script approval (from editor)
+  const handleApprove = (steps: ScriptStep[]) => {
+    setView("main");
+    setJobStatus("tts");
+    setScriptSteps(steps);
+
+    // Simulate TTS → render → complete
+    setTimeout(() => setJobStatus("rendering"), 3000);
+    setTimeout(() => {
+      setJobStatus("complete");
+      addVideo("teacher_verified");
+    }, 6000);
+  };
+
+  const addVideo = (badge: VideoItem["badge"]) => {
+    const newVideo: VideoItem = {
+      id: crypto.randomUUID(),
+      problem: problem.trim(),
+      detailLevel,
+      path: selectedPath || "full_ai",
+      status: "complete",
+      badge,
+      createdAt: new Date().toISOString(),
+      duration: detailLevel === "quick" ? 90 : detailLevel === "standard" ? 210 : 360,
+      videoUrl: null,
+    };
+    setVideos((prev) => [newVideo, ...prev]);
+    setProblem("");
+    setNotes("");
+    setSelectedPath(null);
+  };
+
+  const handleGenerate = () => {
+    switch (selectedPath) {
+      case "full_ai": return handleFullAI();
+      case "ai_review": return handleAIReview();
+      case "professor_source": return handleProfessorSource();
+    }
   };
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/");
   };
+
+  const isGenerating = jobStatus !== "idle" && jobStatus !== "complete" && jobStatus !== "error" && jobStatus !== "reviewing";
 
   if (loading) {
     return (
@@ -159,7 +308,7 @@ export default function ProfessorDashboardClient() {
               ].map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => { setActiveTab(tab.key); setView("main"); }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
                     activeTab === tab.key
                       ? "bg-white/[0.08] text-white"
@@ -186,7 +335,7 @@ export default function ProfessorDashboardClient() {
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         {/* Dashboard Tab */}
-        {activeTab === "dashboard" && (
+        {activeTab === "dashboard" && view === "main" && (
           <div className="space-y-8">
             {/* Problem Submission */}
             <div className="bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.08] rounded-2xl p-8">
@@ -204,6 +353,11 @@ export default function ProfessorDashboardClient() {
                   rows={3}
                   className="w-full px-4 py-3.5 rounded-xl bg-black/40 text-white placeholder-gray-600 border border-white/[0.08] focus:border-violet-500/50 focus:outline-none resize-none text-lg"
                 />
+              </div>
+
+              {/* Path Selection */}
+              <div className="mb-6">
+                <PathSelector selected={selectedPath} onSelect={setSelectedPath} />
               </div>
 
               {/* Detail Level */}
@@ -224,9 +378,7 @@ export default function ProfessorDashboardClient() {
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span>{level.icon}</span>
-                        <span className={`font-medium ${
-                          detailLevel === level.value ? "text-violet-300" : "text-white"
-                        }`}>
+                        <span className={`font-medium ${detailLevel === level.value ? "text-violet-300" : "text-white"}`}>
                           {level.label}
                         </span>
                       </div>
@@ -235,6 +387,28 @@ export default function ProfessorDashboardClient() {
                   ))}
                 </div>
               </div>
+
+              {/* Lean toggle (only for Path A) */}
+              {selectedPath === "full_ai" && (
+                <div className="mb-6 flex items-center gap-3">
+                  <button
+                    onClick={() => setLeanEnabled(!leanEnabled)}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      leanEnabled ? "bg-violet-600" : "bg-white/[0.1]"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                        leanEnabled ? "translate-x-[22px]" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                  <div>
+                    <span className="text-sm text-gray-300">Verify with Lean 4</span>
+                    <p className="text-xs text-gray-600">Formal mathematical proof (+~$0.10)</p>
+                  </div>
+                </div>
+              )}
 
               {/* Notes (collapsible) */}
               <div className="mb-6">
@@ -262,20 +436,18 @@ export default function ProfessorDashboardClient() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleGenerate}
-                  disabled={!problem.trim() || (jobStatus !== "idle" && jobStatus !== "complete" && jobStatus !== "error")}
+                  disabled={!problem.trim() || !selectedPath || isGenerating}
                   className="flex items-center gap-2 px-8 py-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {Icons.sparkles}
-                  Generate Video
+                  {selectedPath === "professor_source" ? "Provide My Solution" : "Generate Video"}
                 </button>
                 {jobStatus !== "idle" && (
                   <div className="flex items-center gap-3">
-                    {jobStatus !== "complete" && jobStatus !== "error" && (
+                    {isGenerating && (
                       <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
                     )}
-                    {jobStatus === "complete" && (
-                      <span className="text-green-400">✓</span>
-                    )}
+                    {jobStatus === "complete" && <span className="text-green-400">✓</span>}
                     <span className={`text-sm ${STATUS_LABELS[jobStatus].color}`}>
                       {STATUS_LABELS[jobStatus].label}
                     </span>
@@ -283,17 +455,20 @@ export default function ProfessorDashboardClient() {
                 )}
               </div>
 
-              {/* Cost Estimate */}
-              <div className="mt-4 flex items-center gap-2 text-xs text-gray-600">
-                <span>Estimated cost:</span>
-                <span className="text-gray-400">
-                  {detailLevel === "quick" ? "~$0.35" : detailLevel === "standard" ? "~$0.55" : "~$0.75"}
-                </span>
-                <span>•</span>
-                <span>
-                  {detailLevel === "quick" ? "~90s video" : detailLevel === "standard" ? "~3-4 min video" : "~6+ min video"}
-                </span>
-              </div>
+              {/* Cost + Badge Estimate */}
+              {selectedPath && (
+                <div className="mt-4 flex items-center gap-3 text-xs text-gray-600">
+                  <span>Est. cost: <span className="text-gray-400">{getCostEstimate()}</span></span>
+                  <span>•</span>
+                  <span className={`px-2 py-0.5 rounded-full ${BADGE_LABELS[getBadge()].color}`}>
+                    {BADGE_LABELS[getBadge()].icon} {BADGE_LABELS[getBadge()].label}
+                  </span>
+                  <span>•</span>
+                  <span>
+                    {detailLevel === "quick" ? "~90s video" : detailLevel === "standard" ? "~3-4 min video" : "~6+ min video"}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Recent Videos */}
@@ -311,15 +486,14 @@ export default function ProfessorDashboardClient() {
                       key={video.id}
                       className="bg-white/[0.03] border border-white/[0.08] rounded-xl p-5 hover:bg-white/[0.05] transition-all cursor-pointer"
                     >
-                      {/* Thumbnail placeholder */}
                       <div className="aspect-video bg-white/[0.04] rounded-lg mb-4 flex items-center justify-center text-gray-600">
                         {Icons.play}
                       </div>
                       <p className="text-sm text-white font-medium mb-2 line-clamp-2">{video.problem}</p>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{new Date(video.createdAt).toLocaleDateString()}</span>
-                        <span className={STATUS_LABELS[video.status].color}>
-                          {STATUS_LABELS[video.status].label}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-500">{new Date(video.createdAt).toLocaleDateString()}</span>
+                        <span className={`px-2 py-0.5 rounded-full ${BADGE_LABELS[video.badge].color}`}>
+                          {BADGE_LABELS[video.badge].icon} {BADGE_LABELS[video.badge].label}
                         </span>
                       </div>
                       {video.duration && (
@@ -333,6 +507,28 @@ export default function ProfessorDashboardClient() {
               )}
             </div>
           </div>
+        )}
+
+        {/* Script Editor View (Path B & C) */}
+        {activeTab === "dashboard" && view === "editor" && (
+          <ScriptEditor
+            steps={scriptSteps}
+            onStepsChange={setScriptSteps}
+            onApprove={handleApprove}
+            onBack={() => { setView("main"); setJobStatus("idle"); }}
+            problem={problem}
+            badge={getBadge()}
+          />
+        )}
+
+        {/* Solution Input View (Path C) */}
+        {activeTab === "dashboard" && view === "solution_input" && (
+          <SolutionInput
+            onSubmit={handleSolutionSubmit}
+            onBack={() => { setView("main"); setJobStatus("idle"); }}
+            problem={problem}
+            isProcessing={isProcessingSolution}
+          />
         )}
 
         {/* Library Tab */}
@@ -354,10 +550,15 @@ export default function ProfessorDashboardClient() {
                       {Icons.play}
                     </div>
                     <p className="text-sm text-white font-medium mb-2 line-clamp-2">{video.problem}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span className="capitalize">{video.detailLevel}</span>
-                      <span>•</span>
-                      <span>{new Date(video.createdAt).toLocaleDateString()}</span>
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 text-gray-500">
+                        <span className="capitalize">{video.detailLevel}</span>
+                        <span>•</span>
+                        <span>{new Date(video.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full ${BADGE_LABELS[video.badge].color}`}>
+                        {BADGE_LABELS[video.badge].icon}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -377,8 +578,8 @@ export default function ProfessorDashboardClient() {
                 <p className="text-xs text-gray-600 mt-1">Professor account</p>
               </div>
               <div className="border-t border-white/[0.06] pt-6">
-                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-3">Default Detail Level</h3>
-                <p className="text-sm text-gray-500">Coming soon — set your preferred default for new videos.</p>
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-3">Default Settings</h3>
+                <p className="text-sm text-gray-500">Coming soon — set your preferred defaults for detail level, Lean verification, and path.</p>
               </div>
               <div className="border-t border-white/[0.06] pt-6">
                 <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-3">API Keys (BYOK)</h3>

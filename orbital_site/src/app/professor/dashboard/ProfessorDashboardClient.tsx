@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
+import { CourseBuilder } from "@/components/CourseBuilder";
 import { PathSelector, type PipelinePath } from "@/components/PathSelector";
 import { ScriptEditor, type ScriptStep } from "@/components/ScriptEditor";
 import { SolutionInput, type SolutionStep } from "@/components/SolutionInput";
@@ -137,7 +138,7 @@ export default function ProfessorDashboardClient() {
   const [notes, setNotes] = useState("");
   const [jobStatus, setJobStatus] = useState<JobStatus>("idle");
   const [videos, setVideos] = useState<VideoItem[]>([]);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "library" | "settings">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "library" | "courses" | "settings">("dashboard");
 
   // Editor state
   const [view, setView] = useState<DashboardView>("main");
@@ -304,6 +305,7 @@ export default function ProfessorDashboardClient() {
               {[
                 { key: "dashboard" as const, label: "Dashboard", icon: Icons.sparkles },
                 { key: "library" as const, label: "Library", icon: Icons.video },
+                { key: "courses" as const, label: "Courses", icon: Icons.video },
                 { key: "settings" as const, label: "Settings", icon: Icons.settings },
               ].map((tab) => (
                 <button
@@ -568,6 +570,11 @@ export default function ProfessorDashboardClient() {
         )}
 
         {/* Settings Tab */}
+
+        {/* Courses Tab */}
+        {activeTab === "courses" && (
+          <CourseBuilder videos={[]} />
+        )}
         {activeTab === "settings" && (
           <div>
             <h2 className="text-xl font-semibold mb-6">Settings</h2>

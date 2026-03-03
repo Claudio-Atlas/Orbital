@@ -86,7 +86,7 @@ class TTSResultWithTimestamps:
 
 | Provider | Status | Voice | SSML | Timestamps | Cost/1K chars |
 |----------|--------|-------|------|------------|---------------|
-| **ElevenLabs** | ✅ Active | Allison (tutorial), Hale (marketing) | ✅ `<break>` | ✅ `with-timestamps` | ~$0.30 |
+| **ElevenLabs** | ✅ Active | Allison (tutorial), Hale (marketing) | ✅ `<break>` | ✅ `with-timestamps` | $0.08-0.10/1K chars |
 | **Fish Audio** | ❌ Blocked (needs business bank) | TBD | ❌ | ❌ | ~$0.015 |
 | **OpenAI TTS** | 🔜 Planned | nova, alloy, etc. | ❌ | ❌ | ~$0.015 |
 | **Local (Piper)** | 🔜 Future (Mac Mini #2) | Custom | ❌ | ❌ | Free |
@@ -244,9 +244,9 @@ To Stage 5:
 
 | Detail Level | ~Chars | API Calls | Cost (ElevenLabs) |
 |---|---|---|---|
-| Quick (90s) | ~1,500 | 1 | ~$0.005 |
-| Standard (3-4min) | ~3,500 | 1 | ~$0.011 |
-| Detailed (6+min) | ~7,000 | 2 | ~$0.021 |
+| Quick (90s) | ~1,500 | 1 | ~$0.12 |
+| Standard (3-4min) | ~3,500 | 1 | ~$0.28 |
+| Detailed (6+min) | ~7,000 | 2 | ~$0.56 |
 
 ## Known Issues
 

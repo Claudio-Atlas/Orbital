@@ -190,13 +190,26 @@ class OrbitalWorker:
             log.info(f"✅ Job {job_id[:8]} complete! Cost: ${total_cost:.3f}")
             
         except Exception as e:
-            log.error(f"❌ Job {job_id[:8]} failed: {e}")
-            self.update_job(job_id,
-                status="failed",
-                stage_detail=f"Error: {str(e)[:200]}",
-                error=str(e),
-                retry_count=job.get("retry_count", 0) + 1
-            )
+            retries = job.get("retry_count", 0)
+            err_str = str(e)
+            transient = any(k in err_str.lower() for k in ["timeout", "rate limit", "connection", "503", "502"])
+            
+            if transient and retries < 2:
+                log.warning(f"⚠️ Job {job_id[:8]} transient error (retry {retries+1}/2): {e}")
+                self.update_job(job_id,
+                    status="queued",
+                    stage_detail=f"Retrying ({retries+1}/2)...",
+                    error=None,
+                    retry_count=retries + 1
+                )
+            else:
+                log.error(f"❌ Job {job_id[:8]} failed: {e}")
+                self.update_job(job_id,
+                    status="failed",
+                    stage_detail=f"Error: {err_str[:200]}",
+                    error=err_str,
+                    retry_count=retries + 1
+                )
     
     # ─── Stage Implementations ───
     

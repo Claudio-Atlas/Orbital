@@ -137,7 +137,7 @@ def _build_graph(cfg):
 
 
 class SyncedShortScene(Scene):
-    STEPS_DATA = [{'type': 'graph', 'content': '', 'narration': "See this curve? It's changing — getting steeper, flatter, rising, falling. The derivative tells us exactly how fast, at every single point.", 'mode': 'replace', 'diagram': {'kind': 'tangent_line', 'x_range': [-4, 4, 1], 'y_range': [-8, 30, 5], 'functions': [{'expr': '3*x**2 + 2*x - 5', 'color': '#22D3EE', 'label': 'f(x)'}], 'tangent': {'at_x': 1, 'color': '#39FF14', 'length': 3}}, 'persistent': True, 'step': 0, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_00.mp3', 'duration': 13.214}, {'type': 'math', 'content': 'f(x) = 3x^2 + 2x - 5', 'narration': "Here's our function — f of x equals 3x squared plus 2x minus 5. Let's find its derivative.", 'mode': 'replace', 'step': 1, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_01.mp3', 'duration': 9.916}, {'type': 'box', 'content': '\\frac{d}{dx}[x^n] = n \\cdot x^{n-1}', 'narration': 'Our main tool is the power rule. The exponent comes down as a multiplier, and the new exponent is one less than before.', 'mode': 'replace', 'label': 'Power Rule', 'step': 2, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_02.mp3', 'duration': 10.381}, {'type': 'math', 'content': '\\frac{d}{dx}[3x^2] = 3 \\cdot 2 \\cdot x^{2-1} = 6x', 'narration': 'First term — 3x squared. The 2 comes down, multiplies the 3, and the exponent drops to 1. That gives us 6x.', 'mode': 'replace', 'step': 3, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_03.mp3', 'duration': 11.263}, {'type': 'math', 'content': '\\frac{d}{dx}[2x] = 2 \\cdot 1 \\cdot x^{0} = 2', 'narration': 'Second term — 2x is really 2x to the first. The 1 comes down, exponent drops to zero, and x to the zero is just 1. So we get 2.', 'mode': 'replace', 'step': 4, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_04.mp3', 'duration': 13.632}, {'type': 'math', 'content': '\\frac{d}{dx}[-5] = 0', 'narration': 'Last term — negative 5 is just a constant. No x, no change. The derivative of any constant is zero.', 'mode': 'replace', 'step': 5, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_05.mp3', 'duration': 10.706}, {'type': 'box', 'content': "f'(x) = 6x + 2", 'narration': 'Combine them all — 6x plus 2 plus zero. The derivative is f prime of x equals 6x plus 2.', 'mode': 'replace', 'label': 'Answer', 'step': 6, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_06.mp3', 'duration': 9.638}, {'type': 'box', 'content': "f'(1) = 6(1) + 2 = 8", 'narration': "And that green tangent line? At x equals 1, f prime of 1 is 6 times 1 plus 2 — that's 8. The derivative gives us the exact slope of the curve at any point.", 'mode': 'replace', 'label': 'Slope at x = 1', 'step': 7, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_find_the_derivative_of_f_x_3x_2_2x/audio/step_07.mp3', 'duration': 13.725}]
+    STEPS_DATA = [{'type': 'box', 'label': '', 'content': '\\text{One rule. Every power of } x.', 'narration': "One rule handles every power of x you'll ever differentiate. Here's how it works.", 'mode': 'replace', 'step': 0, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_00.mp3', 'duration': 7.177}, {'type': 'box', 'label': 'Power Rule', 'content': '\\frac{d}{dx}\\left[x^n\\right] = n \\cdot x^{n-1}', 'narration': 'The power rule: the exponent becomes a multiplier, and the power decreases by one.', 'mode': 'replace', 'step': 1, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_01.mp3', 'duration': 7.269}, {'type': 'math', 'content': '\\frac{d}{dx}\\left[x^2\\right] = 2x^{2-1} = 2x', 'narration': "Start simple — x squared. The 2 comes down as a multiplier, exponent drops to 1. That's 2x.", 'mode': 'replace', 'step': 2, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_02.mp3', 'duration': 9.499}, {'type': 'math', 'content': '\\begin{aligned} \\frac{d}{dx}\\left[x^3\\right] &= 3x^2 \\\\[6pt] \\frac{d}{dx}\\left[x^4\\right] &= 4x^3 \\end{aligned}', 'narration': 'Same pattern, any power: x cubed gives 3x squared, x to the fourth gives 4x cubed.', 'mode': 'replace', 'step': 3, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_03.mp3', 'duration': 10.102}, {'type': 'box', 'label': 'Coefficient Rule', 'content': "\\frac{d}{dx}\\left[c \\cdot f(x)\\right] = c \\cdot f'(x)", 'narration': "What about coefficients? Constants pull out front — then apply the power rule to what's left.", 'mode': 'replace', 'step': 4, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_04.mp3', 'duration': 7.641}, {'type': 'math', 'content': '\\frac{d}{dx}\\left[5x^3\\right] = 5 \\cdot 3x^2 = 15x^2', 'narration': "So 5x cubed: power rule gives 3x squared, multiply by 5 — that's 15x squared.", 'mode': 'replace', 'step': 5, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_05.mp3', 'duration': 8.895}, {'type': 'box', 'label': 'ORBITAL', 'content': '\\text{Next: a full problem.}', 'narration': "Now try a full problem — that's the next video.", 'mode': 'replace', 'step': 6, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_the_power_rule/audio/step_06.mp3', 'duration': 5.0}]
 
     def construct(self):
         self.camera.background_color = "#000000"
@@ -281,17 +281,41 @@ class SyncedShortScene(Scene):
         if graph_mobs:
             self.play(*[FadeOut(m) for m in graph_mobs], run_time=0.4)
 
-        # Orbital end card with glow
-        end_text = Text("ORBITAL", font_size=28, color=WHITE, weight=BOLD)
-        end_text.move_to([0, 0, 0])
-        # Glow: blurred copy behind the text
-        glow = end_text.copy()
-        glow.set_color("#8B5CF6")
-        glow.set_opacity(0.5)
-        glow.scale(1.15)
-        glow.set_stroke(color="#8B5CF6", width=8, opacity=0.3)
-        end_group = VGroup(glow, end_text)
-        end_group.move_to([0, 0, 0])
-        self.play(FadeIn(end_group, scale=0.8), run_time=0.5)
+        # ── Orbital logo end card ──
+        # Planet
+        planet_core = Circle(radius=0.45, color=WHITE, stroke_width=7)
+        planet_glow = Circle(radius=0.52, color="#8B5CF6", stroke_width=12, stroke_opacity=0.15)
+        for r_off, op, w in [(0.03, 0.5, 5), (0.06, 0.25, 3), (0.09, 0.12, 2)]:
+            planet_core.add(Circle(radius=0.45+r_off, color=WHITE, stroke_width=w, stroke_opacity=op))
+        
+        # Orbit rings
+        orbit_ring = Ellipse(width=1.7, height=0.55, color=WHITE, stroke_width=2)
+        orbit_ring.rotate(-30 * DEGREES)
+        orbit_glow = Ellipse(width=1.75, height=0.57, color="#8B5CF6", stroke_width=8, stroke_opacity=0.15)
+        orbit_glow.rotate(-30 * DEGREES)
+        orbit_inner = Ellipse(width=1.55, height=0.48, color="#22D3EE", stroke_width=1.5, stroke_opacity=0.85)
+        orbit_inner.rotate(-30 * DEGREES)
+        
+        # Satellite dot
+        angle = 50 * DEGREES
+        sat_x = 0.85 * np.cos(angle) * np.cos(-30*DEGREES) - 0.28 * np.sin(angle) * np.sin(-30*DEGREES)
+        sat_y = 0.85 * np.cos(angle) * np.sin(-30*DEGREES) + 0.28 * np.sin(angle) * np.cos(-30*DEGREES)
+        sat_glow = Dot([sat_x, sat_y, 0], radius=0.15, color="#22D3EE", fill_opacity=0.25)
+        sat_core = Dot([sat_x, sat_y, 0], radius=0.05, color=WHITE, fill_opacity=1.0)
+        
+        logo = VGroup(planet_glow, planet_core, orbit_glow, orbit_ring, orbit_inner, sat_glow, sat_core)
+        logo.move_to([0, 0.6, 0])
+        
+        # Wordmark
+        wordmark = Text("ORBITAL", font_size=24, color=WHITE, weight=BOLD)
+        wordmark.next_to(logo, DOWN, buff=0.35)
+        wm_glow = wordmark.copy().set_color("#8B5CF6").set_opacity(0.4).scale(1.08)
+        wm_glow.set_stroke(color="#8B5CF6", width=6, opacity=0.2)
+        
+        end_card = VGroup(logo, wm_glow, wordmark)
+        end_card.move_to([0, 0, 0])
+        
+        self.play(FadeIn(logo, scale=0.7), run_time=0.6)
+        self.play(FadeIn(VGroup(wm_glow, wordmark), shift=UP*0.2), run_time=0.4)
         self.wait(1.5)
-        self.play(FadeOut(end_group), run_time=0.3)
+        self.play(FadeOut(end_card), run_time=0.3)

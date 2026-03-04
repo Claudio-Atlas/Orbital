@@ -15,8 +15,32 @@ Review a Stage 1 script for mathematical correctness, pedagogical quality, and s
 | **Mathematician B (Breadth)** | claude-opus-4 | Sanity-check answer, consider alternative approaches, edge cases |
 | **Pedagogy Expert** | claude-opus-4 | Evaluate explanation clarity, pacing, narration tone, common mistakes |
 | **Student Simulator** | claude-sonnet-4 | Read as a student: what's confusing? where do you get lost? |
+| **Short-Form Content Expert** | claude-sonnet-4 | Video pacing, retention, dead time, hook strength, watch-through rate |
+| **Visual Director** | claude-sonnet-4 | Frame composition, math sizing/spacing, visual hierarchy, "does this look viral?" |
 
-**Why 3 Opus + 1 Sonnet:** Mathematicians and Pedagogy make *judgments* requiring deep reasoning. The Student asks *questions* — Sonnet is sufficient and keeps costs down.
+**Why 3 Opus + 3 Sonnet:** Mathematicians and Pedagogy make *judgments* requiring deep reasoning. The Student, Content Expert, and Visual Director evaluate *experience* — Sonnet is sufficient and keeps costs down.
+
+### Short-Form Content Expert Guidelines
+The Content Expert reviews from a **viewer retention** perspective:
+- **Pacing:** Is each step on screen long enough to absorb? Too fast = viewer drops. Too slow = viewer scrolls.
+- **Dead time:** Any silence or empty screen > 1.5s is a retention killer. Flag it.
+- **Hook strength:** Does the first 2-3 seconds grab attention? Would you stop scrolling?
+- **Narration density:** Each step narration should feel complete, not rushed. If a calculation is shown, the narration must walk through it — don't just flash math and move on.
+- **End card:** Should feel like a natural stopping point, not awkward dead air.
+- **Word count check:** Total narration words ÷ 2.5 ≈ expected seconds. If video length >> expected narration time, there's dead time.
+- **The "would I watch this twice?" test:** If a step is confusing on first watch, it needs more explanation.
+
+### Visual Director Guidelines
+The Visual Director reviews from a **cinematography/composition** perspective for viral short-form math:
+- **Frame utilization:** Math should fill 60-70% of the frame width. Tiny equations floating in empty space = amateur. Flag any step where content is too small.
+- **Visual hierarchy:** The most important element should be the biggest. When showing a calculation, the result should pop.
+- **Equation layout:** Long multi-step equations MUST break across lines at `=` signs. Single-line equations that span the full width are unreadable on mobile.
+- **Spacing & breathing room:** Elements need consistent margins. Nothing should feel cramped or floating in a void.
+- **Color contrast:** Neon on black is the brand. Key results should use accent colors (cyan `#22D3EE` or green `#39FF14`).
+- **"Scroll-stop" test:** Would this frame make someone stop scrolling? If a step looks like a textbook screenshot, it fails.
+- **Mobile-first:** Everything must be readable on a phone. Font size minimum ~28pt equivalent in Manim.
+- **Transition feel:** Each step should feel like a reveal, not a slide change. The Write animation should feel intentional.
+- **For each step, provide a LAYOUT NOTE** describing ideal sizing/positioning if the default would look wrong.
 
 ## Protocol: Single Session, 4 Rounds
 

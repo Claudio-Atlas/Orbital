@@ -114,6 +114,20 @@ const Icons = {
 export default function HomePage() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistName, setWaitlistName] = useState("");
+  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+
+  const handleWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!waitlistEmail) return;
+    setWaitlistLoading(true);
+    // For now just simulate — wire up to Supabase/API later
+    await new Promise(r => setTimeout(r, 800));
+    setWaitlistSubmitted(true);
+    setWaitlistLoading(false);
+  };
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -163,22 +177,24 @@ export default function HomePage() {
               {isDark ? Icons.sun : Icons.moon}
             </button>
 
-            {/* Auth Links */}
+            {/* Videos link */}
             <a
-              href="/login"
+              href="/watch"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                 isDark 
                   ? "text-gray-300 hover:text-white hover:bg-white/10" 
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               }`}
             >
-              Log in
+              Videos
             </a>
+
+            {/* Notify Me */}
             <a
-              href="/signup"
-              className="px-4 py-2 text-sm font-medium rounded-lg bg-violet-600 text-white hover:bg-violet-500 transition-colors"
+              href="#waitlist"
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-cyan-500 text-black hover:bg-cyan-400 transition-colors"
             >
-              Sign up
+              Get Notified
             </a>
           </div>
         </div>
@@ -318,9 +334,9 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <button 
-                  onClick={() => setShowLoginModal(true)}
-                  className={`w-full py-4 rounded-xl font-semibold transition-all ${
+                <a 
+                  href="#waitlist"
+                  className={`w-full py-4 rounded-xl font-semibold transition-all text-center block ${
                   key === "standard"
                     ? isDark
                       ? "bg-black text-white hover:bg-gray-900"
@@ -329,11 +345,72 @@ export default function HomePage() {
                       ? "bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08]"
                       : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
                 }`}>
-                  Buy Now
-                </button>
+                  Coming Soon
+                </a>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Waitlist Section */}
+      <section id="waitlist" className={`w-full py-32 border-t ${isDark ? "border-white/[0.05]" : "border-gray-200"}`}>
+        <div className="w-full max-w-2xl mx-auto px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-5">
+            <span className={`bg-clip-text text-transparent ${
+              isDark 
+                ? "bg-gradient-to-r from-cyan-400 to-violet-400" 
+                : "bg-gradient-to-r from-cyan-600 to-violet-600"
+            }`}>
+              Be the first to know
+            </span>
+          </h2>
+          <p className={`text-lg mb-12 ${isDark ? "text-gray-500" : "text-gray-600"}`}>
+            We&apos;re launching soon. Drop your info and we&apos;ll let you know when Orbital is live.
+          </p>
+          
+          {waitlistSubmitted ? (
+            <div className={`rounded-2xl p-8 ${
+              isDark ? "bg-white/[0.03] border border-white/[0.08]" : "bg-gray-100 border border-gray-200"
+            }`}>
+              <div className="text-4xl mb-4">🎉</div>
+              <h3 className="text-xl font-semibold mb-2">You&apos;re on the list!</h3>
+              <p className={isDark ? "text-gray-400" : "text-gray-600"}>We&apos;ll notify you as soon as Orbital launches.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleWaitlist} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+              <input
+                type="text"
+                placeholder="Your name"
+                value={waitlistName}
+                onChange={(e) => setWaitlistName(e.target.value)}
+                className={`flex-1 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
+                  isDark 
+                    ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-cyan-500/50" 
+                    : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500"
+                }`}
+              />
+              <input
+                type="email"
+                placeholder="Your email"
+                value={waitlistEmail}
+                onChange={(e) => setWaitlistEmail(e.target.value)}
+                required
+                className={`flex-1 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
+                  isDark 
+                    ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-cyan-500/50" 
+                    : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500"
+                }`}
+              />
+              <button
+                type="submit"
+                disabled={waitlistLoading}
+                className="px-8 py-4 rounded-xl font-semibold bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-50 whitespace-nowrap"
+              >
+                {waitlistLoading ? "..." : "Notify Me"}
+              </button>
+            </form>
+          )}
         </div>
       </section>
 

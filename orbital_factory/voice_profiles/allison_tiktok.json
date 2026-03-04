@@ -1,25 +1,27 @@
 {
   "name": "Allison TikTok",
   "description": "Warm, confident, slightly playful TA voice for TikTok marketing content",
-  "version": "1.0",
+  "version": "2.0",
   "created": "2026-03-03",
+  "updated": "2026-03-03",
   "voice_id": "5jVVMAv2LzffTcLGarKh",
   "model": "eleven_turbo_v2_5",
   "usage": "TikTok/Reels marketing videos ONLY. Not for product tutorials.",
 
   "elevenlabs_settings": {
-    "stability": 0.40,
-    "similarity_boost": 0.70,
-    "style": 0.35,
-    "speed": 0.85
+    "stability": 0.50,
+    "similarity_boost": 0.75,
+    "style": 0.25,
+    "speed": 0.90
   },
 
   "notes": [
-    "Lower stability (0.40 vs default ~0.50) = more expressive, natural variation",
-    "Higher style (0.35) = more personality in delivery",
-    "Slightly slower (0.85) = warmer, more intentional pacing",
-    "similarity_boost at 0.70 keeps voice consistent but allows expression",
-    "This is the AD voice — warm, engaging, 'cool TA' energy",
-    "For product tutorials, use default Allison settings (stability 0.50, style 0.25, speed 1.0)"
+    "v2.0: Locked after A/B/C/D testing with Clayton (2026-03-03)",
+    "Option C chosen: stable, warm, natural — not choppy or too deep",
+    "stability 0.50 = consistent across per-step API calls",
+    "speed 0.90 = slightly slower than default for intentional pacing",
+    "style 0.25 = subtle personality without being flirty",
+    "similarity_boost 0.75 = keeps voice consistent",
+    "Per-step TTS (6 separate calls) — stability matters more than single-call approach"
   ]
 }

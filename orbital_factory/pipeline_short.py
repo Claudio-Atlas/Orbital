@@ -198,57 +198,69 @@ def _verify_script_sonnet(script: dict, difficulty: str) -> tuple[bool, str]:
 
 def _generate_all_tts(steps: list, audio_dir: Path) -> list:
     """
-    Generate TTS for all narration lines in ONE ElevenLabs API call
-    (paragraph with \\n\\n breaks), then split by silence detection.
+    Generate TTS for each narration line as a SEPARATE ElevenLabs API call.
+    This ensures each segment has exact duration — no silence-splitting issues.
     Returns manifest list enriched with audio_path + duration.
     """
     audio_dir.mkdir(parents=True, exist_ok=True)
 
-    narrations = [s.get("narration", "") for s in steps]
-    # Filter empty narrations
-    non_empty = [(i, n) for i, n in enumerate(narrations) if n.strip()]
+    from elevenlabs import ElevenLabs, VoiceSettings
 
-    if not non_empty:
-        # No audio needed — assign zero durations
-        return [dict(step, audio_path="", duration=2.0) for step in steps]
-
-    # Build single combined text (paragraph breaks)
-    combined_text = "\n\n".join(n for _, n in non_empty)
-
-    combined_path = audio_dir / "combined_narration.mp3"
-    print(f"  🎙️  Calling ElevenLabs (1 API call, {len(non_empty)} lines)...")
-
-    from elevenlabs import ElevenLabs
+    # Load TikTok voice profile
+    voice_profile_path = FACTORY_ROOT / "voice_profiles" / "allison_tiktok.json"
+    if voice_profile_path.exists():
+        vp = json.loads(voice_profile_path.read_text())
+        vs = vp.get("elevenlabs_settings", {})
+    else:
+        vs = {}
 
     client = ElevenLabs(api_key=ELEVEN_API_KEY)
-    audio_gen = client.text_to_speech.convert(
-        text=combined_text,
-        voice_id=ALLISON_VOICE_ID,
-        model_id=ELEVEN_MODEL,
-        output_format="mp3_44100_128",
+    voice_settings = VoiceSettings(
+        stability=vs.get("stability", 0.40),
+        similarity_boost=vs.get("similarity_boost", 0.70),
+        style=vs.get("style", 0.35),
+        speed=vs.get("speed", 0.85),
     )
-    with open(combined_path, "wb") as fh:
-        for chunk in audio_gen:
-            fh.write(chunk)
 
-    print(f"  ✓ Combined audio saved: {combined_path}")
+    MIN_STEP_DURATION = 5.0   # minimum seconds per step (enough to read)
+    BREATHING_ROOM    = 1.0   # extra hold after audio finishes
 
-    # Split by silence
-    per_line_paths = _split_by_silence(combined_path, audio_dir, [n for _, n in non_empty])
-
-    # Build manifest
     manifest = []
-    line_iter = iter(per_line_paths)
+    narration_count = sum(1 for s in steps if s.get("narration", "").strip())
+    print(f"  🎙️  Calling ElevenLabs ({narration_count} API calls, per-step)...")
+
     for i, step in enumerate(steps):
-        if step.get("narration", "").strip():
-            ap, dur = next(line_iter)
-        else:
-            ap, dur = "", 2.0
+        narration = step.get("narration", "").strip()
+        if not narration:
+            manifest.append({
+                **step, "step": i, "audio_path": "", "duration": MIN_STEP_DURATION,
+            })
+            continue
+
+        out_path = audio_dir / f"step_{i:02d}.mp3"
+        audio_gen = client.text_to_speech.convert(
+            text=narration,
+            voice_id=ALLISON_VOICE_ID,
+            model_id=ELEVEN_MODEL,
+            output_format="mp3_44100_128",
+            voice_settings=voice_settings,
+        )
+        with open(out_path, "wb") as fh:
+            for chunk in audio_gen:
+                fh.write(chunk)
+
+        # Get exact duration
+        audio_seg = AudioSegment.from_mp3(out_path)
+        audio_dur = len(audio_seg) / 1000.0
+
+        # Duration = audio + breathing room, at least MIN_STEP_DURATION
+        step_dur = max(MIN_STEP_DURATION, audio_dur + BREATHING_ROOM)
+
         manifest.append({
             **step,
             "step":       i,
-            "audio_path": str(ap),
-            "duration":   dur,
+            "audio_path": str(out_path),
+            "duration":   step_dur,
         })
 
     return manifest
@@ -266,11 +278,11 @@ def _split_by_silence(combined_path: Path, audio_dir: Path, narrations: list) ->
     try:
         from pydub.silence import split_on_silence, detect_silence
 
-        # Find silence gaps ≥350ms
+        # Find silence gaps ≥250ms (lowered for better splitting)
         silence_ranges = detect_silence(
             combined,
-            min_silence_len=350,
-            silence_thresh=combined.dBFS - 18,
+            min_silence_len=250,
+            silence_thresh=combined.dBFS - 14,
         )
 
         if len(silence_ranges) >= len(narrations) - 1:
@@ -322,7 +334,7 @@ def _render_content_scene(manifest: list, job_dir: Path) -> Optional[Path]:
     from scene_short import create_synced_scene_short
 
     scene_path = job_dir / "short_scene.py"
-    create_synced_scene_short(manifest, str(scene_path), intro_duration=INTRO_DURATION)
+    create_synced_scene_short(manifest, str(scene_path), intro_duration=0.0)  # intro is a separate stitched video
 
     env = _manim_env()
     cfg_path = FACTORY_ROOT / "manim_short.cfg"
@@ -447,8 +459,9 @@ def _stitch_video(
     output_path: Path,
 ) -> Path:
     """
-    FFmpeg concat: intro + content + outro → final mp4.
-    If intro or outro are missing, they are skipped gracefully.
+    FFmpeg concat: intro + content → final mp4.
+    Uses the SAME single-pass approach as the standard pipeline.
+    NO intermediate normalization — that was causing audio/video desync.
     """
     segments = []
     if intro_path and intro_path.exists():
@@ -462,36 +475,25 @@ def _stitch_video(
         print(f"  ✓ No stitch needed — copied content directly")
         return output_path
 
-    # Normalize all segments to same resolution + add silent audio where missing
-    normalized = []
-    for i, seg in enumerate(segments):
-        norm_path = output_path.parent / f"_norm_{i}.mp4"
-        # Scale to 1080x1920, add silent audio if no audio stream exists
-        norm_cmd = [
-            "ffmpeg", "-y",
-            "-i", str(seg.resolve()),
-            "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
-            "-c:v", "libx264",
-            "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black",
-            "-r", "60",
-            "-c:a", "aac", "-b:a", "192k",
-            "-shortest",
-            "-movflags", "+faststart",
-            str(norm_path),
-        ]
-        subprocess.run(norm_cmd, capture_output=True, text=True)
-        normalized.append(norm_path)
-
+    # Write concat list (same as standard pipeline)
     concat_list = output_path.parent / "concat_list.txt"
     with open(concat_list, "w") as fh:
-        for seg in normalized:
+        for seg in segments:
             fh.write(f"file '{seg.resolve()}'\n")
 
+    # Single-pass concat + re-encode (same approach as standard pipeline)
+    # Add silent audio source to fill gaps (intro has no audio)
     cmd = [
         "ffmpeg", "-y",
         "-f", "concat", "-safe", "0",
         "-i", str(concat_list),
-        "-c", "copy",
+        "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
+        "-filter_complex",
+        "[0:a?][1:a]amix=inputs=2:duration=first:dropout_transition=0[aout]",
+        "-map", "0:v",
+        "-map", "[aout]",
+        "-c:v", "libx264",
+        "-c:a", "aac", "-b:a", "192k",
         "-movflags", "+faststart",
         str(output_path),
     ]
@@ -504,6 +506,45 @@ def _stitch_video(
     else:
         print(f"  ✓ Stitched: {output_path}")
 
+    return output_path
+
+
+def _mix_background_music(video_path: Path, music_path: Path, output_path: Path, volume: float = 0.12) -> Path:
+    """
+    Mix background music under the video at the given volume (0.0–1.0).
+    Music is trimmed/faded to match video length. Original audio preserved at full volume.
+    """
+    if not music_path.exists():
+        print(f"  ⚠️  Background music not found: {music_path}")
+        return video_path
+
+    video_dur = _get_video_duration(video_path)
+    if video_dur <= 0:
+        return video_path
+
+    # FFmpeg: mix original audio (full volume) with music (low volume), fade out music at end
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", str(video_path),
+        "-stream_loop", "-1",
+        "-i", str(music_path),
+        "-filter_complex",
+        f"[1:a]atrim=0:{video_dur},afade=t=in:st=0:d=2,afade=t=out:st={video_dur-2}:d=2,volume={volume}[music];"
+        f"[0:a][music]amix=inputs=2:duration=first:dropout_transition=2[out]",
+        "-map", "0:v",
+        "-map", "[out]",
+        "-c:v", "copy",
+        "-c:a", "aac", "-b:a", "192k",
+        "-movflags", "+faststart",
+        str(output_path),
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"  ⚠️  Music mix failed: {result.stderr[-300:]}")
+        return video_path
+
+    print(f"  ✓ Background music mixed at {int(volume*100)}% volume")
     return output_path
 
 
@@ -560,6 +601,7 @@ def generate_short_video(
     cta: str = "Follow for more",
     output_name: Optional[str] = None,
     skip_verify: bool = False,
+    script_path: Optional[str] = None,
 ) -> dict:
     """
     Generate a 9:16 short-form math video end-to-end.
@@ -599,10 +641,27 @@ def generate_short_video(
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # ── step 1: script ─────────────────────────────────────────────
-    print("📝 Step 1/6 — Generating script (DeepSeek V3) ...")
-    script = _call_deepseek(problem, difficulty)
-    steps  = script.get("steps", [])
-    print(f"  ✓ {len(steps)} steps generated")
+    if script_path and Path(script_path).exists():
+        print(f"📝 Step 1/6 — Loading pre-built script: {script_path}")
+        script = json.loads(Path(script_path).read_text())
+        steps  = script.get("steps", [])
+        print(f"  ✓ {len(steps)} steps loaded (Circle-reviewed)")
+    else:
+        print("📝 Step 1/6 — Generating script (DeepSeek V3) ...")
+        script = _call_deepseek(problem, difficulty)
+        steps  = script.get("steps", [])
+
+        # ── Reorder: move graph steps to the front and mark persistent ──
+        graph_steps = [s for s in steps if s.get("type") == "graph"]
+        non_graph   = [s for s in steps if s.get("type") != "graph"]
+        for gs in graph_steps:
+            gs["persistent"] = True
+        steps = graph_steps + non_graph
+        script["steps"] = steps
+
+        print(f"  ✓ {len(steps)} steps generated")
+        if graph_steps:
+            print(f"  ✓ Graph moved to front (persistent)")
 
     script_path = job_dir / "script.json"
     script_path.write_text(json.dumps(script, indent=2))
@@ -639,17 +698,26 @@ def generate_short_video(
     if content_video is None:
         raise RuntimeError("Content scene render failed — check Manim logs.")
 
-    # ── step 5: render intro + outro ──────────────────────────────
-    print("\n🎬 Step 5/6 — Rendering intro + outro ...")
-    intro_video = _render_intro(job_dir, hook)
-    outro_video = _render_outro(job_dir, cta)
+    # ── step 5: skip intro for now (end card is in scene) ───────────
+    print("\n🎬 Step 5/6 — Skipping separate intro (end card built into scene)")
 
-    # ── step 6: stitch ─────────────────────────────────────────────
-    print("\n🎞️  Step 6/6 — Stitching final video ...")
+    # ── step 6: just use content video directly (no stitch = no desync) ─
+    print("\n🎞️  Step 6/6 — Finalizing video ...")
     output_name = output_name or f"short_{job_slug}_{int(time.time())}.mp4"
     final_path  = OUTPUT_DIR / output_name
 
-    _stitch_video(intro_video, content_video, outro_video, final_path)
+    shutil.copy(content_video, final_path)
+    print(f"  ✓ Output: {final_path}")
+
+    # ── step 6b: mix background music ──────────────────────────────
+    bg_music = FACTORY_ROOT / "assets" / "audio" / "bg_synthwave.mp3"
+    if bg_music.exists():
+        print("\n🎵 Mixing background music ...")
+        final_with_music = OUTPUT_DIR / f"_music_{output_name}"
+        result_path = _mix_background_music(final_path, bg_music, final_with_music, volume=0.12)
+        if result_path != final_path:
+            # Replace the stitched file with the music version
+            shutil.move(str(final_with_music), str(final_path))
 
     # ── results ────────────────────────────────────────────────────
     final_duration = _get_video_duration(final_path)

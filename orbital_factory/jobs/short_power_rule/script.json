@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "topic": "The Power Rule",
+    "difficulty": "Calculus 1",
+    "product_family": "short-form",
+    "circle_verdict": "PASS WITH REVISIONS"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "label": "",
+      "content": "\\text{One rule. Every power of } x.",
+      "narration": "One rule handles every power of x you'll ever differentiate. Here's how it works.",
+      "mode": "replace"
+    },
+    {
+      "type": "box",
+      "label": "Power Rule",
+      "content": "\\frac{d}{dx}\\left[x^n\\right] = n \\cdot x^{n-1}",
+      "narration": "The power rule: the exponent becomes a multiplier, and the power decreases by one.",
+      "mode": "replace"
+    },
+    {
+      "type": "math",
+      "content": "\\frac{d}{dx}\\left[x^2\\right] = 2x^{2-1} = 2x",
+      "narration": "Start simple — x squared. The 2 comes down as a multiplier, exponent drops to 1. That's 2x.",
+      "mode": "replace"
+    },
+    {
+      "type": "math",
+      "content": "\\begin{aligned} \\frac{d}{dx}\\left[x^3\\right] &= 3x^2 \\\\[6pt] \\frac{d}{dx}\\left[x^4\\right] &= 4x^3 \\end{aligned}",
+      "narration": "Same pattern, any power: x cubed gives 3x squared, x to the fourth gives 4x cubed.",
+      "mode": "replace"
+    },
+    {
+      "type": "box",
+      "label": "Coefficient Rule",
+      "content": "\\frac{d}{dx}\\left[c \\cdot f(x)\\right] = c \\cdot f'(x)",
+      "narration": "What about coefficients? Constants pull out front — then apply the power rule to what's left.",
+      "mode": "replace"
+    },
+    {
+      "type": "math",
+      "content": "\\frac{d}{dx}\\left[5x^3\\right] = 5 \\cdot 3x^2 = 15x^2",
+      "narration": "So 5x cubed: power rule gives 3x squared, multiply by 5 — that's 15x squared.",
+      "mode": "replace"
+    },
+    {
+      "type": "box",
+      "label": "ORBITAL",
+      "content": "\\text{Next: a full problem.}",
+      "narration": "Now try a full problem — that's the next video.",
+      "mode": "replace"
+    }
+  ]
+}

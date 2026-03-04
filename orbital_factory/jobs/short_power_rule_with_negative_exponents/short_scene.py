@@ -1,41 +1,4 @@
 """
-Orbital Scene Generator — Short-Form Vertical (9:16)
-=====================================================
-FORKED FROM standard pipeline's SyncedMathScene — the proven timing model.
-
-TIMING MODEL (exact copy of standard pipeline):
-  1. Build mobject + position it (NO timeline cost)
-  2. add_sound() — audio starts HERE
-  3. FadeOut(previous, 0.4s) — voice plays over fadeout
-  4. Write(new, anim_time) — writing begins ~0.4s into audio
-  5. wait(remaining) — hold until voice done
-  6. wait(EXTRA_HOLD) — breathing room between steps
-
-Changes from standard: portrait frame, graph zone, neon grid, built-in end card.
-"""
-
-import json
-import os
-
-FRAME_W = 4.5
-FRAME_H = 8.0
-GRAPH_CENTER_Y = -1.8
-MATH_CENTER_Y = 1.2
-GRAPH_WIDTH = 3.4
-GRAPH_HEIGHT = 2.8
-MATH_SCALE = 0.85
-BOX_SCALE = 0.65
-ANIMATION_RATIO = 0.35
-EXTRA_HOLD = 0.8
-
-
-def create_synced_scene_short(manifest: list, output_path: str, intro_duration: float = 0.0):
-    for step in manifest:
-        ap = step.get("audio_path", "")
-        if ap and not os.path.isabs(ap):
-            step["audio_path"] = os.path.abspath(ap)
-
-    scene_code = f'''"""
 Auto-generated 9:16 TikTok scene.
 Timing model copied verbatim from standard pipeline SyncedMathScene.
 """
@@ -43,25 +6,25 @@ from manim import *
 import os
 import numpy as np
 
-config.frame_width = {FRAME_W}
-config.frame_height = {FRAME_H}
+config.frame_width = 4.5
+config.frame_height = 8.0
 
 ORBITAL_CYAN  = "#22D3EE"
 NEON_GREEN    = "#39FF14"
 BOX_BORDER    = "#8B5CF6"
 BOX_FILL      = "#1a1130"
 LABEL_COLOR   = "#22D3EE"
-FRAME_W       = {FRAME_W}
-FRAME_H       = {FRAME_H}
+FRAME_W       = 4.5
+FRAME_H       = 8.0
 MAX_WIDTH     = FRAME_W * 0.82
-MATH_SCALE    = {MATH_SCALE}
-BOX_SCALE     = {BOX_SCALE}
-GRAPH_WIDTH   = {GRAPH_WIDTH}
-GRAPH_HEIGHT  = {GRAPH_HEIGHT}
-MATH_CENTER_Y = {MATH_CENTER_Y}
-GRAPH_CENTER_Y = {GRAPH_CENTER_Y}
-ANIMATION_RATIO = {ANIMATION_RATIO}
-EXTRA_HOLD = {EXTRA_HOLD}
+MATH_SCALE    = 0.85
+BOX_SCALE     = 0.65
+GRAPH_WIDTH   = 3.4
+GRAPH_HEIGHT  = 2.8
+MATH_CENTER_Y = 1.2
+GRAPH_CENTER_Y = -1.8
+ANIMATION_RATIO = 0.35
+EXTRA_HOLD = 0.8
 
 
 def _clamp(mob, max_w=None):
@@ -85,20 +48,20 @@ def _build_graph(cfg):
     grid = NumberPlane(
         x_range=x_range, y_range=y_range,
         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-        background_line_style={{
+        background_line_style={
             "stroke_color": "#8B5CF6", "stroke_opacity": 0.25, "stroke_width": 1,
-        }},
-        faded_line_style={{
+        },
+        faded_line_style={
             "stroke_color": "#22D3EE", "stroke_opacity": 0.12, "stroke_width": 0.5,
-        }},
+        },
     )
     axes = Axes(
         x_range=x_range, y_range=y_range,
         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-        axis_config={{
+        axis_config={
             "color": GREY_B, "include_numbers": True, "font_size": 12,
             "numbers_to_exclude": [0],
-        }},
+        },
         tips=False,
     )
     grid.move_to(axes.get_center())
@@ -113,7 +76,7 @@ def _build_graph(cfg):
             if "lambda" in expr_str:
                 fn_obj = eval(expr_str)
             else:
-                fn_obj = eval(f"lambda x: {{expr_str}}")
+                fn_obj = eval(f"lambda x: {expr_str}")
             y_min, y_max = y_range[0], y_range[1]
             x_lo, x_hi = x_range[0], x_range[1]
             test_xs = np.linspace(x_lo, x_hi, 200)
@@ -134,7 +97,7 @@ def _build_graph(cfg):
                     lbl_mob.move_to(axes.c2p(0, 0) + UP * 0.3)
                 group.add(lbl_mob)
         except Exception as e:
-            print(f"  ⚠️  Graph eval failed: {{e}}")
+            print(f"  ⚠️  Graph eval failed: {e}")
 
     if tangent and plotted:
         at_x  = tangent.get("at_x", 0)
@@ -174,7 +137,7 @@ def _build_graph(cfg):
 
 
 class SyncedShortScene(Scene):
-    STEPS_DATA = {repr(manifest)}
+    STEPS_DATA = [{'type': 'box', 'content': '\\frac{d}{dx}\\left[x^n\\right] = n \\cdot x^{n-1}', 'narration': 'The power rule: the exponent becomes a multiplier, and the power drops by one. It works for any exponent — including negatives.', 'mode': 'replace', 'label': 'Power Rule', 'layout': {'scale': 1.3}, 'step': 0, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_00.mp3', 'duration': 12.006}, {'type': 'math', 'content': '\\text{Find } \\frac{d}{dx}\\left[x^{-2}\\right]', 'narration': "Let's use it. Find the derivative of x to the negative 2.", 'mode': 'replace', 'layout': {'scale': 1.5}, 'step': 1, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_01.mp3', 'duration': 5.0}, {'type': 'math', 'content': '\\frac{d}{dx}\\left[x^{-2}\\right] = -2 \\cdot x^{-2-1} = -2x^{-3}', 'narration': 'The exponent, negative 2, becomes the multiplier. Then we subtract 1 from the exponent — negative 2 minus 1 is negative 3. That gives us negative 2 x to the negative 3.', 'mode': 'replace', 'layout': {'scale': 1.1}, 'step': 2, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_02.mp3', 'duration': 15.443}, {'type': 'math', 'content': '-2x^{-3} = \\frac{-2}{x^3}', 'narration': "A negative exponent means x moves to the denominator. So negative 2 x to the negative 3 rewrites as negative 2 over x cubed. That's your final answer.", 'mode': 'replace', 'layout': {'scale': 1.5}, 'step': 3, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_03.mp3', 'duration': 12.935}, {'type': 'box', 'content': "\\text{What if it's written as a fraction?}", 'narration': 'Now — what if the problem gives you a fraction instead of a negative exponent?', 'mode': 'replace', 'label': 'Fraction Form', 'layout': {'scale': 1.2}, 'step': 4, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_04.mp3', 'duration': 6.248}, {'type': 'math', 'content': '\\frac{1}{x^4} = x^{-4}', 'narration': "Rewrite it first. One over x to the fourth is the same as x to the negative 4. Once it's in that form, the power rule applies.", 'mode': 'replace', 'layout': {'scale': 1.6}, 'step': 5, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_05.mp3', 'duration': 10.66}, {'type': 'math', 'content': '\\text{Find } \\frac{d}{dx}\\left[x^{-4}\\right]', 'narration': 'So now — find the derivative of x to the negative 4.', 'mode': 'replace', 'layout': {'scale': 1.5}, 'step': 6, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_06.mp3', 'duration': 5.226}, {'type': 'math', 'content': '\\frac{d}{dx}\\left[x^{-4}\\right] = -4 \\cdot x^{-4-1} = -4x^{-5} = \\frac{-4}{x^5}', 'narration': 'Negative 4 becomes the multiplier. Subtract 1 from the exponent — negative 4 minus 1 is negative 5. Move x to the denominator: negative 4 over x to the fifth.', 'mode': 'replace', 'layout': {'scale': 1.05}, 'step': 7, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_07.mp3', 'duration': 14.7}, {'type': 'math', 'content': '\\text{Find } \\frac{d}{dx}\\left[3x^{-4}\\right]', 'narration': "One more — what about 3 x to the negative 4? Now there's a coefficient.", 'mode': 'replace', 'layout': {'scale': 1.5}, 'step': 8, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_08.mp3', 'duration': 6.155}, {'type': 'math', 'content': '\\frac{d}{dx}\\left[3x^{-4}\\right] = 3 \\cdot (-4) \\cdot x^{-5} = \\frac{-12}{x^5}', 'narration': "When there's a coefficient, it multiplies through. 3 times negative 4 is negative 12. Everything else works the same: negative 12 over x to the fifth.", 'mode': 'replace', 'layout': {'scale': 1.1}, 'step': 9, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_09.mp3', 'duration': 13.678}, {'type': 'box', 'content': '\\text{Next: Fractional Exponents}', 'narration': 'Fractional exponents next. Follow Orbital.', 'mode': 'replace', 'label': 'ORBITAL', 'layout': {'scale': 1.4}, 'step': 10, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_power_rule_with_negative_exponents/audio/step_10.mp3', 'duration': 5.0}]
 
     def construct(self):
         self.camera.background_color = "#000000"
@@ -214,7 +177,7 @@ class SyncedShortScene(Scene):
             if stype == "graph":
                 duration   = step.get("duration", 8.0)
                 audio_path = step.get("audio_path", "")
-                graph_cfg  = step.get("graph", step.get("diagram", {{}}))
+                graph_cfg  = step.get("graph", step.get("diagram", {}))
 
                 # 1. BUILD mobject first
                 mob = _build_graph(graph_cfg)
@@ -260,7 +223,7 @@ class SyncedShortScene(Scene):
             stype      = step.get("type", "math")
             content    = step.get("content") or step.get("latex", "")
             label_txt  = step.get("label", "")
-            layout     = step.get("layout", {{}})
+            layout     = step.get("layout", {})
             scale_override = layout.get("scale", 1.0) if layout else 1.0
 
             anim_time = max(1.2, duration * ANIMATION_RATIO)
@@ -285,7 +248,7 @@ class SyncedShortScene(Scene):
             else:
                 # Auto-break long equations at = signs for vertical layout
                 eq_count = content.count('=')
-                has_aligned = 'aligned' in content or 'begin{{' in content
+                has_aligned = 'aligned' in content or 'begin{' in content
                 if eq_count >= 2 and not has_aligned:
                     # Split at = signs, rebuild as aligned with & before each =
                     parts = content.split('=')
@@ -293,7 +256,7 @@ class SyncedShortScene(Scene):
                     aligned_lines = [parts[0].strip() + ' &= ' + parts[1].strip()]
                     for p in parts[2:]:
                         aligned_lines.append('&= ' + p.strip())
-                    aligned_content = r'\\begin{{aligned}} ' + r' \\\\[8pt] '.join(aligned_lines) + r' \\end{{aligned}}'
+                    aligned_content = r'\begin{aligned} ' + r' \\[8pt] '.join(aligned_lines) + r' \end{aligned}'
                     mob = MathTex(aligned_content, color=WHITE).scale(MATH_SCALE * scale_override)
                 else:
                     mob = MathTex(content, color=WHITE).scale(MATH_SCALE * scale_override)
@@ -342,35 +305,41 @@ class SyncedShortScene(Scene):
         if graph_mobs:
             self.play(*[FadeOut(m) for m in graph_mobs], run_time=0.4)
 
-        # ── Orbital Lissajous end card ──
-        _A, _B = 1.2, 0.95  # scaled for end card
-        liss_glow = ParametricFunction(
-            lambda t: np.array([_A*np.sin(3*t), _B*np.sin(2*t), 0]),
-            t_range=[0, TAU, 0.02],
-            color="#00E5FF", stroke_width=8, stroke_opacity=0.2
-        )
-        liss_core = ParametricFunction(
-            lambda t: np.array([_A*np.sin(3*t), _B*np.sin(2*t), 0]),
-            t_range=[0, TAU, 0.02],
-            color="#00E5FF", stroke_width=2, stroke_opacity=1.0
-        )
-        logo = VGroup(liss_glow, liss_core)
-        logo.move_to([0, 0.5, 0])
+        # ── Orbital logo end card ──
+        # Planet
+        planet_core = Circle(radius=0.45, color=WHITE, stroke_width=7)
+        planet_glow = Circle(radius=0.52, color="#8B5CF6", stroke_width=12, stroke_opacity=0.15)
+        for r_off, op, w in [(0.03, 0.5, 5), (0.06, 0.25, 3), (0.09, 0.12, 2)]:
+            planet_core.add(Circle(radius=0.45+r_off, color=WHITE, stroke_width=w, stroke_opacity=op))
         
-        wordmark = Text("ORBITAL", font_size=22, color="#00E5FF", weight=BOLD)
-        wordmark.next_to(logo, DOWN, buff=0.3)
-        wm_glow = wordmark.copy().set_opacity(0.3).scale(1.05)
+        # Orbit rings
+        orbit_ring = Ellipse(width=1.7, height=0.55, color=WHITE, stroke_width=2)
+        orbit_ring.rotate(-30 * DEGREES)
+        orbit_glow = Ellipse(width=1.75, height=0.57, color="#8B5CF6", stroke_width=8, stroke_opacity=0.15)
+        orbit_glow.rotate(-30 * DEGREES)
+        orbit_inner = Ellipse(width=1.55, height=0.48, color="#22D3EE", stroke_width=1.5, stroke_opacity=0.85)
+        orbit_inner.rotate(-30 * DEGREES)
+        
+        # Satellite dot
+        angle = 50 * DEGREES
+        sat_x = 0.85 * np.cos(angle) * np.cos(-30*DEGREES) - 0.28 * np.sin(angle) * np.sin(-30*DEGREES)
+        sat_y = 0.85 * np.cos(angle) * np.sin(-30*DEGREES) + 0.28 * np.sin(angle) * np.cos(-30*DEGREES)
+        sat_glow = Dot([sat_x, sat_y, 0], radius=0.15, color="#22D3EE", fill_opacity=0.25)
+        sat_core = Dot([sat_x, sat_y, 0], radius=0.05, color=WHITE, fill_opacity=1.0)
+        
+        logo = VGroup(planet_glow, planet_core, orbit_glow, orbit_ring, orbit_inner, sat_glow, sat_core)
+        logo.move_to([0, 0.6, 0])
+        
+        # Wordmark
+        wordmark = Text("ORBITAL", font_size=24, color=WHITE, weight=BOLD)
+        wordmark.next_to(logo, DOWN, buff=0.35)
+        wm_glow = wordmark.copy().set_color("#8B5CF6").set_opacity(0.4).scale(1.08)
+        wm_glow.set_stroke(color="#8B5CF6", width=6, opacity=0.2)
         
         end_card = VGroup(logo, wm_glow, wordmark)
         end_card.move_to([0, 0, 0])
         
-        self.play(Create(liss_core, run_time=0.8), FadeIn(liss_glow, run_time=0.6))
+        self.play(FadeIn(logo, scale=0.7), run_time=0.6)
         self.play(FadeIn(VGroup(wm_glow, wordmark), shift=UP*0.2), run_time=0.4)
-        self.wait(1.2)
+        self.wait(1.5)
         self.play(FadeOut(end_card), run_time=0.3)
-'''
-
-    with open(output_path, "w") as f:
-        f.write(scene_code)
-
-    print(f"  ✓ Created 9:16 TikTok 3-zone scene: {output_path}")

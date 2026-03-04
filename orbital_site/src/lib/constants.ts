@@ -42,7 +42,7 @@ type PricingTier = {
   features: string[];
 };
 
-export const PRICING: Record<string, PricingTier> = {
+export const PRICING_STUDENT: Record<string, PricingTier> = {
   starter: {
     name: "Starter",
     price: 2,
@@ -67,3 +67,31 @@ export const PRICING: Record<string, PricingTier> = {
     features: ["120 minutes of video", "All problem types", "HD quality", "Download videos", "Priority generation", "No watermark"],
   },
 };
+
+export const PRICING_INSTRUCTOR: Record<string, PricingTier> = {
+  department: {
+    name: "Department",
+    price: 49,
+    minutes: 500,
+    pricePerMin: "$0.098",
+    features: ["500 minutes of video", "All problem types", "HD quality", "Embed in LMS", "Custom branding", "Analytics dashboard"],
+  },
+  institution: {
+    name: "Institution",
+    price: 149,
+    minutes: 2000,
+    pricePerMin: "$0.075",
+    badge: "Best Value",
+    features: ["2,000 minutes of video", "All problem types", "HD quality", "Embed in LMS", "Custom branding", "Analytics dashboard", "API access"],
+  },
+  enterprise: {
+    name: "Enterprise",
+    price: 0,
+    minutes: 0,
+    pricePerMin: "Custom",
+    features: ["Unlimited minutes", "All problem types", "HD quality", "Embed in LMS", "Custom branding", "Analytics dashboard", "API access", "Dedicated support"],
+  },
+};
+
+// Keep backwards compat
+export const PRICING = PRICING_STUDENT;

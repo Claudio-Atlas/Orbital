@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { SITE, PRICING } from "@/lib/constants";
+import { SITE, PRICING_STUDENT, PRICING_INSTRUCTOR } from "@/lib/constants";
 import { OrbitalLogo } from "@/components/OrbitalLogo";
 import { VideoCarousel } from "@/components/VideoCarousel";
 
@@ -118,6 +118,7 @@ export default function HomePage() {
   const [waitlistName, setWaitlistName] = useState("");
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [pricingMode, setPricingMode] = useState<"student" | "instructor">("student");
 
   const handleWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,17 +280,51 @@ export default function HomePage() {
       {/* Pricing */}
       <section id="pricing" className={`w-full py-32 border-t ${isDark ? "border-white/[0.05]" : "border-gray-200"}`}>
         <div className="w-full max-w-5xl mx-auto px-8 md:px-12">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-5">Simple pricing</h2>
-            <p className={`text-lg ${isDark ? "text-gray-500" : "text-gray-600"}`}>Buy minutes. Use anytime. No subscription.</p>
+            <p className={`text-lg mb-8 ${isDark ? "text-gray-500" : "text-gray-600"}`}>Buy minutes. Use anytime. No subscription.</p>
+            
+            {/* Student / Instructor toggle */}
+            <div className={`inline-flex rounded-xl p-1 ${
+              isDark ? "bg-white/[0.05] border border-white/[0.08]" : "bg-gray-200"
+            }`}>
+              <button
+                onClick={() => setPricingMode("student")}
+                className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  pricingMode === "student"
+                    ? isDark
+                      ? "bg-cyan-500 text-black"
+                      : "bg-white text-gray-900 shadow-sm"
+                    : isDark
+                    ? "text-gray-400 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Students
+              </button>
+              <button
+                onClick={() => setPricingMode("instructor")}
+                className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  pricingMode === "instructor"
+                    ? isDark
+                      ? "bg-cyan-500 text-black"
+                      : "bg-white text-gray-900 shadow-sm"
+                    : isDark
+                    ? "text-gray-400 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Instructors
+              </button>
+            </div>
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
-            {Object.entries(PRICING).map(([key, tier]) => (
+            {Object.entries(pricingMode === "student" ? PRICING_STUDENT : PRICING_INSTRUCTOR).map(([key, tier]) => (
               <div 
                 key={key} 
                 className={`rounded-3xl p-8 border transition-all flex flex-col ${
-                  key === "standard" 
+                  (key === "standard" || key === "institution" || key === "institution")
                     ? isDark
                       ? "bg-white text-black border-white shadow-2xl shadow-white/10 md:-mt-4 md:mb-4"
                       : "bg-gray-900 text-white border-gray-900 shadow-2xl shadow-gray-900/20 md:-mt-4 md:mb-4"
@@ -300,34 +335,34 @@ export default function HomePage() {
               >
                 {tier.badge && (
                   <div className={`text-xs font-semibold uppercase tracking-widest mb-3 ${
-                    key === "standard"
+                    key === "standard" || key === "institution"
                       ? isDark ? "text-violet-600" : "text-violet-400"
                       : "text-green-500"
                   }`}>{tier.badge}</div>
                 )}
                 <h3 className="text-xl font-semibold mb-2">{tier.name}</h3>
                 <div className="mb-2">
-                  <span className="text-5xl font-semibold">${tier.price}</span>
+                  <span className="text-5xl font-semibold">{tier.price > 0 ? `$${tier.price}` : "Custom"}</span>
                 </div>
                 <p className={`mb-1 text-lg font-medium ${
-                  key === "standard" 
+                  key === "standard" || key === "institution" 
                     ? isDark ? "text-gray-700" : "text-gray-300"
                     : isDark ? "text-gray-300" : "text-gray-700"
-                }`}>{tier.minutes} minutes</p>
+                }`}>{tier.minutes > 0 ? `${tier.minutes} minutes` : "Unlimited"}</p>
                 <p className={`mb-8 text-sm ${
-                  key === "standard" 
+                  key === "standard" || key === "institution" || key === "institution"
                     ? isDark ? "text-gray-500" : "text-gray-400"
                     : isDark ? "text-gray-600" : "text-gray-500"
-                }`}>{tier.pricePerMin}/min</p>
+                }`}>{tier.price > 0 ? `${tier.pricePerMin}/min` : "Let's talk"}</p>
                 <ul className="space-y-4 mb-10 flex-1">
                   {tier.features.map((f) => (
                     <li key={f} className="flex items-center gap-3">
-                      <span className={key === "standard" 
+                      <span className={key === "standard" || key === "institution" 
                         ? isDark ? "text-violet-600" : "text-violet-400"
                         : "text-violet-400"
                       }>{Icons.check}</span>
                       <span className={
-                        key === "standard" 
+                        key === "standard" || key === "institution" 
                           ? isDark ? "text-gray-700" : "text-gray-300"
                           : isDark ? "text-gray-400" : "text-gray-600"
                       }>{f}</span>
@@ -337,15 +372,15 @@ export default function HomePage() {
                 <a 
                   href="#waitlist"
                   className={`w-full py-4 rounded-xl font-semibold transition-all text-center block ${
-                  key === "standard"
+                  (key === "standard" || key === "institution")
                     ? isDark
-                      ? "bg-black text-white hover:bg-gray-900"
-                      : "bg-white text-gray-900 hover:bg-gray-100"
+                      ? "bg-black text-white hover:bg-gray-800"
+                      : "bg-gray-900 text-white hover:bg-gray-800"
                     : isDark
                       ? "bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08]"
                       : "bg-gray-100 hover:bg-gray-200 border border-gray-200"
                 }`}>
-                  Coming Soon
+                  {tier.price > 0 ? "Coming Soon" : "Contact Us"}
                 </a>
               </div>
             ))}

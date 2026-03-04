@@ -21,7 +21,7 @@ const VIDEOS: Video[] = [
   {
     id: "s1",
     title: "Why The Derivative of a Constant is ZERO",
-    youtubeId: "", // Add YouTube ID after upload
+    youtubeId: "WaSbLQewrp8",
     format: "short",
     duration: "0:59",
     description: "The Constant Rule explained visually",
@@ -30,7 +30,7 @@ const VIDEOS: Video[] = [
   {
     id: "s2",
     title: "The ONE Rule That Handles Every Power of x",
-    youtubeId: "",
+    youtubeId: "CVAdvoqXaqw",
     format: "short",
     duration: "1:06",
     description: "The Power Rule — the most important derivative rule",
@@ -39,7 +39,7 @@ const VIDEOS: Video[] = [
   {
     id: "s3",
     title: "Negative Exponents? The Power Rule Still Works",
-    youtubeId: "",
+    youtubeId: "r-vMVR_3208",
     format: "short",
     duration: "1:59",
     description: "Power Rule with negative exponents and fractions",
@@ -48,14 +48,14 @@ const VIDEOS: Video[] = [
   {
     id: "s4",
     title: "Find the Derivative of 3x² + 2x - 5",
-    youtubeId: "",
+    youtubeId: "lGc-f3--Nas",
     format: "short",
     duration: "1:43",
     description: "Full derivative problem — step by step",
     playlist: "Derivatives from Scratch",
   },
 
-  // Tutorials (long-form)
+  // Tutorials (long-form) — add YouTube IDs when uploaded
   {
     id: "t1",
     title: "Group of Order 15 is Cyclic — Full Proof",

@@ -319,7 +319,7 @@ export default function HomePage() {
             </div>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${pricingMode === "instructor" ? "max-w-md mx-auto" : "md:grid-cols-3"}`}>
             {Object.entries(pricingMode === "student" ? PRICING_STUDENT : PRICING_INSTRUCTOR).map(([key, tier]) => (
               <div 
                 key={key} 
@@ -343,12 +343,13 @@ export default function HomePage() {
                 <h3 className="text-xl font-semibold mb-2">{tier.name}</h3>
                 <div className="mb-2">
                   <span className="text-5xl font-semibold">{tier.price > 0 ? `$${tier.price}` : "Custom"}</span>
+                  {pricingMode === "instructor" && tier.price > 0 && <span className="text-lg font-normal opacity-60">/mo</span>}
                 </div>
                 <p className={`mb-1 text-lg font-medium ${
                   key === "standard" || key === "institution" 
                     ? isDark ? "text-gray-700" : "text-gray-300"
                     : isDark ? "text-gray-300" : "text-gray-700"
-                }`}>{tier.minutes > 0 ? `${tier.minutes} minutes` : "Unlimited"}</p>
+                }`}>{tier.minutes > 0 ? `${tier.minutes} minutes` : pricingMode === "instructor" ? "AI usage at cost" : "Unlimited"}</p>
                 <p className={`mb-8 text-sm ${
                   key === "standard" || key === "institution" || key === "institution"
                     ? isDark ? "text-gray-500" : "text-gray-400"

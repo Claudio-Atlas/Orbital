@@ -69,27 +69,13 @@ export const PRICING_STUDENT: Record<string, PricingTier> = {
 };
 
 export const PRICING_INSTRUCTOR: Record<string, PricingTier> = {
-  department: {
-    name: "Department",
-    price: 49,
-    minutes: 500,
-    pricePerMin: "$0.098",
-    features: ["500 minutes of video", "All problem types", "HD quality", "Embed in LMS", "Custom branding", "Analytics dashboard"],
-  },
-  institution: {
-    name: "Institution",
-    price: 149,
-    minutes: 2000,
-    pricePerMin: "$0.075",
-    badge: "Best Value",
-    features: ["2,000 minutes of video", "All problem types", "HD quality", "Embed in LMS", "Custom branding", "Analytics dashboard", "API access"],
-  },
-  enterprise: {
-    name: "Enterprise",
-    price: 0,
+  instructor: {
+    name: "Instructor",
+    price: 10,
     minutes: 0,
-    pricePerMin: "Custom",
-    features: ["Unlimited minutes", "All problem types", "HD quality", "Embed in LMS", "Custom branding", "Analytics dashboard", "API access", "Dedicated support"],
+    pricePerMin: "at cost",
+    badge: "Flat Rate",
+    features: ["$10/month flat subscription", "Pay at cost for AI usage only", "All problem types", "HD quality", "Embed in LMS", "Analytics dashboard", "Generate videos for your students"],
   },
 };
 

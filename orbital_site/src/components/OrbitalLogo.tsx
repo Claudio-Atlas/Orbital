@@ -27,6 +27,7 @@ export function OrbitalLogo({ className = "h-8 w-8", accentColor }: OrbitalLogoP
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      style={{ transform: "rotate(180deg)" }}
     >
       {/* Glow layer */}
       <path
@@ -78,6 +79,7 @@ export function BreathingLogo({ className = "h-20 w-20" }: { className?: string 
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`relative ${className}`}
+        style={{ transform: "rotate(180deg)" }}
       >
         <path d={pathD} stroke={color} strokeWidth="6" strokeOpacity="0.15" fill="none" />
         <path d={pathD} stroke={color} strokeWidth="2.5" strokeOpacity="1" fill="none" />

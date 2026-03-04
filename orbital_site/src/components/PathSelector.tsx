@@ -15,7 +15,7 @@ const PATHS = [
     desc: "Type a problem. AI generates the full solution, verifies it, and renders the video.",
     cost: "~$0.72–1.26",
     badge: "AI / Lean Verified",
-    badgeColor: "text-cyan-400 bg-cyan-500/10",
+    badgeColor: "text-violet-400 bg-violet-500/10",
   },
   {
     key: "ai_review" as PipelinePath,

@@ -8,7 +8,7 @@ interface OrbitalLogoProps {
 }
 
 export function OrbitalLogo({ className = "h-8 w-8", accentColor }: OrbitalLogoProps) {
-  const color = accentColor || "#00E5FF";
+  const color = accentColor || "#8B5CF6";
   
   // 3:2 Lissajous curve: x = sin(3t), y = sin(2t)
   // Generate SVG path points
@@ -53,7 +53,7 @@ export function OrbitalLogo({ className = "h-8 w-8", accentColor }: OrbitalLogoP
  * Breathing logo variant for larger displays
  */
 export function BreathingLogo({ className = "h-20 w-20" }: { className?: string }) {
-  const color = "#00E5FF";
+  const color = "#8B5CF6";
 
   const points: string[] = [];
   for (let i = 0; i <= 200; i++) {

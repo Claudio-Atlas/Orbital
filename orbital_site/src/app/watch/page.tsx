@@ -150,7 +150,7 @@ export default function WatchPage() {
             </button>
             <a
               href="/#waitlist"
-              className="px-4 py-2 text-sm font-medium rounded-lg bg-cyan-500 text-black hover:bg-cyan-400 transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-violet-500 text-white hover:bg-violet-400 transition-colors"
             >
               Get Notified
             </a>
@@ -179,7 +179,7 @@ export default function WatchPage() {
               className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "shorts"
                   ? isDark
-                    ? "bg-cyan-500 text-black"
+                    ? "bg-violet-500 text-white"
                     : "bg-white text-gray-900 shadow-sm"
                   : isDark
                   ? "text-gray-400 hover:text-white"
@@ -193,7 +193,7 @@ export default function WatchPage() {
               className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "tutorials"
                   ? isDark
-                    ? "bg-cyan-500 text-black"
+                    ? "bg-violet-500 text-white"
                     : "bg-white text-gray-900 shadow-sm"
                   : isDark
                   ? "text-gray-400 hover:text-white"
@@ -283,12 +283,12 @@ function VideoCard({
           <div
             className={`absolute inset-0 flex flex-col items-center justify-center ${
               isDark
-                ? "bg-gradient-to-br from-cyan-900/20 to-violet-900/20"
-                : "bg-gradient-to-br from-cyan-100 to-violet-100"
+                ? "bg-gradient-to-br from-violet-900/20 to-violet-900/20"
+                : "bg-gradient-to-br from-violet-100 to-violet-100"
             }`}
           >
             <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 ${
-              isDark ? "bg-cyan-500/20 text-cyan-400" : "bg-cyan-100 text-cyan-600"
+              isDark ? "bg-violet-500/20 text-violet-400" : "bg-violet-100 text-violet-600"
             }`}>
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />

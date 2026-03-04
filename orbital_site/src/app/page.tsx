@@ -193,7 +193,7 @@ export default function HomePage() {
             {/* Notify Me */}
             <a
               href="#waitlist"
-              className="px-4 py-2 text-sm font-medium rounded-lg bg-cyan-500 text-black hover:bg-cyan-400 transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-violet-500 text-white hover:bg-violet-400 transition-colors"
             >
               Get Notified
             </a>
@@ -293,7 +293,7 @@ export default function HomePage() {
                 className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   pricingMode === "student"
                     ? isDark
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-violet-500 text-white"
                       : "bg-white text-gray-900 shadow-sm"
                     : isDark
                     ? "text-gray-400 hover:text-white"
@@ -307,7 +307,7 @@ export default function HomePage() {
                 className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   pricingMode === "instructor"
                     ? isDark
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-violet-500 text-white"
                       : "bg-white text-gray-900 shadow-sm"
                     : isDark
                     ? "text-gray-400 hover:text-white"
@@ -395,8 +395,8 @@ export default function HomePage() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-5">
             <span className={`bg-clip-text text-transparent ${
               isDark 
-                ? "bg-gradient-to-r from-cyan-400 to-violet-400" 
-                : "bg-gradient-to-r from-cyan-600 to-violet-600"
+                ? "bg-gradient-to-r from-violet-400 to-purple-400" 
+                : "bg-gradient-to-r from-violet-600 to-purple-600"
             }`}>
               Be the first to know
             </span>
@@ -422,8 +422,8 @@ export default function HomePage() {
                 onChange={(e) => setWaitlistName(e.target.value)}
                 className={`flex-1 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
                   isDark 
-                    ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-cyan-500/50" 
-                    : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500"
+                    ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-violet-500/50" 
+                    : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-violet-500"
                 }`}
               />
               <input
@@ -434,14 +434,14 @@ export default function HomePage() {
                 required
                 className={`flex-1 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
                   isDark 
-                    ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-cyan-500/50" 
-                    : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500"
+                    ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-violet-500/50" 
+                    : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-violet-500"
                 }`}
               />
               <button
                 type="submit"
                 disabled={waitlistLoading}
-                className="px-8 py-4 rounded-xl font-semibold bg-cyan-500 text-black hover:bg-cyan-400 transition-colors disabled:opacity-50 whitespace-nowrap"
+                className="px-8 py-4 rounded-xl font-semibold bg-violet-500 text-white hover:bg-violet-400 transition-colors disabled:opacity-50 whitespace-nowrap"
               >
                 {waitlistLoading ? "..." : "Notify Me"}
               </button>

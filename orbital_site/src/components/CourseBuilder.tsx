@@ -24,7 +24,7 @@ export interface Course {
 }
 
 const BADGE_LABELS: Record<string, { icon: string; color: string }> = {
-  lean4_verified: { icon: "🏛️", color: "text-cyan-400" },
+  lean4_verified: { icon: "🏛️", color: "text-violet-400" },
   ai_verified: { icon: "✅", color: "text-green-400" },
   teacher_verified: { icon: "👨‍🏫", color: "text-amber-400" },
 };

@@ -74,8 +74,8 @@ const STATUS_LABELS: Record<JobStatus, { label: string; color: string }> = {
   generating: { label: "Writing script...", color: "text-violet-400" },
   reviewing: { label: "Ready for review", color: "text-amber-400" },
   processing_solution: { label: "Processing your solution...", color: "text-violet-400" },
-  circle: { label: "Verifying mathematics...", color: "text-cyan-400" },
-  lean: { label: "Formally proving...", color: "text-cyan-400" },
+  circle: { label: "Verifying mathematics...", color: "text-violet-400" },
+  lean: { label: "Formally proving...", color: "text-violet-400" },
   tts: { label: "Generating narration...", color: "text-violet-400" },
   rendering: { label: "Rendering video...", color: "text-amber-400" },
   complete: { label: "Complete", color: "text-green-400" },
@@ -83,7 +83,7 @@ const STATUS_LABELS: Record<JobStatus, { label: string; color: string }> = {
 };
 
 const BADGE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-  lean4_verified: { label: "Lean 4 Verified", icon: "🏛️", color: "text-cyan-400 bg-cyan-500/10" },
+  lean4_verified: { label: "Lean 4 Verified", icon: "🏛️", color: "text-violet-400 bg-violet-500/10" },
   ai_verified: { label: "AI Verified", icon: "✅", color: "text-green-400 bg-green-500/10" },
   teacher_verified: { label: "Teacher Verified", icon: "👨‍🏫", color: "text-amber-400 bg-amber-500/10" },
 };

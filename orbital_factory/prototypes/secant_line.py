@@ -153,7 +153,7 @@ class SecantLine(Scene):
         # ═══ SCENE 6: RELABEL the points on the graph ═══
         # Transform (1,1) → x and (3,9) → x+h
         relabel_title = Text("Let's rename these points", font_size=22, color=WHITE)
-        relabel_title.move_to([0, 2.8, 0])
+        relabel_title.move_to([0, 3.2, 0])
         self.play(Write(relabel_title), run_time=0.5)
 
         # New labels for the points
@@ -184,54 +184,49 @@ class SecantLine(Scene):
         self.play(Write(h_eq), run_time=0.8)
 
         explain_h = Text("h is just the distance\nbetween the two x-values", font_size=18, color=WHITE, line_spacing=1.2)
-        explain_h.move_to([0, 2.2, 0])
+        explain_h.move_to([0, 2.8, 0])
         self.play(FadeOut(relabel_title), Write(explain_h), run_time=0.6)
         self.wait(2.5)
 
         self.play(FadeOut(explain_h), run_time=0.3)
 
         # ═══ SCENE 7: Rewrite with (x+h) - x in denominator ═══
+        MATH_Y = 3.0  # Keep math well above graph
+
         # Step 1: Show the formula with full denominator
         rewrite_1 = MathTex(
-            r"\frac{f(", r"x+h", r") - f(", r"x", r")}{",
-            r"(x+h)", r" - ", r"x", r"}",
+            r"\frac{f(x+h) - f(x)}{(x+h) - x}",
             font_size=28, color=WHITE
         )
-        rewrite_1.move_to([0, 2.2, 0])
-        rewrite_1[1].set_color(ORANGE)   # x+h in numerator
-        rewrite_1[3].set_color(GREEN)    # x in numerator
-        rewrite_1[5].set_color(ORANGE)   # (x+h) in denominator
-        rewrite_1[7].set_color(GREEN)    # x in denominator
+        rewrite_1.move_to([0, MATH_Y, 0])
 
         self.play(Write(rewrite_1), run_time=1.2)
         self.wait(1.5)
 
         # Step 2: Highlight the denominator — (x+h) - x cancels to h
-        denom_box = SurroundingRectangle(
-            rewrite_1[5:9], color=ORANGE, buff=0.08, stroke_width=2, corner_radius=0.05
-        )
-        cancel_text = MathTex(r"(x+h) - x = h", font_size=22, color=ORANGE)
-        cancel_text.move_to([0, 1.2, 0])
+        # Find where denominator starts visually — use a box around the whole fraction bottom
+        cancel_text = MathTex(r"(x+h) - x = h", font_size=24, color=ORANGE)
+        cancel_text.move_to([0, MATH_Y - 0.7, 0])
 
-        self.play(Create(denom_box), run_time=0.4)
         self.play(Write(cancel_text), run_time=0.8)
         self.wait(1.5)
 
-        # Step 3: Transform to final form
+        # Step 3: Fade out full form, write clean final form
         final_dq = MathTex(
             r"\frac{f(x+h) - f(x)}{h}",
             font_size=32, color=WHITE
         )
-        final_dq.move_to([0, 2.2, 0])
+        final_dq.move_to([0, MATH_Y, 0])
 
         self.play(
-            FadeOut(denom_box), FadeOut(cancel_text),
-            TransformMatchingTex(rewrite_1, final_dq),
-            run_time=1.2
+            FadeOut(cancel_text),
+            FadeOut(rewrite_1),
+            run_time=0.4
         )
+        self.play(Write(final_dq), run_time=1.0)
 
         diff_quot_label = Text("The Difference Quotient", font_size=20, color=VIOLET, weight=BOLD)
-        diff_quot_label.move_to([0, 3.0, 0])
+        diff_quot_label.move_to([0, MATH_Y + 0.6, 0])
         self.play(Write(diff_quot_label), run_time=0.5)
         self.play(Circumscribe(final_dq, color=VIOLET), run_time=0.8)
         self.wait(2.0)

@@ -414,13 +414,13 @@ export default function HomePage() {
               <p className={isDark ? "text-gray-400" : "text-gray-600"}>We&apos;ll notify you as soon as Orbital launches.</p>
             </div>
           ) : (
-            <form onSubmit={handleWaitlist} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+            <form onSubmit={handleWaitlist} className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-2xl mx-auto">
               <input
                 type="text"
                 placeholder="Your name"
                 value={waitlistName}
                 onChange={(e) => setWaitlistName(e.target.value)}
-                className={`flex-1 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
+                className={`w-full sm:w-56 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
                   isDark 
                     ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-violet-500/50" 
                     : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-violet-500"
@@ -432,7 +432,7 @@ export default function HomePage() {
                 value={waitlistEmail}
                 onChange={(e) => setWaitlistEmail(e.target.value)}
                 required
-                className={`flex-1 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
+                className={`w-full sm:w-56 px-5 py-4 rounded-xl text-base outline-none transition-colors ${
                   isDark 
                     ? "bg-white/[0.05] border border-white/[0.1] text-white placeholder-gray-500 focus:border-violet-500/50" 
                     : "bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-violet-500"

@@ -1,0 +1,11 @@
+[
+  {"scene": 1, "narration": "Every curve is hiding a slope. And that slope changes everywhere you look."},
+  {"scene": 2, "narration": "Take this curve, f of x equals x squared. Watch what happens when we track the slope at every point."},
+  {"scene": 3, "narration": "See that green line? That's the tangent line. It shows the exact steepness right where the dot is. Watch the slope update as the dot moves."},
+  {"scene": 4, "narration": "Right here at the bottom, the curve is flat. The slope is zero."},
+  {"scene": 5, "narration": "But over here, the curve is climbing fast. The slope is four. Same curve, totally different steepness."},
+  {"scene": 6, "narration": "So how do we find the exact slope at any point? That question has a name."},
+  {"scene": 7, "narration": "It's called the derivative. The derivative tells you the exact slope of a curve at a single point."},
+  {"scene": 8, "narration": "And derivatives are everywhere. Slope of a position curve? That's velocity. Doctors track how fast a tumor grows. Businesses find marginal cost. Physicists calculate acceleration from a velocity curve."},
+  {"scene": 9, "narration": "That's what a derivative is. Next video, we'll show you exactly how to compute one."}
+]

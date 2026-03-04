@@ -302,30 +302,47 @@ class SyncedShortScene(Scene):
                 ))
 
                 if show_tangent:
-                    tangent_line = always_redraw(lambda: axes.get_secant_slope_group(
-                        x=t.get_value(), graph=axes.plot(fn, color=ORBITAL_CYAN),
-                        dx=0.01, secant_line_color=NEON_GREEN, secant_line_length=2.0
-                    )[-1] if hasattr(axes, 'get_secant_slope_group') else Line(
-                        axes.c2p(t.get_value() - 0.8, fn(t.get_value()) - 0.8 * ((fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002)),
-                        axes.c2p(t.get_value() + 0.8, fn(t.get_value()) + 0.8 * ((fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002)),
-                        color=NEON_GREEN, stroke_width=2.5
-                    ))
+                    def _get_tangent_line():
+                        x0 = t.get_value()
+                        dx = 0.001
+                        slope = (fn(x0 + dx) - fn(x0 - dx)) / (2 * dx)
+                        y0 = fn(x0)
+                        half = 1.2
+                        return Line(
+                            axes.c2p(x0 - half, y0 - slope * half),
+                            axes.c2p(x0 + half, y0 + slope * half),
+                            color=NEON_GREEN, stroke_width=2.5
+                        )
+                    tangent_line = always_redraw(_get_tangent_line)
+
+                # Optional live slope label
+                show_slope = step.get("show_slope", False)
+                slope_mob = None
+                if show_slope:
+                    slope_mob = always_redraw(lambda: Text(
+                        f"slope = {{2 * t.get_value():.1f}}" if "x**2" in content else f"slope = {{(fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002:.1f}}",
+                        font_size=22, color=NEON_GREEN
+                    ).move_to([0, MATH_CENTER_Y, 0]))
 
                 # Start audio
                 if audio_path and os.path.exists(audio_path):
                     self.add_sound(audio_path)
 
-                self.add(dot)
+                self.play(FadeIn(dot), run_time=0.3)
                 if show_tangent:
-                    self.add(tangent_line)
+                    self.play(Create(tangent_line), run_time=0.5)
+                if slope_mob:
+                    self.play(Write(slope_mob), run_time=0.3)
 
-                self.play(t.animate.set_value(dot_range[1]), run_time=duration * 0.8, rate_func=smooth)
+                self.play(t.animate.set_value(dot_range[1]), run_time=duration * 0.7, rate_func=smooth)
                 remaining = max(0.3, duration * 0.2)
                 self.wait(remaining)
 
                 self.remove(dot)
                 if show_tangent:
                     self.remove(tangent_line)
+                if slope_mob:
+                    self.remove(slope_mob)
                 if i < len(steps) - 1:
                     self.wait(EXTRA_HOLD)
                 continue

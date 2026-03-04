@@ -1082,6 +1082,140 @@ class SyncedProofScene(Scene):
                     self.wait(EXTRA_HOLD)
                 continue
 
+            # ── ALGEBRA SOLVE (proven in definition of derivative prototype) ────
+            # Multi-step algebra with vertical stacking and scroll-up management
+            if stype == "algebra_solve":
+                as_cfg = step.get("algebra_solve", {})
+                steps_list = as_cfg.get("steps", [])
+                title = as_cfg.get("title", "")
+                final_color = as_cfg.get("final_color", NEON_GREEN)
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                if title:
+                    t_mob = Text(title, font_size=24, color=WHITE)
+                    t_mob.move_to([0, MATH_CENTER_Y + 0.5, 0])
+                    self.play(Write(t_mob), run_time=0.5)
+                    self.wait(0.5)
+                    self.play(FadeOut(t_mob), run_time=0.3)
+
+                visible_steps = []
+                spacing = 0.55
+                max_visible = 3
+                start_y = MATH_CENTER_Y
+
+                for si, s in enumerate(steps_list):
+                    latex = s.get("latex", "")
+                    note = s.get("note", "")
+                    note_color = s.get("note_color", ORANGE)
+                    is_final = si == len(steps_list) - 1
+                    hold = s.get("hold", 1.5)
+
+                    eq = MathTex(latex, font_size=24, color=final_color if is_final else WHITE)
+                    target_y = start_y - len(visible_steps) * spacing
+                    eq.move_to([0, target_y, 0])
+
+                    if note:
+                        n_mob = Text(note, font_size=16, color=note_color)
+                        n_mob.move_to([1.5, target_y + 0.15, 0])
+                        self.play(Write(n_mob), run_time=0.3)
+
+                    self.play(Write(eq), run_time=0.8)
+                    if is_final:
+                        self.play(Circumscribe(eq, color=final_color), run_time=0.6)
+                    visible_steps.append(eq)
+
+                    if note:
+                        self.wait(max(0.3, hold - 1.1))
+                        self.play(FadeOut(n_mob), run_time=0.2)
+                    else:
+                        self.wait(max(0.3, hold - 0.8))
+
+                    # Scroll up if too many visible
+                    if len(visible_steps) >= max_visible and si < len(steps_list) - 1:
+                        oldest = visible_steps.pop(0)
+                        self.play(FadeOut(oldest, shift=UP*0.4), run_time=0.25)
+                        for vi, v in enumerate(visible_steps):
+                            v.generate_target()
+                            v.target.move_to([0, start_y - vi * spacing, 0])
+                        self.play(*[MoveToTarget(v) for v in visible_steps], run_time=0.3)
+
+                # Keep final result
+                if visible_steps:
+                    previous_replace = VGroup(*visible_steps)
+                else:
+                    previous_replace = None
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── FOIL EXPANSION (proven in definition of derivative prototype) ────
+            if stype == "foil_expansion":
+                fe_cfg = step.get("foil_expansion", {})
+                expression = fe_cfg.get("expression", "(x+h)^2")
+                factored = fe_cfg.get("factored", "(x+h)(x+h)")
+                terms = fe_cfg.get("terms", [
+                    {"latex": r"x \cdot x", "color": ORBITAL_CYAN},
+                    {"latex": r"+ x \cdot h", "color": ORBITAL_VIOLET},
+                    {"latex": r"+ h \cdot x", "color": ORBITAL_VIOLET},
+                    {"latex": r"+ h \cdot h", "color": ORANGE},
+                ])
+                result = fe_cfg.get("result", r"x^2 + 2xh + h^2")
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                fe_title = Text(f"Expand {expression}", font_size=20, color=ORANGE)
+                fe_title.move_to([0, MATH_CENTER_Y + 0.3, 0])
+                self.play(Write(fe_title), run_time=0.4)
+
+                fe_factored = MathTex(f"{expression} = {factored}", font_size=24, color=WHITE)
+                fe_factored.move_to([0, MATH_CENTER_Y - 0.1, 0])
+                self.play(Write(fe_factored), run_time=0.8)
+                self.wait(0.8)
+
+                # Build FOIL terms one at a time
+                term_parts = []
+                for t in terms:
+                    tp = MathTex(t["latex"], font_size=22, color=t.get("color", WHITE))
+                    term_parts.append(tp)
+
+                foil_line = VGroup(*term_parts).arrange(RIGHT, buff=0.05)
+                foil_line.move_to([0, MATH_CENTER_Y - 0.6, 0])
+                eq_sign = MathTex("=", font_size=22, color=WHITE).next_to(foil_line, LEFT, buff=0.1)
+
+                self.play(Write(eq_sign), run_time=0.2)
+                for tp in term_parts:
+                    self.play(Write(tp), run_time=0.4)
+                    self.wait(0.3)
+
+                self.wait(0.5)
+
+                fe_result = MathTex(f"= {result}", font_size=26, color=NEON_GREEN)
+                fe_result.move_to([0, MATH_CENTER_Y - 1.1, 0])
+                self.play(Write(fe_result), run_time=0.8)
+                self.play(Circumscribe(fe_result, color=NEON_GREEN), run_time=0.5)
+                self.wait(1.0)
+
+                self.play(
+                    FadeOut(fe_title), FadeOut(fe_factored),
+                    FadeOut(eq_sign), FadeOut(foil_line), FadeOut(fe_result),
+                    run_time=0.3
+                )
+                previous_replace = None
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
             # ── STANDARD TYPES (text/math/mixed/box/diagram/graph/geometric) ─
             mob = _make_mobject(step)
 

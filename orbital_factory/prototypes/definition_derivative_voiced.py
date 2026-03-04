@@ -234,20 +234,32 @@ class DefinitionDerivativeVoiced(Scene):
         step5.target.move_to([0, MATH_Y, 0])
         self.play(MoveToTarget(step5), run_time=0.4)
 
-        # ═══ SCENE 3.5: Take the limit (4.4s) ═══
-        step6 = MathTex(r"= 2x", font_size=32, color=GREEN)
-        step6.move_to([0, MATH_Y - 0.6, 0])
+        # ═══ SCENE 3.5: Take the limit — show h=0 substitution (4.4s+) ═══
+        # Show 2x + 0
+        step6a = MathTex(r"= 2x + 0", font_size=28, color=WHITE)
+        step6a.move_to([0, MATH_Y - 0.6, 0])
+
+        plug_note = Text("plug in h = 0", font_size=16, color=ORANGE)
+        plug_note.move_to([1.5, MATH_Y - 0.3, 0])
 
         self.add_sound(AUDIO(3.5))
-        self.play(Write(step6), run_time=0.6)
-        self.play(Circumscribe(step6, color=GREEN), run_time=0.8)
-        self.wait(0.5)
+        self.play(Write(plug_note), run_time=0.3)
+        self.play(Write(step6a), run_time=0.6)
+        self.wait(1.0)
+        self.play(FadeOut(plug_note), run_time=0.2)
+
+        # Transform to 2x
+        step6b = MathTex(r"= 2x", font_size=32, color=GREEN)
+        step6b.move_to([0, MATH_Y - 0.6, 0])
+        self.play(ReplacementTransform(step6a, step6b), run_time=0.5)
+        self.play(Circumscribe(step6b, color=GREEN), run_time=0.8)
+        self.wait(0.3)
 
         self.play(FadeOut(step5), run_time=0.2)
         result = MathTex(r"f'(x) = 2x", font_size=34, color=GREEN)
         result.move_to([0, MATH_Y, 0])
-        self.play(ReplacementTransform(step6, result), run_time=0.5)
-        self.wait(max(0.1, DUR(3.5) - 2.6))
+        self.play(ReplacementTransform(step6b, result), run_time=0.5)
+        self.wait(0.3)
 
         # ═══ SCENE 4: Callback payoff (13.7s) ═══
         payoff_title = Text("Let's check!", font_size=22, color=WHITE, weight=BOLD)

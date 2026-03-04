@@ -49,9 +49,9 @@
   },
   {
     "scene": 3.5,
-    "narration": "Take the limit. As h goes to zero, we're left with just 2x.",
+    "narration": "Now plug in h equals zero. 2x plus zero is just 2x.",
     "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3_5.mp3",
-    "duration": 4.440816326530612
+    "duration": 5.146122448979592
   },
   {
     "scene": 4,

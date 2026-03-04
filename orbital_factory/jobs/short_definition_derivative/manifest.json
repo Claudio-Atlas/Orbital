@@ -1,0 +1,74 @@
+[
+  {
+    "scene": 1,
+    "narration": "Last time we built the difference quotient. Now let's see what happens as h goes to zero.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_1.mp3",
+    "duration": 5.328979591836735
+  },
+  {
+    "scene": 1.5,
+    "narration": "The secant line becomes the tangent line. That's the key.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_1_5.mp3",
+    "duration": 4.022857142857143
+  },
+  {
+    "scene": 2,
+    "narration": "This gives us the definition of the derivative. F prime of x equals the limit as h approaches zero of the quantity f of x plus h minus f of x, all over h.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_2.mp3",
+    "duration": 12.617142857142857
+  },
+  {
+    "scene": 3,
+    "narration": "Let's prove it works. Take f of x equals x squared.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3.mp3",
+    "duration": 4.440816326530612
+  },
+  {
+    "scene": 3.1,
+    "narration": "Plug it in. We get the limit as h goes to zero of the quantity x plus h, squared, minus x squared, all over h.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3_1.mp3",
+    "duration": 8.54204081632653
+  },
+  {
+    "scene": 3.2,
+    "narration": "Now expand the quantity x plus h, squared. That's x plus h times x plus h. FOIL it out: x times x, x times h, h times x, h times h. That gives us x squared plus 2xh plus h squared.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3_2.mp3",
+    "duration": 19.461224489795917
+  },
+  {
+    "scene": 3.3,
+    "narration": "Substitute that back in. The x squareds cancel, leaving 2xh plus h squared, all over h.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3_3.mp3",
+    "duration": 7.706122448979592
+  },
+  {
+    "scene": 3.4,
+    "narration": "Factor out the h. The h's cancel.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3_4.mp3",
+    "duration": 2.9257142857142857
+  },
+  {
+    "scene": 3.5,
+    "narration": "Take the limit. As h goes to zero, we're left with just 2x.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_3_5.mp3",
+    "duration": 4.440816326530612
+  },
+  {
+    "scene": 4,
+    "narration": "Let's check. F prime of zero equals 2 times zero, which is zero. That's exactly what we saw, flat at the bottom. F prime of 2 equals 2 times 2, which is 4. The slope was 4. It works.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_4.mp3",
+    "duration": 13.688163265306123
+  },
+  {
+    "scene": 5,
+    "narration": "You just computed your first derivative, straight from the definition.",
+    "audio_path": "/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_definition_derivative/audio/scene_5.mp3",
+    "duration": 4.022857142857143
+  },
+  {
+    "scene": 6,
+    "narration": "",
+    "audio_path": "",
+    "duration": 0
+  }
+]

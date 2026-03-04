@@ -1,0 +1,14 @@
+[
+  {"scene": 1, "narration": "Last time we built the difference quotient. Now let's see what happens as h goes to zero."},
+  {"scene": 1.5, "narration": "The secant line becomes the tangent line. That's the key."},
+  {"scene": 2, "narration": "This gives us the definition of the derivative. F prime of x equals the limit as h approaches zero of the quantity f of x plus h minus f of x, all over h."},
+  {"scene": 3, "narration": "Let's prove it works. Take f of x equals x squared."},
+  {"scene": 3.1, "narration": "Plug it in. We get the limit as h goes to zero of the quantity x plus h, squared, minus x squared, all over h."},
+  {"scene": 3.2, "narration": "Now expand the quantity x plus h, squared. That's x plus h times x plus h. FOIL it out: x times x, x times h, h times x, h times h. That gives us x squared plus 2xh plus h squared."},
+  {"scene": 3.3, "narration": "Substitute that back in. The x squareds cancel, leaving 2xh plus h squared, all over h."},
+  {"scene": 3.4, "narration": "Factor out the h. The h's cancel."},
+  {"scene": 3.5, "narration": "Take the limit. As h goes to zero, we're left with just 2x."},
+  {"scene": 4, "narration": "Let's check. F prime of zero equals 2 times zero, which is zero. That's exactly what we saw, flat at the bottom. F prime of 2 equals 2 times 2, which is 4. The slope was 4. It works."},
+  {"scene": 5, "narration": "You just computed your first derivative, straight from the definition."},
+  {"scene": 6, "narration": ""}
+]

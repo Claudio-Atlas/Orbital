@@ -58,6 +58,21 @@ result = generate_short_video(
 - **Manim frame:** 4.5 wide × 8.0 tall
 - **Config:** `manim_short.cfg`
 
+### All Step Types (scene_short.py)
+
+| Type | Description | Key Fields |
+|------|-------------|------------|
+| `box` | Text box with neon border | `content`, `label`, `layout.scale` |
+| `math` | LaTeX equation | `content`, `layout.scale` (auto line-break at 2+ `=`) |
+| `graph` | Function plot with axes | `content` (expr like `x**2`), or full `graph` config |
+| `animated_dot` | Dot slides along curve + tangent line | `content` (expr), `dot_range` [start, end], `show_tangent` (bool) |
+| `secant_to_tangent` | Two dots merge, secant→tangent | `content` (expr), `fixed_x`, `h_start`, `h_end` |
+| `rise_run` | Rise/run triangle between two points | `content` (expr), `x1`, `x2` |
+| `h_countdown` | Animated h value shrinking | `start`, `end` |
+| `equation_highlight` | Equation with parts that light up | `parts` (array of LaTeX), `colors` (array of hex) |
+| `transform` | Morph one equation into another | `from_tex`, `to_tex` |
+| `indicate` | Write equation then flash/circumscribe it | `content` |
+
 ### Text Sizing (THESE MATTER)
 - **Box text:** `Text(content, font_size=42, color=WHITE)` — NOT MathTex for plain text
 - **Math:** `MathTex(content, color=WHITE).scale(MATH_SCALE * scale_override)` where `MATH_SCALE=0.85`

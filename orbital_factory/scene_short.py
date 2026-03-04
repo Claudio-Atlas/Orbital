@@ -263,6 +263,347 @@ class SyncedShortScene(Scene):
                     self.wait(EXTRA_HOLD)
                 continue
 
+            # ── ANIMATED DOT (dot slides along curve with tangent line) ──
+            if stype == "animated_dot":
+                duration   = step.get("duration", 8.0)
+                audio_path = step.get("audio_path", "")
+                content    = step.get("content", "x**2")
+                dot_range  = step.get("dot_range", [-2, 2])
+                show_tangent = step.get("show_tangent", True)
+                layout     = step.get("layout", {{}})
+
+                fn = eval(f"lambda x: {{content}}")
+
+                # Use existing graph or build one
+                if graph_mobs:
+                    axes = graph_mobs[-1][1]  # axes is second element
+                else:
+                    axes = Axes(
+                        x_range=[-3, 3, 1], y_range=[-2, 10, 2],
+                        x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]}},
+                        tips=False,
+                    )
+                    axes.move_to([0, GRAPH_CENTER_Y, 0])
+                    curve = axes.plot(fn, x_range=[dot_range[0]-0.5, dot_range[1]+0.5], color=ORBITAL_CYAN, stroke_width=2.5)
+                    self.play(FadeIn(axes), Create(curve), run_time=1.0)
+
+                # Fade out previous content
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+                    previous = None
+
+                # ValueTracker drives the dot position
+                t = ValueTracker(dot_range[0])
+
+                dot = always_redraw(lambda: Dot(
+                    axes.c2p(t.get_value(), fn(t.get_value())),
+                    color=NEON_GREEN, radius=0.08
+                ))
+
+                if show_tangent:
+                    tangent_line = always_redraw(lambda: axes.get_secant_slope_group(
+                        x=t.get_value(), graph=axes.plot(fn, color=ORBITAL_CYAN),
+                        dx=0.01, secant_line_color=NEON_GREEN, secant_line_length=2.0
+                    )[-1] if hasattr(axes, 'get_secant_slope_group') else Line(
+                        axes.c2p(t.get_value() - 0.8, fn(t.get_value()) - 0.8 * ((fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002)),
+                        axes.c2p(t.get_value() + 0.8, fn(t.get_value()) + 0.8 * ((fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002)),
+                        color=NEON_GREEN, stroke_width=2.5
+                    ))
+
+                # Start audio
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.add(dot)
+                if show_tangent:
+                    self.add(tangent_line)
+
+                self.play(t.animate.set_value(dot_range[1]), run_time=duration * 0.8, rate_func=smooth)
+                remaining = max(0.3, duration * 0.2)
+                self.wait(remaining)
+
+                self.remove(dot)
+                if show_tangent:
+                    self.remove(tangent_line)
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── SECANT TO TANGENT (two dots merge, secant becomes tangent) ──
+            if stype == "secant_to_tangent":
+                duration   = step.get("duration", 10.0)
+                audio_path = step.get("audio_path", "")
+                content    = step.get("content", "x**2")
+                fixed_x    = step.get("fixed_x", 1)
+                h_start    = step.get("h_start", 2.0)
+                h_end      = step.get("h_end", 0.05)
+                layout     = step.get("layout", {{}})
+
+                fn = eval(f"lambda x: {{content}}")
+
+                if graph_mobs:
+                    axes = graph_mobs[-1][1]
+                else:
+                    axes = Axes(
+                        x_range=[-3, 3, 1], y_range=[-2, 10, 2],
+                        x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]}},
+                        tips=False,
+                    )
+                    axes.move_to([0, GRAPH_CENTER_Y, 0])
+                    curve = axes.plot(fn, x_range=[-3, 3], color=ORBITAL_CYAN, stroke_width=2.5)
+                    self.play(FadeIn(axes), Create(curve), run_time=1.0)
+
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+                    previous = None
+
+                h_tracker = ValueTracker(h_start)
+                x0 = fixed_x
+
+                fixed_dot = Dot(axes.c2p(x0, fn(x0)), color=NEON_GREEN, radius=0.08)
+
+                moving_dot = always_redraw(lambda: Dot(
+                    axes.c2p(x0 + h_tracker.get_value(), fn(x0 + h_tracker.get_value())),
+                    color="#F97316", radius=0.08
+                ))
+
+                secant = always_redraw(lambda: Line(
+                    axes.c2p(x0 - 1, fn(x0) + (-1) * (fn(x0 + h_tracker.get_value()) - fn(x0)) / max(h_tracker.get_value(), 0.001)),
+                    axes.c2p(x0 + h_tracker.get_value() + 1, fn(x0 + h_tracker.get_value()) + 1 * (fn(x0 + h_tracker.get_value()) - fn(x0)) / max(h_tracker.get_value(), 0.001)),
+                    color=BOX_BORDER, stroke_width=2.5
+                ))
+
+                h_label = always_redraw(lambda: Text(
+                    f"h = {{h_tracker.get_value():.3f}}",
+                    font_size=24, color=WHITE
+                ).move_to([FRAME_W/2 - 0.8, MATH_CENTER_Y + 1.5, 0]))
+
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.add(fixed_dot, moving_dot, secant, h_label)
+                self.play(
+                    h_tracker.animate.set_value(h_end),
+                    run_time=duration * 0.75,
+                    rate_func=smooth
+                )
+
+                # Flash the tangent line green when it locks in
+                final_tangent = secant.copy().set_color(NEON_GREEN)
+                self.play(Transform(secant, final_tangent), Flash(fixed_dot, color=NEON_GREEN), run_time=0.5)
+                self.wait(max(0.3, duration * 0.2))
+
+                self.remove(moving_dot, secant, h_label)
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── RISE/RUN (triangle showing slope between two points) ──
+            if stype == "rise_run":
+                duration   = step.get("duration", 6.0)
+                audio_path = step.get("audio_path", "")
+                content    = step.get("content", "x**2")
+                x1         = step.get("x1", 1)
+                x2         = step.get("x2", 3)
+                layout     = step.get("layout", {{}})
+
+                fn = eval(f"lambda x: {{content}}")
+
+                if graph_mobs:
+                    axes = graph_mobs[-1][1]
+                else:
+                    axes = Axes(
+                        x_range=[-3, 3, 1], y_range=[-2, 10, 2],
+                        x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]}},
+                        tips=False,
+                    )
+                    axes.move_to([0, GRAPH_CENTER_Y, 0])
+
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+                    previous = None
+
+                y1, y2 = fn(x1), fn(x2)
+                dot1 = Dot(axes.c2p(x1, y1), color=NEON_GREEN, radius=0.08)
+                dot2 = Dot(axes.c2p(x2, y2), color="#F97316", radius=0.08)
+
+                # Horizontal line (run)
+                run_line = DashedLine(axes.c2p(x1, y1), axes.c2p(x2, y1), color=ORBITAL_CYAN, stroke_width=2)
+                # Vertical line (rise)
+                rise_line = DashedLine(axes.c2p(x2, y1), axes.c2p(x2, y2), color=NEON_GREEN, stroke_width=2)
+                # Secant line
+                slope = (y2 - y1) / (x2 - x1)
+                sec_line = Line(
+                    axes.c2p(x1 - 0.5, y1 - 0.5 * slope),
+                    axes.c2p(x2 + 0.5, y2 + 0.5 * slope),
+                    color=BOX_BORDER, stroke_width=2.5
+                )
+
+                # Labels
+                run_label = Text("run", font_size=18, color=ORBITAL_CYAN)
+                run_label.next_to(run_line, DOWN, buff=0.1)
+                rise_label = Text("rise", font_size=18, color=NEON_GREEN)
+                rise_label.next_to(rise_line, RIGHT, buff=0.1)
+
+                anim_time = max(1.2, duration * ANIMATION_RATIO)
+
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.play(FadeIn(dot1), FadeIn(dot2), Create(sec_line), run_time=anim_time * 0.4)
+                self.play(Create(run_line), Write(run_label), run_time=anim_time * 0.3)
+                self.play(Create(rise_line), Write(rise_label), run_time=anim_time * 0.3)
+
+                remaining = max(0.3, duration - anim_time)
+                self.wait(remaining)
+
+                mob = VGroup(dot1, dot2, run_line, rise_line, sec_line, run_label, rise_label)
+                previous = mob
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── H COUNTDOWN (animated number showing h shrinking) ──
+            if stype == "h_countdown":
+                duration   = step.get("duration", 5.0)
+                audio_path = step.get("audio_path", "")
+                h_start    = step.get("start", 2.0)
+                h_end      = step.get("end", 0.01)
+                layout     = step.get("layout", {{}})
+
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+                    previous = None
+
+                h_val = ValueTracker(h_start)
+                h_text = Text("h = ", font_size=42, color=WHITE).move_to([0, MATH_CENTER_Y + 0.3, 0])
+                h_num = always_redraw(lambda: DecimalNumber(
+                    h_val.get_value(), num_decimal_places=4, font_size=48, color=NEON_GREEN
+                ).next_to(h_text, RIGHT, buff=0.15))
+
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.play(Write(h_text), FadeIn(h_num), run_time=0.8)
+                self.play(h_val.animate.set_value(h_end), run_time=duration * 0.7, rate_func=smooth)
+                self.play(Indicate(h_num, color=NEON_GREEN), run_time=0.5)
+                remaining = max(0.3, duration * 0.15)
+                self.wait(remaining)
+
+                previous = VGroup(h_text, h_num)
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── EQUATION HIGHLIGHT (color-coded parts light up) ──
+            if stype == "equation_highlight":
+                duration   = step.get("duration", 6.0)
+                audio_path = step.get("audio_path", "")
+                parts      = step.get("parts", [])
+                colors     = step.get("colors", [])
+                layout     = step.get("layout", {{}})
+                scale_override = layout.get("scale", 1.0) if layout else 1.0
+
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+                    previous = None
+
+                # Build equation with colored substrings
+                tex_parts = parts if parts else [step.get("content", "")]
+                mob = MathTex(*tex_parts, color=WHITE).scale(MATH_SCALE * scale_override)
+                _clamp(mob)
+                mob.move_to([0, MATH_CENTER_Y, 0])
+
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.play(Write(mob), run_time=1.2)
+
+                # Highlight each part sequentially
+                part_colors = colors if colors else [ORBITAL_CYAN, NEON_GREEN, "#F97316", BOX_BORDER]
+                time_per_part = max(0.4, (duration - 2.0) / max(len(tex_parts), 1))
+                for idx, part_mob in enumerate(mob):
+                    if idx < len(part_colors):
+                        self.play(
+                            part_mob.animate.set_color(part_colors[idx]),
+                            Indicate(part_mob, color=part_colors[idx]),
+                            run_time=time_per_part
+                        )
+
+                remaining = max(0.3, duration - 1.2 - time_per_part * len(tex_parts))
+                self.wait(remaining)
+
+                previous = mob
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── TRANSFORM (morph one equation into another) ──
+            if stype == "transform":
+                duration   = step.get("duration", 5.0)
+                audio_path = step.get("audio_path", "")
+                from_tex   = step.get("from_tex", step.get("content", ""))
+                to_tex     = step.get("to_tex", "")
+                layout     = step.get("layout", {{}})
+                scale_override = layout.get("scale", 1.0) if layout else 1.0
+
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+                    previous = None
+
+                mob_from = MathTex(from_tex, color=WHITE).scale(MATH_SCALE * scale_override)
+                mob_to   = MathTex(to_tex, color=WHITE).scale(MATH_SCALE * scale_override)
+                _clamp(mob_from)
+                _clamp(mob_to)
+                mob_from.move_to([0, MATH_CENTER_Y, 0])
+                mob_to.move_to([0, MATH_CENTER_Y, 0])
+
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.play(Write(mob_from), run_time=1.0)
+                self.wait(max(0.5, duration * 0.3))
+                self.play(TransformMatchingTex(mob_from, mob_to), run_time=1.5)
+                remaining = max(0.3, duration - 3.0)
+                self.wait(remaining)
+
+                previous = mob_to
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── INDICATE (flash/highlight an existing element) ──
+            if stype == "indicate":
+                duration   = step.get("duration", 3.0)
+                audio_path = step.get("audio_path", "")
+                content    = step.get("content", "")
+                layout     = step.get("layout", {{}})
+                scale_override = layout.get("scale", 1.0) if layout else 1.0
+
+                mob = MathTex(content, color=WHITE).scale(MATH_SCALE * scale_override)
+                _clamp(mob)
+                mob.move_to([0, MATH_CENTER_Y, 0])
+
+                if previous is not None:
+                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
+
+                if audio_path and os.path.exists(audio_path):
+                    self.add_sound(audio_path)
+
+                self.play(Write(mob), run_time=0.8)
+                self.play(Circumscribe(mob, color=NEON_GREEN, run_time=1.0))
+                self.play(Flash(mob.get_center(), color=NEON_GREEN, num_lines=8, run_time=0.5))
+                remaining = max(0.3, duration - 2.3)
+                self.wait(remaining)
+
+                previous = mob
+                if i < len(steps) - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
             # ── CONTENT STEP ──
             duration   = step.get("duration", 2.0)
             audio_path = step.get("audio_path", "")

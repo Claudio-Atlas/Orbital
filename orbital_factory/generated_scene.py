@@ -772,6 +772,316 @@ class SyncedProofScene(Scene):
                     self.wait(EXTRA_HOLD)
                 continue
 
+            # ── ANIMATED DOT (proven in derivative concept prototype) ────
+            if stype == "animated_dot":
+                dot_cfg = step.get("animated_dot", {})
+                content = dot_cfg.get("content", step.get("content", "x**2"))
+                dot_range = dot_cfg.get("dot_range", [-2.5, 2.5])
+                show_tangent = dot_cfg.get("show_tangent", True)
+                show_slope = dot_cfg.get("show_slope", False)
+
+                fn_ad = eval(f"lambda x: {content}")
+
+                # Clear previous
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                # Build graph if not already present
+                ad_axes = Axes(
+                    x_range=[-3, 3, 1], y_range=[-2, 10, 2],
+                    x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                    axis_config={"color": GREY_B, "include_numbers": True, "font_size": 18, "numbers_to_exclude": [0]},
+                    tips=False,
+                )
+                ad_axes.move_to([0, GRAPH_CENTER_Y, 0])
+                ad_curve = ad_axes.plot(fn_ad, x_range=[dot_range[0]-0.5, dot_range[1]+0.5], color=ORBITAL_CYAN, stroke_width=2.5)
+                self.play(FadeIn(ad_axes), Create(ad_curve), run_time=1.0)
+
+                t_ad = ValueTracker(dot_range[0])
+
+                dot_ad = always_redraw(lambda: Dot(
+                    ad_axes.c2p(t_ad.get_value(), fn_ad(t_ad.get_value())),
+                    color=NEON_GREEN, radius=0.12
+                ))
+
+                tangent_ad = None
+                if show_tangent:
+                    def _get_tangent_ad():
+                        x0 = t_ad.get_value()
+                        dx = 0.001
+                        slope = (fn_ad(x0+dx) - fn_ad(x0-dx)) / (2*dx)
+                        y0 = fn_ad(x0)
+                        half = 1.5
+                        return Line(
+                            ad_axes.c2p(x0-half, y0-slope*half),
+                            ad_axes.c2p(x0+half, y0+slope*half),
+                            color=NEON_GREEN, stroke_width=2.5
+                        )
+                    tangent_ad = always_redraw(_get_tangent_ad)
+
+                slope_mob_ad = None
+                if show_slope:
+                    slope_mob_ad = always_redraw(lambda: Text(
+                        f"slope = {(fn_ad(t_ad.get_value()+0.001)-fn_ad(t_ad.get_value()-0.001))/0.002:.1f}",
+                        font_size=28, color=NEON_GREEN
+                    ).move_to([0, MATH_CENTER_Y, 0]))
+
+                self.play(FadeIn(dot_ad), run_time=0.3)
+                if tangent_ad:
+                    self.play(Create(tangent_ad), run_time=0.5)
+                if slope_mob_ad:
+                    self.play(Write(slope_mob_ad), run_time=0.3)
+
+                self.play(t_ad.animate.set_value(dot_range[1]), run_time=duration*0.7, rate_func=smooth)
+                self.wait(max(0.3, duration*0.2))
+
+                cleanup = [dot_ad, ad_axes, ad_curve]
+                if tangent_ad: cleanup.append(tangent_ad)
+                if slope_mob_ad: cleanup.append(slope_mob_ad)
+                self.play(*[FadeOut(m) for m in cleanup], run_time=0.3)
+                previous_replace = None
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── SECANT TO TANGENT (proven in secant line prototype) ────
+            if stype == "secant_to_tangent":
+                st_cfg = step.get("secant_to_tangent", {})
+                content = st_cfg.get("content", step.get("content", "x**2"))
+                x_fixed = st_cfg.get("x_fixed", 1)
+                h_start = st_cfg.get("h_start", 2.0)
+                h_end = st_cfg.get("h_end", 0.1)
+
+                fn_st = eval(f"lambda x: {content}")
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                st_axes = Axes(
+                    x_range=[-1, 4, 1], y_range=[-1, 10, 2],
+                    x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                    axis_config={"color": GREY_B, "include_numbers": True, "font_size": 18, "numbers_to_exclude": [0]},
+                    tips=False,
+                )
+                st_axes.move_to([0, GRAPH_CENTER_Y, 0])
+                st_curve = st_axes.plot(fn_st, x_range=[-0.5, 3.5], color=ORBITAL_CYAN, stroke_width=2.5)
+                self.play(FadeIn(st_axes), Create(st_curve), run_time=1.0)
+
+                fixed_dot = Dot(st_axes.c2p(x_fixed, fn_st(x_fixed)), color=NEON_GREEN, radius=0.12)
+                self.play(FadeIn(fixed_dot), run_time=0.3)
+
+                h_tr = ValueTracker(h_start)
+
+                moving_d = always_redraw(lambda: Dot(
+                    st_axes.c2p(x_fixed + h_tr.get_value(), fn_st(x_fixed + h_tr.get_value())),
+                    color=ORANGE, radius=0.12
+                ))
+
+                def _get_secant():
+                    h = max(h_tr.get_value(), 0.01)
+                    ya = fn_st(x_fixed)
+                    yb = fn_st(x_fixed + h)
+                    s = (yb - ya) / h
+                    ext = 0.6
+                    return Line(
+                        st_axes.c2p(x_fixed - ext, ya - ext*s),
+                        st_axes.c2p(x_fixed + h + ext, yb + ext*s),
+                        color=ORBITAL_VIOLET, stroke_width=3
+                    )
+                sec_line = always_redraw(_get_secant)
+
+                self.add(moving_d, sec_line)
+                self.play(h_tr.animate.set_value(h_end), run_time=duration*0.7, rate_func=smooth)
+                self.wait(max(0.3, duration*0.2))
+
+                self.play(FadeOut(VGroup(st_axes, st_curve, fixed_dot, moving_d, sec_line)), run_time=0.3)
+                previous_replace = None
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── RISE RUN (proven in secant line prototype) ────
+            if stype == "rise_run":
+                rr_cfg = step.get("rise_run", {})
+                content = rr_cfg.get("content", step.get("content", "x**2"))
+                x_a = rr_cfg.get("x1", 1)
+                x_b = rr_cfg.get("x2", 3)
+
+                fn_rr = eval(f"lambda x: {content}")
+                ya, yb = fn_rr(x_a), fn_rr(x_b)
+                rise_val = yb - ya
+                run_val = x_b - x_a
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                rr_axes = Axes(
+                    x_range=[-1, 4, 1], y_range=[-1, 10, 2],
+                    x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                    axis_config={"color": GREY_B, "include_numbers": True, "font_size": 18, "numbers_to_exclude": [0]},
+                    tips=False,
+                )
+                rr_axes.move_to([0, GRAPH_CENTER_Y, 0])
+                rr_curve = rr_axes.plot(fn_rr, x_range=[-0.5, 3.5], color=ORBITAL_CYAN, stroke_width=2.5)
+                self.play(FadeIn(rr_axes), Create(rr_curve), run_time=0.8)
+
+                d1 = Dot(rr_axes.c2p(x_a, ya), color=NEON_GREEN, radius=0.1)
+                d2 = Dot(rr_axes.c2p(x_b, yb), color=ORANGE, radius=0.1)
+                self.play(FadeIn(d1), FadeIn(d2), run_time=0.3)
+
+                run_ln = DashedLine(rr_axes.c2p(x_a, ya), rr_axes.c2p(x_b, ya), color=ORBITAL_CYAN, stroke_width=2, dash_length=0.1)
+                rise_ln = DashedLine(rr_axes.c2p(x_b, ya), rr_axes.c2p(x_b, yb), color=NEON_GREEN, stroke_width=2, dash_length=0.1)
+
+                run_lbl = Text(f"run = {run_val:.0f}", font_size=20, color=ORBITAL_CYAN)
+                run_lbl.next_to(run_ln, DOWN, buff=0.1)
+                rise_lbl = Text(f"rise = {rise_val:.0f}", font_size=20, color=NEON_GREEN)
+                rise_lbl.next_to(rise_ln, RIGHT, buff=0.1)
+
+                self.play(Create(run_ln), Write(run_lbl), run_time=0.6)
+                self.play(Create(rise_ln), Write(rise_lbl), run_time=0.6)
+                self.wait(max(0.3, duration - 2.3))
+
+                rr_group = VGroup(rr_axes, rr_curve, d1, d2, run_ln, rise_ln, run_lbl, rise_lbl)
+                self.play(FadeOut(rr_group), run_time=0.3)
+                previous_replace = None
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── EQUATION HIGHLIGHT ────
+            if stype == "equation_highlight":
+                eh_cfg = step.get("equation_highlight", {})
+                latex = eh_cfg.get("latex", step.get("content", ""))
+                highlights = eh_cfg.get("highlights", [])
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                eq_mob = MathTex(latex, color=WHITE).scale(1.4)
+                self.play(Write(eq_mob), run_time=anim_time*0.5)
+
+                time_per_hl = max(0.5, (duration - anim_time*0.5) / max(len(highlights), 1))
+                for hl in highlights:
+                    indices = hl.get("indices", [])
+                    hcolor = hl.get("color", ORBITAL_VIOLET)
+                    for i in indices:
+                        if i < len(eq_mob[0]):
+                            self.play(eq_mob[0][i].animate.set_color(hcolor), run_time=0.3)
+                    self.wait(time_per_hl - 0.3)
+
+                previous_replace = eq_mob
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── INDICATE ────
+            if stype == "indicate":
+                ind_cfg = step.get("indicate", {})
+                latex = ind_cfg.get("latex", step.get("content", ""))
+                ind_color = ind_cfg.get("color", NEON_GREEN)
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                ind_mob = MathTex(latex, color=WHITE).scale(1.4)
+                self.play(Write(ind_mob), run_time=anim_time*0.4)
+                self.play(Circumscribe(ind_mob, color=ind_color), run_time=0.8)
+                self.wait(max(0.3, duration - anim_time*0.4 - 0.8))
+                previous_replace = ind_mob
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
+            # ── H COUNTDOWN (secant shrink animation) ────
+            if stype == "h_countdown":
+                hc_cfg = step.get("h_countdown", {})
+                content = hc_cfg.get("content", step.get("content", "x**2"))
+                x_fixed = hc_cfg.get("x_fixed", 1)
+                h_values = hc_cfg.get("h_values", [2.0, 1.0, 0.5, 0.1])
+
+                fn_hc = eval(f"lambda x: {content}")
+
+                if build_lines:
+                    self.play(*[FadeOut(ln, shift=UP*0.3) for ln in build_lines], run_time=0.3)
+                    build_lines.clear()
+                if previous_replace is not None:
+                    self.play(FadeOut(previous_replace, shift=UP*0.3), run_time=0.35)
+
+                hc_axes = Axes(
+                    x_range=[-1, 4, 1], y_range=[-1, 10, 2],
+                    x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
+                    axis_config={"color": GREY_B, "include_numbers": True, "font_size": 18, "numbers_to_exclude": [0]},
+                    tips=False,
+                )
+                hc_axes.move_to([0, GRAPH_CENTER_Y, 0])
+                hc_curve = hc_axes.plot(fn_hc, x_range=[-0.5, 3.5], color=ORBITAL_CYAN, stroke_width=2.5)
+                self.play(FadeIn(hc_axes), Create(hc_curve), run_time=0.8)
+
+                fd = Dot(hc_axes.c2p(x_fixed, fn_hc(x_fixed)), color=NEON_GREEN, radius=0.1)
+                self.play(FadeIn(fd), run_time=0.2)
+
+                time_per_h = max(0.8, (duration - 1.0) / len(h_values))
+                prev_sec = None
+                prev_md = None
+                prev_lbl = None
+
+                for h in h_values:
+                    ya = fn_hc(x_fixed)
+                    yb = fn_hc(x_fixed + h)
+                    s = (yb - ya) / h
+                    ext = 0.5
+                    sl = Line(
+                        hc_axes.c2p(x_fixed-ext, ya-ext*s),
+                        hc_axes.c2p(x_fixed+h+ext, yb+ext*s),
+                        color=ORBITAL_VIOLET, stroke_width=2.5
+                    )
+                    md = Dot(hc_axes.c2p(x_fixed+h, yb), color=ORANGE, radius=0.1)
+                    lbl = Text(f"h = {h}", font_size=22, color=ORANGE).move_to([0, MATH_CENTER_Y, 0])
+
+                    anims_in = [FadeIn(sl), FadeIn(md), Write(lbl)]
+                    anims_out = []
+                    if prev_sec: anims_out.append(FadeOut(prev_sec))
+                    if prev_md: anims_out.append(FadeOut(prev_md))
+                    if prev_lbl: anims_out.append(FadeOut(prev_lbl))
+
+                    if anims_out:
+                        self.play(*anims_out, *anims_in, run_time=0.5)
+                    else:
+                        self.play(*anims_in, run_time=0.5)
+
+                    self.wait(time_per_h - 0.5)
+                    prev_sec, prev_md, prev_lbl = sl, md, lbl
+
+                cleanup_hc = [hc_axes, hc_curve, fd]
+                if prev_sec: cleanup_hc.append(prev_sec)
+                if prev_md: cleanup_hc.append(prev_md)
+                if prev_lbl: cleanup_hc.append(prev_lbl)
+                self.play(*[FadeOut(m) for m in cleanup_hc], run_time=0.3)
+                previous_replace = None
+
+                if idx < total - 1:
+                    self.wait(EXTRA_HOLD)
+                continue
+
             # ── STANDARD TYPES (text/math/mixed/box/diagram/graph/geometric) ─
             mob = _make_mobject(step)
 

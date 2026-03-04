@@ -375,8 +375,8 @@ export default function HomePage() {
                   className={`w-full py-4 rounded-xl font-semibold transition-all text-center block ${
                   (key === "standard" || key === "institution")
                     ? isDark
-                      ? "bg-black text-white hover:bg-gray-800"
-                      : "bg-gray-900 text-white hover:bg-gray-800"
+                      ? "bg-violet-600 text-white hover:bg-violet-500"
+                      : "bg-violet-600 text-white hover:bg-violet-500"
                     : isDark
                       ? "bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08]"
                       : "bg-gray-100 hover:bg-gray-200 border border-gray-200"

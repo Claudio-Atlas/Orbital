@@ -150,7 +150,47 @@ class DefinitionDerivative(Scene):
         self.play(Write(step1), run_time=1.0)
         self.wait(1.5)
 
-        # Step 2: Expand
+        # Step 1b: Show FOIL expansion of (x+h)²
+        foil_title = Text("Expand (x + h)²", font_size=18, color=ORANGE)
+        foil_title.move_to([0, MATH_Y - 0.5, 0])
+        self.play(Write(foil_title), run_time=0.4)
+
+        foil_1 = MathTex(r"(x+h)^2 = (x+h)(x+h)", font_size=22, color=WHITE)
+        foil_1.move_to([0, MATH_Y - 0.9, 0])
+        self.play(Write(foil_1), run_time=0.8)
+        self.wait(1.0)
+
+        # Show each FOIL term
+        foil_2 = MathTex(
+            r"= x \cdot x", r"+ x \cdot h", r"+ h \cdot x", r"+ h \cdot h",
+            font_size=22, color=WHITE
+        )
+        foil_2.move_to([0, MATH_Y - 1.4, 0])
+        foil_2[0].set_color(CYAN)      # x·x
+        foil_2[1].set_color(VIOLET)    # x·h
+        foil_2[2].set_color(VIOLET)    # h·x
+        foil_2[3].set_color(ORANGE)    # h·h
+
+        self.play(Write(foil_2[0]), run_time=0.4)
+        self.wait(0.3)
+        self.play(Write(foil_2[1]), run_time=0.4)
+        self.wait(0.3)
+        self.play(Write(foil_2[2]), run_time=0.4)
+        self.wait(0.3)
+        self.play(Write(foil_2[3]), run_time=0.4)
+        self.wait(0.8)
+
+        # Simplify to final expanded form
+        foil_3 = MathTex(r"= x^2 + 2xh + h^2", font_size=24, color=GREEN)
+        foil_3.move_to([0, MATH_Y - 1.9, 0])
+        self.play(Write(foil_3), run_time=0.8)
+        self.play(Circumscribe(foil_3, color=GREEN), run_time=0.5)
+        self.wait(1.0)
+
+        # Clear FOIL work, keep step1
+        self.play(FadeOut(foil_title), FadeOut(foil_1), FadeOut(foil_2), FadeOut(foil_3), run_time=0.3)
+
+        # Step 2: Now substitute the expansion
         step2 = MathTex(
             r"= \lim_{h \to 0} \frac{x^2 + 2xh + h^2 - x^2}{h}",
             font_size=24, color=WHITE

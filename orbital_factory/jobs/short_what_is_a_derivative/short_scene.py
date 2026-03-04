@@ -1,41 +1,4 @@
 """
-Orbital Scene Generator — Short-Form Vertical (9:16)
-=====================================================
-FORKED FROM standard pipeline's SyncedMathScene — the proven timing model.
-
-TIMING MODEL (exact copy of standard pipeline):
-  1. Build mobject + position it (NO timeline cost)
-  2. add_sound() — audio starts HERE
-  3. FadeOut(previous, 0.4s) — voice plays over fadeout
-  4. Write(new, anim_time) — writing begins ~0.4s into audio
-  5. wait(remaining) — hold until voice done
-  6. wait(EXTRA_HOLD) — breathing room between steps
-
-Changes from standard: portrait frame, graph zone, neon grid, built-in end card.
-"""
-
-import json
-import os
-
-FRAME_W = 4.5
-FRAME_H = 8.0
-GRAPH_CENTER_Y = -1.8
-MATH_CENTER_Y = 1.2
-GRAPH_WIDTH = 3.4
-GRAPH_HEIGHT = 2.8
-MATH_SCALE = 0.85
-BOX_SCALE = 0.65
-ANIMATION_RATIO = 0.35
-EXTRA_HOLD = 0.8
-
-
-def create_synced_scene_short(manifest: list, output_path: str, intro_duration: float = 0.0):
-    for step in manifest:
-        ap = step.get("audio_path", "")
-        if ap and not os.path.isabs(ap):
-            step["audio_path"] = os.path.abspath(ap)
-
-    scene_code = f'''"""
 Auto-generated 9:16 TikTok scene.
 Timing model copied verbatim from standard pipeline SyncedMathScene.
 """
@@ -43,25 +6,25 @@ from manim import *
 import os
 import numpy as np
 
-config.frame_width = {FRAME_W}
-config.frame_height = {FRAME_H}
+config.frame_width = 4.5
+config.frame_height = 8.0
 
 ORBITAL_CYAN  = "#22D3EE"
 NEON_GREEN    = "#39FF14"
 BOX_BORDER    = "#8B5CF6"
 BOX_FILL      = "#1a1130"
 LABEL_COLOR   = "#22D3EE"
-FRAME_W       = {FRAME_W}
-FRAME_H       = {FRAME_H}
+FRAME_W       = 4.5
+FRAME_H       = 8.0
 MAX_WIDTH     = FRAME_W * 0.82
-MATH_SCALE    = {MATH_SCALE}
-BOX_SCALE     = {BOX_SCALE}
-GRAPH_WIDTH   = {GRAPH_WIDTH}
-GRAPH_HEIGHT  = {GRAPH_HEIGHT}
-MATH_CENTER_Y = {MATH_CENTER_Y}
-GRAPH_CENTER_Y = {GRAPH_CENTER_Y}
-ANIMATION_RATIO = {ANIMATION_RATIO}
-EXTRA_HOLD = {EXTRA_HOLD}
+MATH_SCALE    = 0.85
+BOX_SCALE     = 0.65
+GRAPH_WIDTH   = 3.4
+GRAPH_HEIGHT  = 2.8
+MATH_CENTER_Y = 1.2
+GRAPH_CENTER_Y = -1.8
+ANIMATION_RATIO = 0.35
+EXTRA_HOLD = 0.8
 
 
 def _clamp(mob, max_w=None):
@@ -85,20 +48,20 @@ def _build_graph(cfg):
     grid = NumberPlane(
         x_range=x_range, y_range=y_range,
         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-        background_line_style={{
+        background_line_style={
             "stroke_color": "#8B5CF6", "stroke_opacity": 0.25, "stroke_width": 1,
-        }},
-        faded_line_style={{
+        },
+        faded_line_style={
             "stroke_color": "#22D3EE", "stroke_opacity": 0.12, "stroke_width": 0.5,
-        }},
+        },
     )
     axes = Axes(
         x_range=x_range, y_range=y_range,
         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-        axis_config={{
+        axis_config={
             "color": GREY_B, "include_numbers": True, "font_size": 12,
             "numbers_to_exclude": [0],
-        }},
+        },
         tips=False,
     )
     grid.move_to(axes.get_center())
@@ -113,7 +76,7 @@ def _build_graph(cfg):
             if "lambda" in expr_str:
                 fn_obj = eval(expr_str)
             else:
-                fn_obj = eval(f"lambda x: {{expr_str}}")
+                fn_obj = eval(f"lambda x: {expr_str}")
             y_min, y_max = y_range[0], y_range[1]
             x_lo, x_hi = x_range[0], x_range[1]
             test_xs = np.linspace(x_lo, x_hi, 200)
@@ -134,7 +97,7 @@ def _build_graph(cfg):
                     lbl_mob.move_to(axes.c2p(0, 0) + UP * 0.3)
                 group.add(lbl_mob)
         except Exception as e:
-            print(f"  ⚠️  Graph eval failed: {{e}}")
+            print(f"  ⚠️  Graph eval failed: {e}")
 
     if tangent and plotted:
         at_x  = tangent.get("at_x", 0)
@@ -174,7 +137,7 @@ def _build_graph(cfg):
 
 
 class SyncedShortScene(Scene):
-    STEPS_DATA = {repr(manifest)}
+    STEPS_DATA = [{'step': 0, 'type': 'box', 'content': 'What IS a Derivative?', 'narration': 'What if I told you every curve has a hidden speed at every point?', 'layout': {'scale': 1.3}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_00.mp3', 'duration': 5.226}, {'step': 1, 'type': 'graph', 'content': 'x**2', 'narration': "Take this curve, f of x equals x squared. Near the bottom, around x equals zero, it's almost flat. But as you move to the right, toward x equals two or three, it climbs faster and faster.", 'layout': {'scale': 1.0}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_01.mp3', 'duration': 16.279}, {'step': 2, 'type': 'box', 'content': 'How steep is the curve at ONE specific point?', 'narration': 'So the big question is: how steep is this curve at one specific point? Not on average. At exactly that spot.', 'layout': {'scale': 1.1}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_02.mp3', 'duration': 9.406}, {'step': 3, 'type': 'box', 'content': 'Secant Line: a straight line through two points on the curve', 'narration': "Here's the idea. Pick two points on the curve and draw a straight line through them. That's called a secant line. Its slope gives you the average rate of change between those two points.", 'layout': {'scale': 1.0}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_03.mp3', 'duration': 12.656}, {'step': 4, 'type': 'math', 'content': '\\text{Slope of Secant} = \\frac{f(x+h) - f(x)}{h}', 'narration': 'The slope of that secant line is f of x plus h minus f of x, all divided by h. That h is the horizontal gap between your two x values.', 'layout': {'scale': 1.2}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_04.mp3', 'duration': 13.26}, {'step': 5, 'type': 'box', 'content': 'Now slide the second point closer... and closer...', 'narration': "Now here's where it gets beautiful. Slide that second point closer and closer to the first one. In math, we call this taking a limit. As h shrinks toward zero, the secant line rotates and settles into one perfect position.", 'layout': {'scale': 1.1}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_05.mp3', 'duration': 18.322}, {'step': 6, 'type': 'box', 'content': 'Secant Line → Tangent Line', 'narration': 'When h reaches zero, the secant line becomes a tangent line. A line that just touches the curve at that single point, matching its exact steepness.', 'layout': {'scale': 1.2}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_06.mp3', 'duration': 11.635}, {'step': 7, 'type': 'math', 'content': "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}", 'narration': "And that's the derivative. The limit as h approaches zero of f of x plus h minus f of x over h. It gives you the exact slope of the curve at any single point.", 'layout': {'scale': 1.3}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_07.mp3', 'duration': 13.539}, {'step': 8, 'type': 'box', 'content': 'Derivative = slope of the tangent line = instantaneous rate of change', 'narration': 'The derivative is the slope of the tangent line. Another way to say it: the instantaneous rate of change. This is exactly how physics computes velocity from a position curve.', 'layout': {'scale': 1.0}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_08.mp3', 'duration': 14.793}, {'step': 9, 'type': 'box', 'content': 'Every derivative rule is just a shortcut for this limit.', 'narration': "That's all a derivative is. A slope at a single point. And every derivative rule you'll ever learn? Just a shortcut for computing this limit.", 'layout': {'scale': 1.2}, 'audio_path': '/Users/claudioatlas/Desktop/Orbital/orbital_factory/jobs/short_what_is_a_derivative/audio/step_09.mp3', 'duration': 11.728}]
 
     def construct(self):
         self.camera.background_color = "#000000"
@@ -214,16 +177,16 @@ class SyncedShortScene(Scene):
             if stype == "graph":
                 duration   = step.get("duration", 8.0)
                 audio_path = step.get("audio_path", "")
-                graph_cfg  = step.get("graph", step.get("diagram", {{}}))
+                graph_cfg  = step.get("graph", step.get("diagram", {}))
 
                 # If graph_cfg is empty but we have a "content" expression, build a default config
                 if not graph_cfg.get("functions") and step.get("content"):
                     expr = step["content"]
-                    graph_cfg = {{
+                    graph_cfg = {
                         "x_range": [-3, 3, 1],
                         "y_range": [-2, 10, 2],
-                        "functions": [{{"expr": expr, "label": "f(x)"}}],
-                    }}
+                        "functions": [{"expr": expr, "label": "f(x)"}],
+                    }
 
                 # 1. BUILD mobject first
                 mob = _build_graph(graph_cfg)
@@ -269,7 +232,7 @@ class SyncedShortScene(Scene):
             stype      = step.get("type", "math")
             content    = step.get("content") or step.get("latex", "")
             label_txt  = step.get("label", "")
-            layout     = step.get("layout", {{}})
+            layout     = step.get("layout", {})
             scale_override = layout.get("scale", 1.0) if layout else 1.0
 
             anim_time = max(1.2, duration * ANIMATION_RATIO)
@@ -279,7 +242,7 @@ class SyncedShortScene(Scene):
             # ═══════════════════════════════════════════════════
             if stype == "box":
                 # Use Text() for boxes to preserve spaces; MathTex strips whitespace
-                inner = Text(content, color=WHITE, font_size=42).scale(scale_override)
+                inner = Text(content, color=WHITE, font_size=28).scale(scale_override)
                 _clamp(inner, MAX_WIDTH * 0.85)
                 box_rect = SurroundingRectangle(
                     inner, color=BOX_BORDER, fill_color=BOX_FILL,
@@ -295,7 +258,7 @@ class SyncedShortScene(Scene):
             else:
                 # Auto-break long equations at = signs for vertical layout
                 eq_count = content.count('=')
-                has_aligned = 'aligned' in content or 'begin{{' in content
+                has_aligned = 'aligned' in content or 'begin{' in content
                 if eq_count >= 2 and not has_aligned:
                     # Split at = signs, rebuild as aligned with & before each =
                     parts = content.split('=')
@@ -303,7 +266,7 @@ class SyncedShortScene(Scene):
                     aligned_lines = [parts[0].strip() + ' &= ' + parts[1].strip()]
                     for p in parts[2:]:
                         aligned_lines.append('&= ' + p.strip())
-                    aligned_content = r'\\begin{{aligned}} ' + r' \\\\[8pt] '.join(aligned_lines) + r' \\end{{aligned}}'
+                    aligned_content = r'\begin{aligned} ' + r' \\[8pt] '.join(aligned_lines) + r' \end{aligned}'
                     mob = MathTex(aligned_content, color=WHITE).scale(MATH_SCALE * scale_override)
                 else:
                     mob = MathTex(content, color=WHITE).scale(MATH_SCALE * scale_override)
@@ -378,9 +341,3 @@ class SyncedShortScene(Scene):
         self.play(FadeIn(VGroup(wm_glow, wordmark), shift=UP*0.2), run_time=0.4)
         self.wait(1.2)
         self.play(FadeOut(end_card), run_time=0.3)
-'''
-
-    with open(output_path, "w") as f:
-        f.write(scene_code)
-
-    print(f"  ✓ Created 9:16 TikTok 3-zone scene: {output_path}")

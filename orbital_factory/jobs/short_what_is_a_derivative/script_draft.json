@@ -1,0 +1,72 @@
+[
+  {
+    "step": 1,
+    "type": "box",
+    "content": "What IS a Derivative?",
+    "narration": "What if I told you every single curve has a hidden speed at every point?",
+    "layout": { "scale": 1.3 }
+  },
+  {
+    "step": 2,
+    "type": "graph",
+    "content": "x**2",
+    "narration": "Take this curve, f of x equals x squared. It's not moving at the same rate everywhere. Near the bottom it's almost flat, but out here it's climbing fast.",
+    "layout": { "scale": 1.0 }
+  },
+  {
+    "step": 3,
+    "type": "box",
+    "content": "The Big Question: How steep is the curve at ONE specific point?",
+    "narration": "So the big question is: how steep is this curve at one specific point? Not on average — at exactly that spot.",
+    "layout": { "scale": 1.1 }
+  },
+  {
+    "step": 4,
+    "type": "box",
+    "content": "Secant Line → connects two points on the curve",
+    "narration": "Here's the idea. Pick two points on the curve and draw a straight line through them. That's called a secant line. It gives you the average rate of change between those two points.",
+    "layout": { "scale": 1.0 }
+  },
+  {
+    "step": 5,
+    "type": "math",
+    "content": "\\text{Average Rate} = \\frac{f(x+h) - f(x)}{h}",
+    "narration": "The slope of that secant line is f of x plus h minus f of x, all divided by h. That h is just the distance between your two points.",
+    "layout": { "scale": 1.2 }
+  },
+  {
+    "step": 6,
+    "type": "box",
+    "content": "Now slide the second point closer... and closer... and closer...",
+    "narration": "Now here's where it gets beautiful. What happens if you slide that second point closer and closer to the first one? The secant line starts to rotate and settle into one perfect position.",
+    "layout": { "scale": 1.1 }
+  },
+  {
+    "step": 7,
+    "type": "box",
+    "content": "Secant Line → Tangent Line",
+    "narration": "When the two points merge into one, the secant line becomes a tangent line. It just barely touches the curve at that single point.",
+    "layout": { "scale": 1.2 }
+  },
+  {
+    "step": 8,
+    "type": "math",
+    "content": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
+    "narration": "And that's the derivative. The limit as h approaches zero of f of x plus h minus f of x over h. It gives you the exact slope of the curve at any single point.",
+    "layout": { "scale": 1.3 }
+  },
+  {
+    "step": 9,
+    "type": "box",
+    "content": "The derivative = the slope of the tangent line = the instantaneous rate of change",
+    "narration": "So the derivative is just the slope of the tangent line. Another way to say it: it's the instantaneous rate of change. Not the average — the exact rate, right at that moment.",
+    "layout": { "scale": 1.0 }
+  },
+  {
+    "step": 10,
+    "type": "box",
+    "content": "That's it. That's what a derivative is. 🎯",
+    "narration": "That's it. That's all a derivative is. A slope at a single point. And once you understand this, every derivative rule you'll ever learn is just a shortcut for computing this limit.",
+    "layout": { "scale": 1.2 }
+  }
+]

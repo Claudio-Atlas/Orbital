@@ -59,7 +59,7 @@ const VIDEOS: Video[] = [
   {
     id: "t1",
     title: "Group of Order 15 is Cyclic — Full Proof",
-    youtubeId: "",
+    youtubeId: "USmfu88O0ew",
     format: "tutorial",
     duration: "5:30",
     description: "Complete proof using Sylow theorems",
@@ -67,7 +67,7 @@ const VIDEOS: Video[] = [
   {
     id: "t2",
     title: "Uncountability of the Reals — Dedekind Cuts",
-    youtubeId: "",
+    youtubeId: "x1fx09DyKx4",
     format: "tutorial",
     duration: "4:45",
     description: "Why the real numbers are uncountable",

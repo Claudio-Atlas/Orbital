@@ -12,7 +12,7 @@ The Visual Creation Team designs and builds new visual types for Orbital's video
 
 | Agent | Role | Model | Label | Focus |
 |-------|------|-------|-------|-------|
-| **Iris** | Visual Architect (Visionary) | claude-opus-4-6 | `orbital-iris` | Designs visual briefs — what should appear on screen, motion, timing, color. No code. |
+| **Iris** | Creative Lead & Visual Architect | claude-opus-4-6 | `orbital-iris` | Generates viral short concepts + designs visual briefs. The idea engine AND the visual eye. |
 | **Claudio** | Renderer & Integrator | (main assistant) | — | Renders Iris's briefs in Manim, shows her the output, iterates until approved. |
 
 **Forge** (Visual Engineer) is retired from the core loop as of 2026-03-07. Claudio handles rendering directly, which lets Iris close the feedback loop — she sees the actual render and iterates, instead of designing blind.
@@ -22,7 +22,9 @@ The Visual Creation Team designs and builds new visual types for Orbital's video
 ## Workflow (Updated 2026-03-07)
 
 ```
-CONCEPT (from Clayton or content calendar)
+IRIS generates concept pitches (calculus-focused, WHY questions, visual potential)
+    ↓
+CLAYTON picks from pitches (or assigns a concept)
     ↓
 ┌─────────────────────────────────────────────┐
 │ IRIS reads:                                  │

@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "topic": "Solving Cubic Equations by Factoring and Quadratic Formula",
+    "title": "Solve x³ − 7x² + 11x = 0 | MAT 170 Exam 2"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "content": "Solve:  x³ − 7x² + 11x = 0",
+      "narration": "Solve x cubed minus 7 x squared plus 11 x equals 0.",
+      "label": "MAT 170 Exam 2 Review"
+    },
+    {
+      "type": "box",
+      "content": "Always look for a Greatest Common Factor (GCF) first.",
+      "narration": "Before doing anything else, always check if there is a greatest common factor you can pull out.",
+      "label": "Strategy"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x^3 - 7x^2 + 11x = 0",
+            "narration": "We start with x cubed minus 7 x squared plus 11 x equals 0."
+          },
+          {
+            "latex": "x(x^2 - 7x + 11) = 0",
+            "narration": "Every term has an x, so we factor out x as the greatest common factor.",
+            "note": "Factor out GCF: x",
+            "note_color": "#22D3EE"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "Zero Product Property: If A · B = 0, then A = 0 or B = 0.",
+      "narration": "Now we use the Zero Product Property. If a product equals zero, then at least one of the factors must equal zero.",
+      "label": "Zero Product Property"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x = 0 \\quad \\text{or} \\quad x^2 - 7x + 11 = 0",
+            "narration": "We set each factor equal to zero. Either x equals 0, or x squared minus 7 x plus 11 equals 0."
+          },
+          {
+            "latex": "x = 0 \\checkmark",
+            "narration": "The first factor gives us x equals 0. That is one solution.",
+            "note": "First solution!",
+            "note_color": "#39FF14"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "Quadratic Formula: x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
+      "narration": "For the second factor, x squared minus 7 x plus 11 equals 0, we need the Quadratic Formula because it does not factor nicely.",
+      "label": "Quadratic Formula"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "a = 1, \\quad b = -7, \\quad c = 11",
+            "narration": "We identify a equals 1, b equals negative 7, and c equals 11."
+          },
+          {
+            "latex": "x = \\frac{-(-7) \\pm \\sqrt{(-7)^2 - 4(1)(11)}}{2(1)}",
+            "narration": "Substituting into the Quadratic Formula, x equals negative negative 7, plus or minus the square root of negative 7 squared minus 4 times 1 times 11, all over 2 times 1."
+          },
+          {
+            "latex": "x = \\frac{7 \\pm \\sqrt{49 - 44}}{2}",
+            "narration": "Negative negative 7 is 7. Negative 7 squared is 49. And 4 times 1 times 11 is 44. The denominator is 2."
+          },
+          {
+            "latex": "x = \\frac{7 \\pm \\sqrt{5}}{2}",
+            "narration": "49 minus 44 equals 5. So x equals 7 plus or minus the square root of 5, all over 2.",
+            "note": "Two more solutions!",
+            "note_color": "#39FF14"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "x = 0, \\quad x = \\frac{7 + \\sqrt{5}}{2} \\approx 4.618, \\quad x = \\frac{7 - \\sqrt{5}}{2} \\approx 2.382",
+      "narration": "Our three solutions are x equals 0, x equals 7 plus square root of 5 over 2 which is approximately 4.618, and x equals 7 minus square root of 5 over 2 which is approximately 2.382.",
+      "label": "Final Answer"
+    },
+    {
+      "type": "graph",
+      "narration": "Here is the graph of x cubed minus 7 x squared plus 11 x. Notice it crosses the x-axis at all three solutions: x equals 0, approximately 2.382, and approximately 4.618.",
+      "diagram": {
+        "x_range": [-1, 6, 1],
+        "y_range": [-8, 12, 2],
+        "functions": [
+          {"expr": "x**3 - 7*x**2 + 11*x", "color": "#22D3EE"}
+        ],
+        "dots": [
+          {"x": 0, "y": 0, "color": "#39FF14", "label": "x = 0"},
+          {"x": 2.382, "y": 0, "color": "#39FF14", "label": "x ≈ 2.382"},
+          {"x": 4.618, "y": 0, "color": "#39FF14", "label": "x ≈ 4.618"}
+        ]
+      },
+      "duration": 6.0
+    }
+  ]
+}

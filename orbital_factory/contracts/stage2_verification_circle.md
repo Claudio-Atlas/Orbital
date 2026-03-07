@@ -7,16 +7,19 @@
 ## Purpose
 Review a Stage 1 script for mathematical correctness, pedagogical quality, and student comprehension. Output a revised script ready for Stage 3 (Lean formalization).
 
-## Model Assignments
+## Team
 
-| Role | Model | Focus |
-|------|-------|-------|
-| **Mathematician A (Rigor)** | claude-opus-4 | Verify every computation, check logical flow, flag notation errors |
-| **Mathematician B (Breadth)** | claude-opus-4 | Sanity-check answer, consider alternative approaches, edge cases |
-| **Pedagogy Expert** | claude-opus-4 | Evaluate explanation clarity, pacing, narration tone, common mistakes |
-| **Student Simulator** | claude-sonnet-4 | Read as a student: what's confusing? where do you get lost? |
-| **Short-Form Content Expert** | claude-sonnet-4 | Video pacing, retention, dead time, hook strength, watch-through rate |
-| **Visual Director** | claude-sonnet-4 | Frame composition, math sizing/spacing, visual hierarchy, "does this look viral?" |
+| Name | Role | Model | Focus |
+|------|------|-------|-------|
+| **Archimedes** | Visionary / Orchestrator | claude-opus-4 | Writes scripts, designs visuals, submits to Circle. Learns from corrections. |
+| **Fermat** | Mathematician A (Rigor) | claude-opus-4 | Verify every computation, check logical flow, flag notation errors |
+| **Euler** | Mathematician B (Breadth) | claude-opus-4 | Sanity-check answer, consider alternative approaches, edge cases |
+| **Descartes** | Pedagogy Expert | claude-opus-4 | Evaluate explanation clarity, pacing, narration tone, common mistakes |
+| **Sophie** | Student Simulator | claude-sonnet-4 | Read as a student: what's confusing? where do you get lost? |
+| **Escher** | Content & Pacing Expert | claude-sonnet-4 | Video pacing, retention, dead time, hook strength, watch-through rate |
+| **Penrose** | Visual Director | claude-sonnet-4 | Frame composition, math sizing/spacing, visual hierarchy |
+
+*Archimedes feeds scripts INTO the Circle. The Circle reviews and sends corrections back. Every correction is logged in `memory/agents/archimedes.md` as training data for eventual local model replacement.*
 
 **Why 3 Opus + 3 Sonnet:** Mathematicians and Pedagogy make *judgments* requiring deep reasoning. The Student, Content Expert, and Visual Director evaluate *experience* — Sonnet is sufficient and keeps costs down.
 
@@ -157,7 +160,7 @@ Professors can optionally **skip the circle** and review/edit scripts themselves
 ```
 You are running a Verification Circle for Orbital, an AI math video generator.
 
-You will play 4 roles across 4 rounds: Mathematician A (Rigor), Mathematician B (Breadth), Pedagogy Expert, and Student Simulator.
+You will play 6 roles across 4 rounds: Fermat (Rigor), Euler (Breadth), Descartes (Pedagogy), Sophie (Student), Escher (Content & Pacing), and Penrose (Visual Director).
 
 PROBLEM: {problem}
 COURSE: {course}

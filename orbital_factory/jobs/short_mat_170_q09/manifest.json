@@ -1,0 +1,86 @@
+[
+  {
+    "type": "box",
+    "content": "Determine the end behavior",
+    "narration": "Use the leading coefficient test for f of x equals 2 x cubed plus x minus 2.",
+    "label": "MAT 170 Exam 2 Review",
+    "step": 0,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "f(x) = 2x^3 + x - 2",
+    "narration": "Identify the leading term.",
+    "step": 1,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "algebra_solve",
+    "narration": "",
+    "algebra_solve": {
+      "final_color": "#39FF14",
+      "steps": [
+        {
+          "latex": "\\text{Leading term: } 2x^3",
+          "narration": "The leading term is 2 x cubed.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "\\text{Degree: 3 (odd)}",
+          "narration": "The degree is 3, which is odd. Opposite end behavior.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "\\text{Leading coefficient: } 2 \\text{ (positive)}",
+          "narration": "The leading coefficient is positive 2. Positive with odd degree means: falls left, rises right.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "x \\to -\\infty: \\; f(x) \\to -\\infty",
+          "narration": "As x goes to negative infinity, f of x goes to negative infinity.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "x \\to +\\infty: \\; f(x) \\to +\\infty",
+          "narration": "As x goes to positive infinity, f of x goes to positive infinity.",
+          "audio_path": "",
+          "duration": 4.0
+        }
+      ]
+    },
+    "step": 2,
+    "audio_path": "",
+    "duration": 20.0
+  },
+  {
+    "type": "graph",
+    "narration": "The graph confirms: falls on the left, rises on the right.",
+    "diagram": {
+      "x_range": [
+        -3,
+        3,
+        1
+      ],
+      "y_range": [
+        -20,
+        20,
+        5
+      ],
+      "functions": [
+        {
+          "expr": "2*x**3 + x - 2",
+          "color": "#22D3EE"
+        }
+      ]
+    },
+    "duration": 5.0,
+    "step": 3,
+    "audio_path": ""
+  }
+]

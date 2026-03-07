@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "topic": "Solving a Cubic by Factoring",
+    "difficulty": "MAT 170 Exam 2",
+    "product_family": "short-form",
+    "title": "Solve x³ - 7x² + 11x = 0 | MAT 170 Exam 2"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "content": "Solve: x³ - 7x² + 11x = 0",
+      "narration": "Solve x cubed minus 7 x squared plus 11 x equals zero.",
+      "label": "Problem"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x^3 - 7x^2 + 11x = 0",
+            "narration": "Every term has an x in common. Factor it out."
+          },
+          {
+            "latex": "x(x^2 - 7x + 11) = 0",
+            "narration": "That gives us x times the quantity x squared minus 7 x plus 11, equals zero."
+          },
+          {
+            "latex": "x = 0",
+            "narration": "Set the first factor to zero. x equals zero. That's our first solution.",
+            "note": "first solution",
+            "note_color": "#39FF14"
+          },
+          {
+            "latex": "x^2 - 7x + 11 = 0",
+            "narration": "Now for the quadratic. This doesn't factor nicely, so we need the quadratic formula."
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "x = (-b ± √(b²-4ac)) / 2a",
+      "narration": "Here's the quadratic formula. We need to identify a, b, and c.",
+      "label": "Quadratic Formula"
+    },
+    {
+      "type": "box",
+      "content": "a = 1,  b = -7,  c = 11",
+      "narration": "a is 1, b is negative 7, and c is 11.",
+      "label": "Identify"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x = \\frac{-(-7) \\pm \\sqrt{(-7)^2 - 4(1)(11)}}{2(1)}",
+            "narration": "Plug those values in. Negative negative 7 is positive 7."
+          },
+          {
+            "latex": "x = \\frac{7 \\pm \\sqrt{49 - 44}}{2}",
+            "narration": "Under the radical, negative 7 squared is 49. 4 times 1 times 11 is 44. 49 minus 44 is 5."
+          },
+          {
+            "latex": "x = \\frac{7 \\pm \\sqrt{5}}{2}",
+            "narration": "So x equals 7 plus or minus root 5, all over 2."
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "x = 0,  x = (7+√5)/2,  x = (7-√5)/2",
+      "narration": "Our three solutions: x equals zero, 7 plus root 5 over 2, and 7 minus root 5 over 2.",
+      "label": "Final Answer"
+    },
+    {
+      "type": "graph",
+      "narration": "And here's the graph. You can see the curve crossing the x-axis at all three zeros.",
+      "diagram": {
+        "x_range": [-1, 6, 1],
+        "y_range": [-8, 12, 2],
+        "functions": [
+          {
+            "expr": "x**3 - 7*x**2 + 11*x",
+            "color": "#22D3EE",
+            "label": ""
+          }
+        ],
+        "dots": [
+          {"x": 0, "y": 0, "color": "#39FF14", "label": "x=0"},
+          {"x": 2.382, "y": 0, "color": "#39FF14", "label": ""},
+          {"x": 4.618, "y": 0, "color": "#39FF14", "label": ""}
+        ]
+      },
+      "duration": 6.0
+    }
+  ]
+}

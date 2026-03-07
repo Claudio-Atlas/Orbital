@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "topic": "End Behavior of Polynomial Functions",
+    "title": "End Behavior of f(x) = −x¹⁰ − 3x⁹ + x² | MAT 170 Exam 2"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "content": "Determine the end behavior of:  f(x) = −x¹⁰ − 3x⁹ + x²",
+      "narration": "Determine the end behavior of f of x equals negative x to the tenth minus 3 x to the ninth plus x squared.",
+      "label": "MAT 170 Exam 2 Review"
+    },
+    {
+      "type": "math",
+      "content": "f(x) = -x^{10} - 3x^9 + x^2",
+      "narration": "Here is our function: negative x to the tenth minus 3 x to the ninth plus x squared."
+    },
+    {
+      "type": "box",
+      "content": "Leading Coefficient Test: The end behavior of a polynomial is determined ONLY by its leading term (the term with the highest power of x).",
+      "narration": "The Leading Coefficient Test tells us end behavior depends only on the leading term.",
+      "label": "Leading Coefficient Test"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "\\text{Leading term: } -x^{10}",
+            "narration": "The leading term is negative x to the tenth.",
+            "note": "Highest power of x",
+            "note_color": "#22D3EE"
+          },
+          {
+            "latex": "\\text{Degree: } 10 \\quad (\\text{even})",
+            "narration": "The degree is 10, which is even.",
+            "note": "EVEN degree",
+            "note_color": "#FACC15"
+          },
+          {
+            "latex": "\\text{Leading coefficient: } -1 \\quad (\\text{negative})",
+            "narration": "The leading coefficient is negative 1, which is negative.",
+            "note": "NEGATIVE coefficient",
+            "note_color": "#FF6B6B"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "Even degree + Negative leading coefficient:\n• As x → −∞, f(x) → −∞  (falls to the left)\n• As x → +∞, f(x) → −∞  (falls to the right)\nBoth ends point DOWN.",
+      "narration": "The pattern for even degree with a negative leading coefficient: both ends fall. The graph falls to the left and falls to the right. Think of it as an upside-down parabola shape on the ends.",
+      "label": "End Behavior Pattern"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "\\text{As } x \\to -\\infty, \\quad f(x) \\to -\\infty",
+            "narration": "As x goes to negative infinity, f of x goes to negative infinity. The graph falls on the left.",
+            "note": "↘ falls left",
+            "note_color": "#39FF14"
+          },
+          {
+            "latex": "\\text{As } x \\to +\\infty, \\quad f(x) \\to -\\infty",
+            "narration": "As x goes to positive infinity, f of x also goes to negative infinity. The graph falls on the right too.",
+            "note": "↘ falls right",
+            "note_color": "#39FF14"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "End behavior:  Falls left, Falls right  (both ends down)\nAs x → −∞, f(x) → −∞\nAs x → +∞, f(x) → −∞",
+      "narration": "The end behavior is: both ends fall. The graph goes down on the left and down on the right.",
+      "label": "Final Answer"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "topic": "Zeros and Multiplicities",
+    "title": "Find Zeros of x\u00b3 - 3x + 2 | MAT 170 Exam 2"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "content": "Find all zeros and multiplicities",
+      "narration": "Find all zeros and their multiplicities for f of x equals x cubed minus 3 x plus 2.",
+      "label": "MAT 170 Exam 2 Review"
+    },
+    {
+      "type": "math",
+      "content": "f(x) = x^3 - 3x + 2",
+      "narration": "Notice there's no x squared term. Let's test some rational roots."
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "f(1) = 1 - 3 + 2 = 0 \\checkmark",
+            "narration": "Test x equals 1. One minus 3 plus 2 equals zero. It works."
+          },
+          {
+            "latex": "(x - 1)(x^2 + x - 2) = 0",
+            "narration": "Divide out x minus 1 to get x squared plus x minus 2.",
+            "note": "synthetic division"
+          },
+          {
+            "latex": "(x - 1)(x + 2)(x - 1) = 0",
+            "narration": "Factor the quadratic. x plus 2 times x minus 1. There's x minus 1 again!"
+          },
+          {
+            "latex": "f(x) = (x - 1)^2(x + 2)",
+            "narration": "So f of x equals x minus 1 squared times x plus 2."
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "x = 1 (multiplicity 2),  x = -2 (multiplicity 1)",
+      "narration": "x equals 1 has multiplicity 2 \u2014 the graph touches there. x equals negative 2 has multiplicity 1 \u2014 it crosses.",
+      "label": "Final Answer"
+    },
+    {
+      "type": "graph",
+      "narration": "The graph bounces at x equals 1 and crosses through at negative 2.",
+      "diagram": {
+        "x_range": [
+          -4,
+          4,
+          1
+        ],
+        "y_range": [
+          -8,
+          8,
+          2
+        ],
+        "functions": [
+          {
+            "expr": "x**3 - 3*x + 2",
+            "color": "#22D3EE"
+          }
+        ],
+        "dots": [
+          {
+            "x": 1,
+            "y": 0,
+            "color": "#39FF14",
+            "label": "x=1"
+          },
+          {
+            "x": -2,
+            "y": 0,
+            "color": "#F97316",
+            "label": "x=-2"
+          }
+        ]
+      },
+      "duration": 6.0
+    }
+  ]
+}

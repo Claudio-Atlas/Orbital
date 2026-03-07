@@ -1,0 +1,98 @@
+[
+  {
+    "type": "box",
+    "content": "Solve: x\u00b3 - 3x\u00b2 - x + 3 = 0",
+    "narration": "Solve x cubed minus 3 x squared minus x plus 3 equals zero.",
+    "label": "MAT 170 Exam 2 Review",
+    "step": 0,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "algebra_solve",
+    "narration": "",
+    "algebra_solve": {
+      "final_color": "#39FF14",
+      "steps": [
+        {
+          "latex": "x^3 - 3x^2 - x + 3 = 0",
+          "narration": "This one factors by grouping. Group the first two terms and the last two.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "x^2(x - 3) - 1(x - 3) = 0",
+          "narration": "Factor x squared from the first group, and negative 1 from the second.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "(x^2 - 1)(x - 3) = 0",
+          "narration": "Factor out the common x minus 3.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "(x - 1)(x + 1)(x - 3) = 0",
+          "narration": "x squared minus 1 is a difference of squares. Factor it.",
+          "audio_path": "",
+          "duration": 4.0
+        }
+      ]
+    },
+    "step": 1,
+    "audio_path": "",
+    "duration": 16.0
+  },
+  {
+    "type": "box",
+    "content": "x = 1,  x = -1,  x = 3",
+    "narration": "Three solutions: x equals 1, negative 1, and 3.",
+    "label": "Final Answer",
+    "step": 2,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "graph",
+    "narration": "The graph shows all three x-intercepts.",
+    "diagram": {
+      "x_range": [
+        -3,
+        5,
+        1
+      ],
+      "y_range": [
+        -10,
+        10,
+        2
+      ],
+      "functions": [
+        {
+          "expr": "x**3 - 3*x**2 - x + 3",
+          "color": "#22D3EE"
+        }
+      ],
+      "dots": [
+        {
+          "x": -1,
+          "y": 0,
+          "color": "#39FF14"
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "color": "#39FF14"
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "color": "#39FF14"
+        }
+      ]
+    },
+    "duration": 5.0,
+    "step": 3,
+    "audio_path": ""
+  }
+]

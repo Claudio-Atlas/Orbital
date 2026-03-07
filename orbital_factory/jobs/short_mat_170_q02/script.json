@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "topic": "Solve a Cubic (Rational Root + Quadratic)",
+    "title": "Solve 2x\u00b3 + 3x\u00b2 - 89x + 120 = 0 | MAT 170 Exam 2"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "content": "Solve: 2x\u00b3 + 3x\u00b2 - 89x + 120 = 0",
+      "narration": "Solve 2 x cubed plus 3 x squared minus 89 x plus 120 equals zero.",
+      "label": "MAT 170 Exam 2 Review"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "2x^3 + 3x^2 - 89x + 120 = 0",
+            "narration": "This is a cubic. Try possible rational roots. Factors of 120 over factors of 2."
+          },
+          {
+            "latex": "\\text{Try } x = 5: \\quad 2(125) + 3(25) - 89(5) + 120 = 0 \\checkmark",
+            "narration": "Testing x equals 5. 250 plus 75 minus 445 plus 120 equals zero. It works."
+          },
+          {
+            "latex": "(x - 5)(2x^2 + 13x - 24) = 0",
+            "narration": "Divide out x minus 5. We get 2 x squared plus 13 x minus 24.",
+            "note": "synthetic division"
+          },
+          {
+            "latex": "(x - 5)(2x - 3)(x + 8) = 0",
+            "narration": "Factor the quadratic: 2 x minus 3 times x plus 8."
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "x = 5,  x = 3/2,  x = -8",
+      "narration": "Three solutions: x equals 5, x equals 3 over 2, and x equals negative 8.",
+      "label": "Final Answer"
+    },
+    {
+      "type": "graph",
+      "narration": "The graph confirms all three zeros.",
+      "diagram": {
+        "x_range": [
+          -10,
+          7,
+          2
+        ],
+        "y_range": [
+          -200,
+          200,
+          50
+        ],
+        "functions": [
+          {
+            "expr": "2*x**3 + 3*x**2 - 89*x + 120",
+            "color": "#22D3EE"
+          }
+        ],
+        "dots": [
+          {
+            "x": -8,
+            "y": 0,
+            "color": "#39FF14"
+          },
+          {
+            "x": 1.5,
+            "y": 0,
+            "color": "#39FF14"
+          },
+          {
+            "x": 5,
+            "y": 0,
+            "color": "#39FF14"
+          }
+        ]
+      },
+      "duration": 5.0
+    }
+  ]
+}

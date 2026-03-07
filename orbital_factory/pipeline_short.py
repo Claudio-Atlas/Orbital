@@ -48,6 +48,7 @@ OUTPUT_DIR   = FACTORY_ROOT / "output"
 JOBS_DIR     = FACTORY_ROOT / "jobs"
 
 SHORT_SYSTEM_PROMPT = (PROMPTS_DIR / "short_script.txt").read_text()
+WHY_SYSTEM_PROMPT   = (PROMPTS_DIR / "why_script.txt").read_text() if (PROMPTS_DIR / "why_script.txt").exists() else SHORT_SYSTEM_PROMPT
 
 # ── API keys ───────────────────────────────────────────────────────────────
 ELEVEN_API_KEY   = os.environ.get("ELEVEN_API_KEY",  "sk_4abfbb388b66e23c7df0424e9228691ae139ab56a449e2a7")
@@ -105,6 +106,46 @@ def _call_deepseek(problem: str, difficulty: str) -> dict:
     raw = response.choices[0].message.content.strip()
 
     # Strip any accidental code fences
+    raw = re.sub(r"^```(?:json)?\s*", "", raw)
+    raw = re.sub(r"\s*```$", "", raw)
+
+    try:
+        script = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"DeepSeek returned invalid JSON: {e}\n\nRaw:\n{raw[:500]}")
+
+    return script
+
+
+def _call_deepseek_why(concept: str) -> dict:
+    """
+    Call DeepSeek V3 to generate a 'why does this work?' explainer script.
+    Uses the why_script.txt prompt template.
+    """
+    user_prompt = f"Concept: {concept}"
+
+    if not DEEPSEEK_API_KEY:
+        print("  ⚠️  DEEPSEEK_API_KEY not set — using stub script for import test")
+        return _stub_script(concept, "medium")
+
+    from openai import OpenAI
+
+    client = OpenAI(
+        api_key=DEEPSEEK_API_KEY,
+        base_url="https://api.deepseek.com/v1",
+    )
+
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[
+            {"role": "system", "content": WHY_SYSTEM_PROMPT},
+            {"role": "user",   "content": user_prompt},
+        ],
+        temperature=0.7,
+        max_tokens=3000,
+    )
+
+    raw = response.choices[0].message.content.strip()
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw)
 
@@ -216,30 +257,23 @@ def _generate_all_tts(steps: list, audio_dir: Path) -> list:
 
     client = ElevenLabs(api_key=ELEVEN_API_KEY)
     voice_settings = VoiceSettings(
-        stability=vs.get("stability", 0.40),
-        similarity_boost=vs.get("similarity_boost", 0.70),
-        style=vs.get("style", 0.35),
-        speed=vs.get("speed", 0.85),
+        stability=vs.get("stability", 0.50),
+        similarity_boost=vs.get("similarity_boost", 0.75),
+        style=vs.get("style", 0.25),
+        speed=vs.get("speed", 0.90),
     )
 
-    MIN_STEP_DURATION = 5.0   # minimum seconds per step (enough to read)
-    BREATHING_ROOM    = 1.0   # extra hold after audio finishes
+    MIN_STEP_DURATION = 3.5   # minimum seconds per step (enough to read)
+    BREATHING_ROOM    = 0.5   # extra hold after audio finishes
 
     manifest = []
     narration_count = sum(1 for s in steps if s.get("narration", "").strip())
     print(f"  🎙️  Calling ElevenLabs ({narration_count} API calls, per-step)...")
 
-    for i, step in enumerate(steps):
-        narration = step.get("narration", "").strip()
-        if not narration:
-            manifest.append({
-                **step, "step": i, "audio_path": "", "duration": MIN_STEP_DURATION,
-            })
-            continue
-
-        out_path = audio_dir / f"step_{i:02d}.mp3"
+    def _tts_one(text: str, out_path: Path) -> float:
+        """Generate TTS for one narration, return duration in seconds."""
         audio_gen = client.text_to_speech.convert(
-            text=narration,
+            text=text,
             voice_id=ALLISON_VOICE_ID,
             model_id=ELEVEN_MODEL,
             output_format="mp3_44100_128",
@@ -248,12 +282,51 @@ def _generate_all_tts(steps: list, audio_dir: Path) -> list:
         with open(out_path, "wb") as fh:
             for chunk in audio_gen:
                 fh.write(chunk)
-
-        # Get exact duration
         audio_seg = AudioSegment.from_mp3(out_path)
-        audio_dur = len(audio_seg) / 1000.0
+        return len(audio_seg) / 1000.0
 
-        # Duration = audio + breathing room, at least MIN_STEP_DURATION
+    for i, step in enumerate(steps):
+        narration = step.get("narration", "").strip()
+        stype = step.get("type", "math")
+
+        # ── ALGEBRA SOLVE: per-sub-step TTS ──
+        if stype == "algebra_solve":
+            as_cfg = step.get("algebra_solve", {})
+            as_steps = as_cfg.get("steps", [])
+            total_dur = 0
+
+            for si, sub in enumerate(as_steps):
+                sub_narration = sub.get("narration", "").strip()
+                if not sub_narration:
+                    sub["audio_path"] = ""
+                    sub["duration"] = sub.get("hold", MIN_STEP_DURATION)
+                    total_dur += sub["duration"]
+                    continue
+
+                sub_path = audio_dir / f"step_{i:02d}_sub_{si:02d}.mp3"
+                audio_dur = _tts_one(sub_narration, sub_path)
+                sub["audio_path"] = str(sub_path)
+                sub["duration"] = max(MIN_STEP_DURATION, audio_dur + BREATHING_ROOM)
+                total_dur += sub["duration"]
+
+            step["algebra_solve"]["steps"] = as_steps
+            manifest.append({
+                **step,
+                "step": i,
+                "audio_path": "",  # no top-level audio — sub-steps have their own
+                "duration": total_dur,
+            })
+            continue
+
+        # ── ALL OTHER STEP TYPES: one TTS per step ──
+        if not narration:
+            manifest.append({
+                **step, "step": i, "audio_path": "", "duration": MIN_STEP_DURATION,
+            })
+            continue
+
+        out_path = audio_dir / f"step_{i:02d}.mp3"
+        audio_dur = _tts_one(narration, out_path)
         step_dur = max(MIN_STEP_DURATION, audio_dur + BREATHING_ROOM)
 
         manifest.append({
@@ -326,30 +399,34 @@ def _split_by_silence(combined_path: Path, audio_dir: Path, narrations: list) ->
 #  STEP 4 — Render content scene (scene_short.py + manim_short.cfg)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _render_content_scene(manifest: list, job_dir: Path) -> Optional[Path]:
+def _render_content_scene(manifest: list, job_dir: Path, landscape: bool = False) -> Optional[Path]:
     """
-    Write + render the main content scene at 9:16.
+    Write + render the main content scene.
+    Portrait (9:16, 1080×1920) by default; landscape (16:9, 1920×1080) if flag set.
     Returns path to rendered mp4 or None on failure.
     """
     from scene_short import create_synced_scene_short
 
     scene_path = job_dir / "short_scene.py"
-    create_synced_scene_short(manifest, str(scene_path), intro_duration=0.0)  # intro is a separate stitched video
+    create_synced_scene_short(manifest, str(scene_path), intro_duration=0.0, landscape=landscape)
 
     env = _manim_env()
     cfg_path = FACTORY_ROOT / "manim_short.cfg"
 
+    resolution = "1920,1080" if landscape else "1080,1920"
+    orientation = "16:9, 1920×1080" if landscape else "9:16, 1080×1920"
+
     cmd = [
         "manim",
         "--config_file", str(cfg_path),
-        "--resolution", "1080,1920",
+        "--resolution", resolution,
         "--frame_rate", "60",
         "--format", "mp4",
         str(scene_path.name),
         "SyncedShortScene",
     ]
 
-    print("  🎨 Rendering content scene (9:16, 1080×1920) ...")
+    print(f"  🎨 Rendering content scene ({orientation}) ...")
     result = subprocess.run(cmd, cwd=str(job_dir), env=env, capture_output=True, text=True)
 
     if result.returncode != 0:
@@ -602,17 +679,24 @@ def generate_short_video(
     output_name: Optional[str] = None,
     skip_verify: bool = False,
     script_path: Optional[str] = None,
+    visual_only: bool = False,
+    landscape: bool = False,
+    mode: str = "howto",
 ) -> dict:
     """
-    Generate a 9:16 short-form math video end-to-end.
+    Generate a math video end-to-end.
 
     Args:
         problem     : Math problem description / equation string.
+                      For mode="why", this is the concept (e.g., "Why does the chain rule work?")
         hook        : Hook overlay text for intro. Random if None.
         difficulty  : "easy" | "medium" | "hard" (affects verification depth).
         cta         : Call-to-action for outro (default: "Follow for more").
         output_name : Output filename (auto-generated if None).
         skip_verify : Skip Sonnet verification pass.
+        visual_only : If True, skip TTS and render silent video for visual review.
+        landscape   : If True, render 16:9 (1920x1080) instead of 9:16 (1080x1920).
+        mode        : "howto" (step-by-step problem) | "why" (why does this rule work?).
 
     Returns:
         {
@@ -625,10 +709,11 @@ def generate_short_video(
     start_time = time.time()
 
     print("\n" + "=" * 62)
-    print("🚀 ORBITAL SHORT-FORM PIPELINE")
+    print(f"🚀 ORBITAL SHORT-FORM PIPELINE ({mode.upper()} mode)")
     print("=" * 62)
-    print(f"   Problem    : {problem[:70]}")
+    print(f"   {'Concept' if mode == 'why' else 'Problem'}    : {problem[:70]}")
     print(f"   Difficulty : {difficulty}")
+    print(f"   Mode       : {mode}")
     hook = hook or random.choice(HOOKS)
     print(f"   Hook       : {hook!r}")
     print()
@@ -647,8 +732,12 @@ def generate_short_video(
         steps  = script.get("steps", [])
         print(f"  ✓ {len(steps)} steps loaded (Circle-reviewed)")
     else:
-        print("📝 Step 1/6 — Generating script (DeepSeek V3) ...")
-        script = _call_deepseek(problem, difficulty)
+        if mode == "why":
+            print("📝 Step 1/6 — Generating WHY script (DeepSeek V3) ...")
+            script = _call_deepseek_why(problem)
+        else:
+            print("📝 Step 1/6 — Generating script (DeepSeek V3) ...")
+            script = _call_deepseek(problem, difficulty)
         steps  = script.get("steps", [])
 
         # ── Reorder: move graph steps to the front and mark persistent ──
@@ -681,20 +770,40 @@ def generate_short_video(
         print("\n⏭️  Step 2/6 — Verification skipped")
 
     # ── step 3: TTS ────────────────────────────────────────────────
-    print("\n🎙️  Step 3/6 — Generating TTS (Allison, ElevenLabs) ...")
+    DEFAULT_VISUAL_DURATION = 4.0  # seconds per step when no audio
     audio_dir = job_dir / "audio"
-    manifest  = _generate_all_tts(steps, audio_dir)
+    total_tts_chars = 0
 
-    total_tts_chars = sum(len(s.get("narration", "")) for s in steps)
-    total_duration  = sum(s.get("duration", 0) for s in manifest)
-    print(f"  ✓ Total TTS duration: {total_duration:.1f}s")
+    if visual_only:
+        print("\n👁️  Step 3/6 — VISUAL ONLY (no TTS, $0 cost)")
+        # Build manifest with default durations, no audio
+        manifest = []
+        for i, step in enumerate(steps):
+            stype = step.get("type", "math")
+            if stype == "algebra_solve":
+                as_cfg = step.get("algebra_solve", {})
+                for sub in as_cfg.get("steps", []):
+                    sub["audio_path"] = ""
+                    sub["duration"] = sub.get("hold", DEFAULT_VISUAL_DURATION)
+                step["algebra_solve"] = as_cfg
+                manifest.append({**step, "step": i, "audio_path": "", "duration": sum(s.get("duration", DEFAULT_VISUAL_DURATION) for s in as_cfg.get("steps", []))})
+            else:
+                manifest.append({**step, "step": i, "audio_path": "", "duration": step.get("duration", DEFAULT_VISUAL_DURATION)})
+        total_duration = sum(s.get("duration", 0) for s in manifest)
+        print(f"  ✓ Visual preview: {total_duration:.1f}s (default timing)")
+    else:
+        print("\n🎙️  Step 3/6 — Generating TTS (Allison, ElevenLabs) ...")
+        manifest = _generate_all_tts(steps, audio_dir)
+        total_tts_chars = sum(len(s.get("narration", "")) for s in steps)
+        total_duration  = sum(s.get("duration", 0) for s in manifest)
+        print(f"  ✓ Total TTS duration: {total_duration:.1f}s")
 
     manifest_path = job_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2))
 
     # ── step 4: render content scene ──────────────────────────────
     print("\n🎨 Step 4/6 — Rendering content scene ...")
-    content_video = _render_content_scene(manifest, job_dir)
+    content_video = _render_content_scene(manifest, job_dir, landscape=landscape)
     if content_video is None:
         raise RuntimeError("Content scene render failed — check Manim logs.")
 
@@ -704,20 +813,24 @@ def generate_short_video(
     # ── step 6: just use content video directly (no stitch = no desync) ─
     print("\n🎞️  Step 6/6 — Finalizing video ...")
     output_name = output_name or f"short_{job_slug}_{int(time.time())}.mp4"
+    if not output_name.endswith(".mp4"):
+        output_name += ".mp4"
     final_path  = OUTPUT_DIR / output_name
 
     shutil.copy(content_video, final_path)
     print(f"  ✓ Output: {final_path}")
 
-    # ── step 6b: mix background music ──────────────────────────────
+    # ── step 6b: mix background music (skip for visual-only) ──────
     bg_music = FACTORY_ROOT / "assets" / "audio" / "bg_synthwave.mp3"
-    if bg_music.exists():
+    if bg_music.exists() and not visual_only:
         print("\n🎵 Mixing background music ...")
         final_with_music = OUTPUT_DIR / f"_music_{output_name}"
         result_path = _mix_background_music(final_path, bg_music, final_with_music, volume=0.12)
         if result_path != final_path:
             # Replace the stitched file with the music version
             shutil.move(str(final_with_music), str(final_path))
+    elif visual_only:
+        print("\n👁️  Skipping music mix (visual-only)")
 
     # ── results ────────────────────────────────────────────────────
     final_duration = _get_video_duration(final_path)
@@ -753,6 +866,8 @@ if __name__ == "__main__":
     parser.add_argument("--cta",        default="Follow for more", help="Outro call-to-action")
     parser.add_argument("--output",     default=None,     help="Output filename")
     parser.add_argument("--skip-verify", action="store_true")
+    parser.add_argument("--visual-only", action="store_true", help="Render silent video (no TTS, $0 cost)")
+    parser.add_argument("--landscape", action="store_true", help="Render 16:9 landscape (1920x1080) instead of 9:16 portrait")
 
     args = parser.parse_args()
 
@@ -763,6 +878,8 @@ if __name__ == "__main__":
         cta         = args.cta,
         output_name = args.output,
         skip_verify = args.skip_verify,
+        visual_only = args.visual_only,
+        landscape   = args.landscape,
     )
 
     if result:

@@ -75,6 +75,18 @@ CLAYTON picks from pitches (or assigns a concept)
 
 ## Key Principles
 
+### 0. ALIVE Is the Default (Established 2026-03-07)
+Every visual must feel like a living organism. Inspired by AIGENTS neural net visualization.
+- **Glow layers** on every key mobject (stroke 6, opacity 0.15)
+- **Pulsing** on active elements (opacity 0.7↔1.0)
+- **Brightness = attention** (discussed = bright, context = dim at 0.3)
+- **Bloom flash** on reveals (0.2s spike then settle)
+- **Breathing** on persistent elements (scale 1.0↔1.02)
+- **Organic easing** always (never linear)
+- **Spark particles** on transitions and connections
+- Every storyboard step must include an "Alive Layer" column
+- Full spec locked in `settings.json` under `aliveStandard`
+
 ### 1. Text Is Sacred
 The text presentation types (math, box, mixed, text, transform) are the Orbital brand. They are LOCKED. Iris doesn't redesign them. They are consistent across every video.
 

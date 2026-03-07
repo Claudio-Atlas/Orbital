@@ -1,116 +1,31 @@
 """
-Orbital Scene Generator — Short-Form Vertical (9:16)
-=====================================================
-FORKED FROM standard pipeline's SyncedMathScene — the proven timing model.
-
-TIMING MODEL (exact copy of standard pipeline):
-  1. Build mobject + position it (NO timeline cost)
-  2. add_sound() — audio starts HERE
-  3. FadeOut(previous, 0.4s) — voice plays over fadeout
-  4. Write(new, anim_time) — writing begins ~0.4s into audio
-  5. wait(remaining) — hold until voice done
-  6. wait(EXTRA_HOLD) — breathing room between steps
-
-Changes from standard: portrait frame, graph zone, neon grid, built-in end card.
-"""
-
-import json
-import os
-
-## ── PORTRAIT (9:16) defaults ──
-FRAME_W = 4.5
-FRAME_H = 8.0
-GRAPH_CENTER_Y = -1.8
-MATH_CENTER_Y = 1.2
-GRAPH_WIDTH = 3.4
-GRAPH_HEIGHT = 2.8
-MATH_SCALE = 0.85
-BOX_SCALE = 0.65
-ANIMATION_RATIO = 0.35
-EXTRA_HOLD = 0.5
-
-## ── LANDSCAPE (16:9) overrides ──
-## Tuned from Group Order 15 video (A+ review, proven settings)
-LANDSCAPE_FRAME_W = 14.2
-LANDSCAPE_FRAME_H = 8.0
-LANDSCAPE_GRAPH_CENTER_Y = -1.5
-LANDSCAPE_MATH_CENTER_Y = 1.5
-LANDSCAPE_GRAPH_WIDTH = 6.0
-LANDSCAPE_GRAPH_HEIGHT = 3.5
-LANDSCAPE_MATH_SCALE = 1.4       # was 0.95 — matched from Group Order 15 synced_scene.py
-LANDSCAPE_BOX_SCALE = 0.90       # was 0.75 — text/box scale from Group Order 15 (0.85-0.9)
-LANDSCAPE_EQ_FONT_SIZE = 42      # algebra_solve equation font (portrait: 26)
-LANDSCAPE_NOTE_FONT_SIZE = 22    # algebra_solve note font (portrait: 14)
-LANDSCAPE_TITLE_FONT_SIZE = 36   # algebra_solve title font (portrait: 24)
-LANDSCAPE_WM_FONT_SIZE = 14      # watermark (portrait: 10)
-
-
-def create_synced_scene_short(manifest: list, output_path: str, intro_duration: float = 0.0, landscape: bool = False):
-    for step in manifest:
-        ap = step.get("audio_path", "")
-        if ap and not os.path.isabs(ap):
-            step["audio_path"] = os.path.abspath(ap)
-
-    # Select constants based on orientation
-    if landscape:
-        _fw = LANDSCAPE_FRAME_W
-        _fh = LANDSCAPE_FRAME_H
-        _gcy = LANDSCAPE_GRAPH_CENTER_Y
-        _mcy = LANDSCAPE_MATH_CENTER_Y
-        _gw = LANDSCAPE_GRAPH_WIDTH
-        _gh = LANDSCAPE_GRAPH_HEIGHT
-        _ms = LANDSCAPE_MATH_SCALE
-        _bs = LANDSCAPE_BOX_SCALE
-        _eq_fs = LANDSCAPE_EQ_FONT_SIZE
-        _note_fs = LANDSCAPE_NOTE_FONT_SIZE
-        _title_fs = LANDSCAPE_TITLE_FONT_SIZE
-        _wm_fs = LANDSCAPE_WM_FONT_SIZE
-    else:
-        _fw = FRAME_W
-        _fh = FRAME_H
-        _gcy = GRAPH_CENTER_Y
-        _mcy = MATH_CENTER_Y
-        _gw = GRAPH_WIDTH
-        _gh = GRAPH_HEIGHT
-        _ms = MATH_SCALE
-        _bs = BOX_SCALE
-        _eq_fs = 26
-        _note_fs = 14
-        _title_fs = 24
-        _wm_fs = 10
-
-    scene_code = f'''"""
-Auto-generated {'16:9 landscape' if landscape else '9:16 portrait'} scene.
+Auto-generated 9:16 TikTok scene.
 Timing model copied verbatim from standard pipeline SyncedMathScene.
 """
 from manim import *
 import os
 import numpy as np
 
-config.frame_width = {_fw}
-config.frame_height = {_fh}
+config.frame_width = 4.5
+config.frame_height = 8.0
 
 ORBITAL_CYAN  = "#22D3EE"
 NEON_GREEN    = "#39FF14"
 BOX_BORDER    = "#8B5CF6"
 BOX_FILL      = "#1a1130"
 LABEL_COLOR   = "#22D3EE"
-FRAME_W       = {_fw}
-FRAME_H       = {_fh}
+FRAME_W       = 4.5
+FRAME_H       = 8.0
 MAX_WIDTH     = FRAME_W * 0.82
-MATH_SCALE    = {_ms}
-BOX_SCALE     = {_bs}
-GRAPH_WIDTH   = {_gw}
-GRAPH_HEIGHT  = {_gh}
-MATH_CENTER_Y = {_mcy}
-GRAPH_CENTER_Y = {_gcy}
+MATH_SCALE    = 0.85
+BOX_SCALE     = 0.65
+GRAPH_WIDTH   = 3.4
+GRAPH_HEIGHT  = 2.8
+MATH_CENTER_Y = 1.2
+GRAPH_CENTER_Y = -1.8
 ZONE_A_Y = 2.5
-ANIMATION_RATIO = {ANIMATION_RATIO}
-EXTRA_HOLD = {EXTRA_HOLD}
-EQ_FONT_SIZE = {_eq_fs}
-NOTE_FONT_SIZE = {_note_fs}
-TITLE_FONT_SIZE = {_title_fs}
-WM_FONT_SIZE = {_wm_fs}
+ANIMATION_RATIO = 0.35
+EXTRA_HOLD = 0.5
 
 
 def _clamp(mob, max_w=None):
@@ -134,20 +49,20 @@ def _build_graph(cfg):
     grid = NumberPlane(
         x_range=x_range, y_range=y_range,
         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-        background_line_style={{
+        background_line_style={
             "stroke_color": "#8B5CF6", "stroke_opacity": 0.25, "stroke_width": 1,
-        }},
-        faded_line_style={{
+        },
+        faded_line_style={
             "stroke_color": "#22D3EE", "stroke_opacity": 0.12, "stroke_width": 0.5,
-        }},
+        },
     )
     axes = Axes(
         x_range=x_range, y_range=y_range,
         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-        axis_config={{
+        axis_config={
             "color": GREY_B, "include_numbers": True, "font_size": 12,
             "numbers_to_exclude": [0],
-        }},
+        },
         tips=False,
     )
     grid.move_to(axes.get_center())
@@ -162,7 +77,7 @@ def _build_graph(cfg):
             if "lambda" in expr_str:
                 fn_obj = eval(expr_str)
             else:
-                fn_obj = eval(f"lambda x: {{expr_str}}")
+                fn_obj = eval(f"lambda x: {expr_str}")
             y_min, y_max = y_range[0], y_range[1]
             x_lo, x_hi = x_range[0], x_range[1]
             test_xs = np.linspace(x_lo, x_hi, 200)
@@ -183,7 +98,7 @@ def _build_graph(cfg):
                     lbl_mob.move_to(axes.c2p(0, 0) + UP * 0.3)
                 group.add(lbl_mob)
         except Exception as e:
-            print(f"  ⚠️  Graph eval failed: {{e}}")
+            print(f"  ⚠️  Graph eval failed: {e}")
 
     if tangent and plotted:
         at_x  = tangent.get("at_x", 0)
@@ -240,7 +155,7 @@ def _build_graph(cfg):
 
 
 class SyncedShortScene(Scene):
-    STEPS_DATA = {repr(manifest)}
+    STEPS_DATA = [{'type': 'box', 'content': 'Find all zeros and multiplicities', 'narration': 'Find all zeros and their multiplicities for f of x equals x cubed minus 3 x plus 2.', 'label': 'MAT 170 Exam 2 Review', 'step': 0, 'audio_path': '', 'duration': 4.0}, {'type': 'math', 'content': 'f(x) = x^3 - 3x + 2', 'narration': "Notice there's no x squared term. Let's test some rational roots.", 'step': 1, 'audio_path': '', 'duration': 4.0}, {'type': 'algebra_solve', 'narration': '', 'algebra_solve': {'final_color': '#39FF14', 'steps': [{'latex': 'f(1) = 1 - 3 + 2 = 0 \\checkmark', 'narration': 'Test x equals 1. One minus 3 plus 2 equals zero. It works.', 'audio_path': '', 'duration': 4.0}, {'latex': '(x - 1)(x^2 + x - 2) = 0', 'narration': 'Divide out x minus 1 to get x squared plus x minus 2.', 'note': 'synthetic division', 'audio_path': '', 'duration': 4.0}, {'latex': '(x - 1)(x + 2)(x - 1) = 0', 'narration': "Factor the quadratic. x plus 2 times x minus 1. There's x minus 1 again!", 'audio_path': '', 'duration': 4.0}, {'latex': 'f(x) = (x - 1)^2(x + 2)', 'narration': 'So f of x equals x minus 1 squared times x plus 2.', 'audio_path': '', 'duration': 4.0}]}, 'step': 2, 'audio_path': '', 'duration': 16.0}, {'type': 'box', 'content': 'x = 1 (multiplicity 2),  x = -2 (multiplicity 1)', 'narration': 'x equals 1 has multiplicity 2 — the graph touches there. x equals negative 2 has multiplicity 1 — it crosses.', 'label': 'Final Answer', 'step': 3, 'audio_path': '', 'duration': 4.0}, {'type': 'graph', 'narration': 'The graph bounces at x equals 1 and crosses through at negative 2.', 'diagram': {'x_range': [-4, 4, 1], 'y_range': [-8, 8, 2], 'functions': [{'expr': 'x**3 - 3*x + 2', 'color': '#22D3EE'}], 'dots': [{'x': 1, 'y': 0, 'color': '#39FF14', 'label': 'x=1'}, {'x': -2, 'y': 0, 'color': '#F97316', 'label': 'x=-2'}]}, 'duration': 6.0, 'step': 4, 'audio_path': ''}]
 
     def construct(self):
         self.camera.background_color = "#000000"
@@ -262,7 +177,7 @@ class SyncedShortScene(Scene):
         self.add(border_glow, border)
 
         # Watermark
-        wm = Text("ORBITAL", font_size=WM_FONT_SIZE, color=WHITE, weight=BOLD)
+        wm = Text("ORBITAL", font_size=10, color=WHITE, weight=BOLD)
         wm.set_opacity(0.35)
         wm.move_to([-FRAME_W/2 + 0.5, -FRAME_H/2 + 0.2, 0])
         self.add(wm)
@@ -280,16 +195,16 @@ class SyncedShortScene(Scene):
             if stype == "graph":
                 duration   = step.get("duration", 8.0)
                 audio_path = step.get("audio_path", "")
-                graph_cfg  = step.get("graph", step.get("diagram", {{}}))
+                graph_cfg  = step.get("graph", step.get("diagram", {}))
 
                 # If graph_cfg is empty but we have a "content" expression, build a default config
                 if not graph_cfg.get("functions") and step.get("content"):
                     expr = step["content"]
-                    graph_cfg = {{
+                    graph_cfg = {
                         "x_range": [-3, 3, 1],
                         "y_range": [-2, 10, 2],
-                        "functions": [{{"expr": expr, "label": "f(x)"}}],
-                    }}
+                        "functions": [{"expr": expr, "label": "f(x)"}],
+                    }
 
                 # 1. BUILD mobject first
                 mob = _build_graph(graph_cfg)
@@ -336,9 +251,9 @@ class SyncedShortScene(Scene):
                 content    = step.get("content", "x**2")
                 dot_range  = step.get("dot_range", [-2, 2])
                 show_tangent = step.get("show_tangent", True)
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
 
-                fn = eval(f"lambda x: {{content}}")
+                fn = eval(f"lambda x: {content}")
 
                 # Use existing graph or build one
                 if graph_mobs:
@@ -347,7 +262,7 @@ class SyncedShortScene(Scene):
                     axes = Axes(
                         x_range=[-3, 3, 1], y_range=[-2, 10, 2],
                         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]}},
+                        axis_config={"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]},
                         tips=False,
                     )
                     axes.move_to([0, GRAPH_CENTER_Y, 0])
@@ -386,7 +301,7 @@ class SyncedShortScene(Scene):
                 slope_mob = None
                 if show_slope:
                     slope_mob = always_redraw(lambda: Text(
-                        f"slope = {{2 * t.get_value():.1f}}" if "x**2" in content else f"slope = {{(fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002:.1f}}",
+                        f"slope = {2 * t.get_value():.1f}" if "x**2" in content else f"slope = {(fn(t.get_value()+0.001)-fn(t.get_value()-0.001))/0.002:.1f}",
                         font_size=22, color=NEON_GREEN
                     ).move_to([0, MATH_CENTER_Y, 0]))
 
@@ -421,9 +336,9 @@ class SyncedShortScene(Scene):
                 fixed_x    = step.get("fixed_x", 1)
                 h_start    = step.get("h_start", 2.0)
                 h_end      = step.get("h_end", 0.05)
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
 
-                fn = eval(f"lambda x: {{content}}")
+                fn = eval(f"lambda x: {content}")
 
                 if graph_mobs:
                     axes = graph_mobs[-1][1]
@@ -431,7 +346,7 @@ class SyncedShortScene(Scene):
                     axes = Axes(
                         x_range=[-3, 3, 1], y_range=[-2, 10, 2],
                         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]}},
+                        axis_config={"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]},
                         tips=False,
                     )
                     axes.move_to([0, GRAPH_CENTER_Y, 0])
@@ -459,7 +374,7 @@ class SyncedShortScene(Scene):
                 ))
 
                 h_label = always_redraw(lambda: Text(
-                    f"h = {{h_tracker.get_value():.3f}}",
+                    f"h = {h_tracker.get_value():.3f}",
                     font_size=24, color=WHITE
                 ).move_to([FRAME_W/2 - 0.8, MATH_CENTER_Y + 1.5, 0]))
 
@@ -490,9 +405,9 @@ class SyncedShortScene(Scene):
                 content    = step.get("content", "x**2")
                 x1         = step.get("x1", 1)
                 x2         = step.get("x2", 3)
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
 
-                fn = eval(f"lambda x: {{content}}")
+                fn = eval(f"lambda x: {content}")
 
                 if graph_mobs:
                     axes = graph_mobs[-1][1]
@@ -500,7 +415,7 @@ class SyncedShortScene(Scene):
                     axes = Axes(
                         x_range=[-3, 3, 1], y_range=[-2, 10, 2],
                         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]}},
+                        axis_config={"color": GREY_B, "include_numbers": True, "font_size": 12, "numbers_to_exclude": [0]},
                         tips=False,
                     )
                     axes.move_to([0, GRAPH_CENTER_Y, 0])
@@ -555,7 +470,7 @@ class SyncedShortScene(Scene):
                 audio_path = step.get("audio_path", "")
                 h_start    = step.get("start", 2.0)
                 h_end      = step.get("end", 0.01)
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
 
                 if previous is not None:
                     self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.3)
@@ -587,7 +502,7 @@ class SyncedShortScene(Scene):
                 audio_path = step.get("audio_path", "")
                 parts      = step.get("parts", [])
                 colors     = step.get("colors", [])
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
                 scale_override = layout.get("scale", 1.0) if layout else 1.0
 
                 if previous is not None:
@@ -630,7 +545,7 @@ class SyncedShortScene(Scene):
                 audio_path = step.get("audio_path", "")
                 from_tex   = step.get("from_tex", step.get("content", ""))
                 to_tex     = step.get("to_tex", "")
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
                 scale_override = layout.get("scale", 1.0) if layout else 1.0
 
                 if previous is not None:
@@ -669,7 +584,7 @@ class SyncedShortScene(Scene):
                 duration   = step.get("duration", 3.0)
                 audio_path = step.get("audio_path", "")
                 content    = step.get("content", "")
-                layout     = step.get("layout", {{}})
+                layout     = step.get("layout", {})
                 scale_override = layout.get("scale", 1.0) if layout else 1.0
 
                 mob = MathTex(content, color=WHITE).scale(MATH_SCALE * scale_override)
@@ -698,7 +613,7 @@ class SyncedShortScene(Scene):
                 duration   = step.get("duration", 8.0)
                 audio_path = step.get("audio_path", "")
                 content    = step.get("content", "x**2")
-                rs_cfg     = step.get("riemann_sum", {{}})
+                rs_cfg     = step.get("riemann_sum", {})
                 a_val      = rs_cfg.get("a", 0)
                 b_val      = rs_cfg.get("b", 3)
                 n_values   = rs_cfg.get("n_values", [4, 20, 50, 200])
@@ -706,7 +621,7 @@ class SyncedShortScene(Scene):
                 x_range_cfg = rs_cfg.get("x_range", [-0.3, 3.8, 1])
                 y_range_cfg = rs_cfg.get("y_range", [-0.5, 10, 2])
 
-                fn = eval(f"lambda x: {{content}}")
+                fn = eval(f"lambda x: {content}")
 
                 if previous is not None:
                     self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.4)
@@ -716,14 +631,14 @@ class SyncedShortScene(Scene):
                     rs_axes = Axes(
                         x_range=x_range_cfg, y_range=y_range_cfg,
                         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-                        axis_config={{"color": GREY_B, "include_numbers": True, "font_size": 11, "numbers_to_exclude": [0]}},
+                        axis_config={"color": GREY_B, "include_numbers": True, "font_size": 11, "numbers_to_exclude": [0]},
                         tips=False,
                     )
                     rs_grid = NumberPlane(
                         x_range=x_range_cfg, y_range=y_range_cfg,
                         x_length=GRAPH_WIDTH, y_length=GRAPH_HEIGHT,
-                        background_line_style={{"stroke_color": "#8B5CF6", "stroke_opacity": 0.15, "stroke_width": 0.8}},
-                        faded_line_style={{"stroke_color": "#22D3EE", "stroke_opacity": 0.06, "stroke_width": 0.4}},
+                        background_line_style={"stroke_color": "#8B5CF6", "stroke_opacity": 0.15, "stroke_width": 0.8},
+                        faded_line_style={"stroke_color": "#22D3EE", "stroke_opacity": 0.06, "stroke_width": 0.4},
                     )
                     rs_grid.move_to(rs_axes.get_center())
                     rs_curve = rs_axes.plot(fn, x_range=[a_val, b_val + 0.1], color=ORBITAL_CYAN, stroke_width=3)
@@ -760,8 +675,8 @@ class SyncedShortScene(Scene):
                 for ni, n in enumerate(n_values):
                     new_rects = _make_rects(n)
                     rs_sum = sum(fn(a_val + ii * (b_val-a_val)/n) * (b_val-a_val)/n for ii in range(1, n+1))
-                    n_label = Text(f"n = {{n}}", font_size=18, color=WHITE).move_to([0, 2.8, 0])
-                    s_label = MathTex(f"\\\\text{{{{Sum}}}} \\\\approx {{rs_sum:.2f}}", font_size=24, color="#F97316").move_to([0, 2.2, 0])
+                    n_label = Text(f"n = {n}", font_size=18, color=WHITE).move_to([0, 2.8, 0])
+                    s_label = MathTex(f"\\text{{Sum}} \\approx {rs_sum:.2f}", font_size=24, color="#F97316").move_to([0, 2.2, 0])
 
                     if current_rects is None:
                         self.play(FadeIn(new_rects, lag_ratio=0.1), Write(n_label), Write(s_label), run_time=1.2)
@@ -784,7 +699,7 @@ class SyncedShortScene(Scene):
                 if show_exact is not None:
                     rs_curve_ref = rs_axes.plot(fn, x_range=[a_val, b_val], color=ORBITAL_CYAN)
                     area_fill = rs_axes.get_area(rs_curve_ref, x_range=[a_val, b_val], color=ORBITAL_CYAN, opacity=0.4)
-                    exact_label = MathTex(f"= {{show_exact}}", font_size=36, color=NEON_GREEN).move_to([0, 2.0, 0])
+                    exact_label = MathTex(f"= {show_exact}", font_size=36, color=NEON_GREEN).move_to([0, 2.0, 0])
                     self.play(Transform(current_rects, area_fill), run_time=1.5)
                     self.play(Write(exact_label), Flash(rs_axes.c2p((a_val+b_val)/2, 2), color=NEON_GREEN), run_time=0.5)
                     self.wait(1.0)
@@ -797,7 +712,7 @@ class SyncedShortScene(Scene):
             if stype == "zoom_to_point":
                 duration   = step.get("duration", 6.0)
                 audio_path = step.get("audio_path", "")
-                zoom_cfg   = step.get("zoom_to_point", {{}})
+                zoom_cfg   = step.get("zoom_to_point", {})
                 scale_factor = zoom_cfg.get("scale", 3.0)
                 target_x   = zoom_cfg.get("x", 0)
                 target_y   = zoom_cfg.get("y", 0)
@@ -831,7 +746,7 @@ class SyncedShortScene(Scene):
             if stype == "brace_anatomy":
                 duration   = step.get("duration", 8.0)
                 audio_path = step.get("audio_path", "")
-                ba_cfg     = step.get("brace_anatomy", {{}})
+                ba_cfg     = step.get("brace_anatomy", {})
                 braces     = ba_cfg.get("braces", [])
 
                 if previous is not None:
@@ -881,7 +796,7 @@ class SyncedShortScene(Scene):
             if stype == "strikethrough_cancel":
                 duration   = step.get("duration", 6.0)
                 audio_path = step.get("audio_path", "")
-                sc_cfg     = step.get("strikethrough_cancel", {{}})
+                sc_cfg     = step.get("strikethrough_cancel", {})
                 num_tex    = sc_cfg.get("numerator", "")
                 den_tex    = sc_cfg.get("denominator", "")
                 cancel_indices = sc_cfg.get("cancel_indices", [])
@@ -932,234 +847,17 @@ class SyncedShortScene(Scene):
                     self.wait(EXTRA_HOLD)
                 continue
 
-            # ── PERMUTATION DISPLAY (blocks shuffle through all arrangements) ──
-            if stype == "permutation_display":
-                duration   = step.get("duration", 16.0)
-                audio_path = step.get("audio_path", "")
-                pd_cfg     = step.get("permutation_display", {{}})
-                objects    = pd_cfg.get("objects", [
-                    {{"label": "A", "color": ORBITAL_CYAN}},
-                    {{"label": "B", "color": NEON_GREEN}},
-                    {{"label": "C", "color": "#9333EA"}},
-                ])
-                show_count = pd_cfg.get("show_count", True)
-                speed      = pd_cfg.get("speed", "normal")
-
-                if previous is not None:
-                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.4)
-                    previous = None
-
-                n = len(objects)
-
-                from itertools import permutations
-                all_perms = list(permutations(range(n)))
-
-                # Block sizing — matches Orbital visual language (4.5×8.0 frame)
-                block_size = min(0.55, MAX_WIDTH * 0.85 / max(n, 1))
-                gap = 0.12
-
-                def _make_shelf():
-                    total_w = n * block_size + (n - 1) * gap + 0.3
-                    shelf_bar = Line(
-                        LEFT * total_w / 2, RIGHT * total_w / 2,
-                        color=GREY_B, stroke_width=2
-                    )
-                    return shelf_bar
-
-                def _make_blocks(perm):
-                    blocks = VGroup()
-                    total_w = n * block_size + (n - 1) * gap
-                    start_x = -total_w / 2 + block_size / 2
-                    for pos, idx in enumerate(perm):
-                        obj = objects[idx]
-                        sq = RoundedRectangle(
-                            width=block_size, height=block_size,
-                            color=obj["color"], fill_color=obj["color"],
-                            fill_opacity=0.25, stroke_width=2,
-                            corner_radius=0.06
-                        )
-                        lbl = MathTex(obj["label"], font_size=22, color=obj["color"])
-                        lbl.move_to(sq.get_center())
-                        block = VGroup(sq, lbl)
-                        block.move_to([start_x + pos * (block_size + gap), 0, 0])
-                        blocks.add(block)
-                    return blocks
-
-                # Layout: content centered at MATH_CENTER_Y
-                shelf_y = MATH_CENTER_Y
-                shelf = _make_shelf()
-                shelf.move_to([0, shelf_y - block_size / 2 - 0.06, 0])
-
-                # Counter — MathTex to match Orbital style
-                count_mob = None
-                if show_count:
-                    count_mob = MathTex("0", font_size=28, color=WHITE)
-                    count_mob.move_to([0, shelf_y - block_size / 2 - 0.45, 0])
-
-                if audio_path and os.path.exists(audio_path):
-                    self.add_sound(audio_path)
-
-                self.play(Create(shelf), run_time=0.4)
-                if count_mob:
-                    self.play(Write(count_mob), run_time=0.2)
-
-                # Show first arrangement
-                current_blocks = _make_blocks(all_perms[0])
-                current_blocks.move_to([0, shelf_y, 0])
-                self.play(FadeIn(current_blocks, lag_ratio=0.15), run_time=0.5)
-
-                perm_count = 1
-                if count_mob:
-                    new_count = MathTex(str(perm_count), font_size=28, color=WHITE)
-                    new_count.move_to(count_mob.get_center())
-                    self.play(Transform(count_mob, new_count), run_time=0.12)
-
-                # Cycle through remaining permutations (skip if "show_first" mode)
-                show_mode = pd_cfg.get("permutations", "all")
-                if show_mode != "show_first" and len(all_perms) > 1:
-                    speed_map = {{"slow": 0.8, "normal": 0.45, "fast": 0.2}}
-                    swap_time = speed_map.get(speed, 0.45)
-                    available = max(1.0, duration - 3.0)
-                    actual_swap_time = max(0.3, min(swap_time, available / max(len(all_perms) - 1, 1)))
-
-                    for pi in range(1, len(all_perms)):
-                        new_blocks = _make_blocks(all_perms[pi])
-                        new_blocks.move_to([0, shelf_y, 0])
-
-                        self.play(
-                            *[Transform(current_blocks[j], new_blocks[j]) for j in range(n)],
-                            run_time=max(0.2, actual_swap_time * 0.6)
-                        )
-
-                        perm_count += 1
-                        if count_mob:
-                            new_count = MathTex(str(perm_count), font_size=28, color=WHITE)
-                            new_count.move_to(count_mob.get_center())
-                            self.play(Transform(count_mob, new_count), run_time=0.1)
-
-                        self.wait(max(0.1, actual_swap_time * 0.3))
-                else:
-                    # show_first: just hold the initial arrangement
-                    self.wait(max(0.3, duration - 1.5))
-
-                # Final result in Orbital box style
-                final_inner = MathTex(f"{{n}}! = {{len(all_perms)}}", color=NEON_GREEN).scale(BOX_SCALE)
-                final_box = SurroundingRectangle(
-                    final_inner, color=BOX_BORDER, fill_color=BOX_FILL,
-                    fill_opacity=0.6, buff=0.2, corner_radius=0.1, stroke_width=2,
-                )
-                final_group = VGroup(final_box, final_inner)
-                final_group.move_to([0, shelf_y - block_size / 2 - 1.0, 0])
-                self.play(FadeIn(final_group), run_time=0.5)
-                self.play(Circumscribe(final_group, color=NEON_GREEN), run_time=0.5)
-                self.wait(0.6)
-
-                previous = VGroup(shelf, current_blocks, final_group)
-                if count_mob:
-                    previous.add(count_mob)
-                if i < len(steps) - 1:
-                    self.wait(EXTRA_HOLD)
-                continue
-
-            # ── EMPTY SHELF (empty shelf with glow — "the empty arrangement") ──
-            if stype == "empty_shelf":
-                duration   = step.get("duration", 8.0)
-                audio_path = step.get("audio_path", "")
-                es_cfg     = step.get("empty_shelf", {{}})
-                glow       = es_cfg.get("glow", True)
-                glow_color = es_cfg.get("glow_color", ORBITAL_CYAN)
-                caption    = es_cfg.get("caption", "The empty arrangement")
-                pause_dur  = es_cfg.get("pause_duration", 1.0)
-
-                if previous is not None:
-                    self.play(FadeOut(previous, shift=UP * 0.3), run_time=0.4)
-                    previous = None
-
-                shelf_y = MATH_CENTER_Y + 0.3
-                shelf_w = 2.0
-
-                # The shelf bar
-                shelf_bar = Line(
-                    LEFT * shelf_w / 2, RIGHT * shelf_w / 2,
-                    color=GREY_B, stroke_width=2
-                )
-                shelf_bar.move_to([0, shelf_y - 0.35, 0])
-
-                # Glow effect — soft fill above shelf
-                if glow:
-                    glow_rect = Rectangle(
-                        width=shelf_w * 0.7, height=0.5,
-                        color=glow_color, fill_color=glow_color,
-                        fill_opacity=0.0, stroke_width=0, stroke_opacity=0
-                    )
-                    glow_rect.move_to([0, shelf_y, 0])
-                    glow_ring = RoundedRectangle(
-                        width=shelf_w * 0.75, height=0.55,
-                        color=glow_color, stroke_width=1.5, stroke_opacity=0.35,
-                        fill_opacity=0, corner_radius=0.1
-                    )
-                    glow_ring.move_to([0, shelf_y, 0])
-
-                # Caption — Orbital text style
-                cap_mob = Text(caption, font_size=18, color=glow_color, weight=BOLD)
-                cap_mob.move_to([0, shelf_y - 0.85, 0])
-
-                # Punchline in Orbital box
-                punch_inner = MathTex("0! = 1", color=NEON_GREEN).scale(BOX_SCALE)
-                punch_box = SurroundingRectangle(
-                    punch_inner, color=BOX_BORDER, fill_color=BOX_FILL,
-                    fill_opacity=0.6, buff=0.2, corner_radius=0.1, stroke_width=2,
-                )
-                punch_group = VGroup(punch_box, punch_inner)
-                punch_group.move_to([0, shelf_y - 1.6, 0])
-
-                if audio_path and os.path.exists(audio_path):
-                    self.add_sound(audio_path)
-
-                # Build up
-                self.play(Create(shelf_bar), run_time=0.4)
-                if pause_dur > 0.05:
-                    self.wait(pause_dur)
-
-                # Glow fades in
-                if glow:
-                    self.play(
-                        glow_rect.animate.set_fill(opacity=0.12),
-                        FadeIn(glow_ring),
-                        run_time=1.0,
-                        rate_func=smooth
-                    )
-
-                self.play(Write(cap_mob), run_time=0.5)
-                self.wait(0.4)
-
-                # The punchline
-                self.play(FadeIn(punch_group), run_time=0.5)
-                self.play(Circumscribe(punch_group, color=NEON_GREEN), run_time=0.5)
-
-                elapsed = pause_dur + (1.0 if glow else 0) + 0.5 + 0.4 + 0.5 + 0.5
-                remaining = max(0.1, duration - elapsed)
-                self.wait(remaining)
-
-                all_mobs = VGroup(shelf_bar, cap_mob, punch_group)
-                if glow:
-                    all_mobs.add(glow_rect, glow_ring)
-                previous = all_mobs
-                if i < len(steps) - 1:
-                    self.wait(EXTRA_HOLD)
-                continue
-
             # ── TRACE DOT (dot moves along curve) ──
             if stype == "trace_dot":
                 duration   = step.get("duration", 5.0)
                 audio_path = step.get("audio_path", "")
-                td_cfg     = step.get("trace_dot", {{}})
+                td_cfg     = step.get("trace_dot", {})
                 content    = td_cfg.get("expr", step.get("content", "x**2"))
                 x_start    = td_cfg.get("x_start", -2)
                 x_end      = td_cfg.get("x_end", 2)
                 dot_color  = td_cfg.get("color", NEON_GREEN)
 
-                fn = eval(f"lambda x: {{content}}")
+                fn = eval(f"lambda x: {content}")
 
                 if graph_mobs:
                     td_axes = graph_mobs[-1][1]
@@ -1190,7 +888,7 @@ class SyncedShortScene(Scene):
             stype      = step.get("type", "math")
             content    = step.get("content") or step.get("latex", "")
             label_txt  = step.get("label", "")
-            layout     = step.get("layout", {{}})
+            layout     = step.get("layout", {})
             scale_override = layout.get("scale", 1.0) if layout else 1.0
 
             anim_time = max(1.2, duration * ANIMATION_RATIO)
@@ -1201,7 +899,7 @@ class SyncedShortScene(Scene):
             # audio clip and duration, using the proven: add_sound → Write → wait(DUR) pattern.
             # ═══════════════════════════════════════════════════
             if stype == "algebra_solve":
-                as_cfg = step.get("algebra_solve", {{}})
+                as_cfg = step.get("algebra_solve", {})
                 as_steps = as_cfg.get("steps", [])
                 as_title = as_cfg.get("title", "")
                 final_color = as_cfg.get("final_color", NEON_GREEN)
@@ -1214,7 +912,7 @@ class SyncedShortScene(Scene):
                 has_substep_audio = any(s.get("audio_path") for s in as_steps)
 
                 if as_title:
-                    t_mob = Text(as_title, font_size=TITLE_FONT_SIZE, color=WHITE)
+                    t_mob = Text(as_title, font_size=24, color=WHITE)
                     t_mob.move_to([0, ZONE_A_Y, 0])
                     self.play(Write(t_mob), run_time=0.5)
                     self.wait(0.5)
@@ -1233,7 +931,7 @@ class SyncedShortScene(Scene):
                     sub_audio = s.get("audio_path", "")
                     sub_dur = s.get("duration", s.get("hold", 3.0))
 
-                    eq = MathTex(latex, font_size=EQ_FONT_SIZE, color=final_color if is_final else WHITE)
+                    eq = MathTex(latex, font_size=26, color=final_color if is_final else WHITE)
                     _clamp(eq)
                     target_y = start_y - len(visible_steps) * spacing
                     eq.move_to([0, target_y, 0])
@@ -1252,7 +950,7 @@ class SyncedShortScene(Scene):
 
                     # 3. Show note annotation if present (below-right of equation)
                     if note:
-                        n_mob = Text(note, font_size=NOTE_FONT_SIZE, color=note_color)
+                        n_mob = Text(note, font_size=14, color=note_color)
                         n_mob.next_to(eq, DOWN + RIGHT, buff=0.08)
                         # Clamp note inside frame
                         if n_mob.get_right()[0] > FRAME_W/2 - 0.2:
@@ -1296,14 +994,14 @@ class SyncedShortScene(Scene):
             # FOIL EXPANSION (proven in definition of derivative prototype)
             # ═══════════════════════════════════════════════════
             if stype == "foil_expansion":
-                fe_cfg = step.get("foil_expansion", {{}})
+                fe_cfg = step.get("foil_expansion", {})
                 expression = fe_cfg.get("expression", "(x+h)^2")
                 factored = fe_cfg.get("factored", "(x+h)(x+h)")
                 terms = fe_cfg.get("terms", [
-                    {{"latex": r"x \\cdot x", "color": ORBITAL_CYAN}},
-                    {{"latex": r"+ x \\cdot h", "color": ORBITAL_VIOLET}},
-                    {{"latex": r"+ h \\cdot x", "color": ORBITAL_VIOLET}},
-                    {{"latex": r"+ h \\cdot h", "color": ORANGE}},
+                    {"latex": r"x \cdot x", "color": ORBITAL_CYAN},
+                    {"latex": r"+ x \cdot h", "color": ORBITAL_VIOLET},
+                    {"latex": r"+ h \cdot x", "color": ORBITAL_VIOLET},
+                    {"latex": r"+ h \cdot h", "color": ORANGE},
                 ])
                 result = fe_cfg.get("result", r"x^2 + 2xh + h^2")
 
@@ -1314,11 +1012,11 @@ class SyncedShortScene(Scene):
                 if audio_path and os.path.exists(audio_path):
                     self.add_sound(audio_path)
 
-                fe_title = Text(f"Expand {{expression}}", font_size=20, color=ORANGE)
+                fe_title = Text(f"Expand {expression}", font_size=20, color=ORANGE)
                 fe_title.move_to([0, ZONE_A_Y + 0.3, 0])
                 self.play(Write(fe_title), run_time=0.4)
 
-                fe_factored = MathTex(f"{{expression}} = {{factored}}", font_size=24, color=WHITE)
+                fe_factored = MathTex(f"{expression} = {factored}", font_size=24, color=WHITE)
                 fe_factored.move_to([0, ZONE_A_Y - 0.1, 0])
                 self.play(Write(fe_factored), run_time=0.8)
                 self.wait(0.8)
@@ -1338,7 +1036,7 @@ class SyncedShortScene(Scene):
                     self.wait(0.3)
                 self.wait(0.5)
 
-                fe_result = MathTex(f"= {{result}}", font_size=26, color=NEON_GREEN)
+                fe_result = MathTex(f"= {result}", font_size=26, color=NEON_GREEN)
                 fe_result.move_to([0, ZONE_A_Y - 1.1, 0])
                 self.play(Write(fe_result), run_time=0.8)
                 self.play(Circumscribe(fe_result, color=NEON_GREEN), run_time=0.5)
@@ -1370,324 +1068,10 @@ class SyncedShortScene(Scene):
                 else:
                     mob = VGroup(box_rect, inner)
                 _clamp(mob)
-
-            if stype == "gear_pair":
-                # Two interlocking gears — spinning motion for "connected rates" visual
-                # content = ignored (visual only), label = optional text below
-                # Uses step["color1"] and step["color2"] for gear colors (default VIOLET/CYAN)
-                c1 = step.get("color1", "#8B5CF6")
-                c2 = step.get("color2", "#22D3EE")
-                r1 = step.get("radius1", 0.8)
-                r2 = step.get("radius2", 0.55)
-                n1 = step.get("teeth1", 12)
-                n2 = step.get("teeth2", 8)
-                g1_center = np.array([-0.55, MATH_CENTER_Y + 1.0, 0])
-                g2_center = np.array([0.75, MATH_CENTER_Y + 1.0, 0])
-
-                def _build_gear(radius, n_teeth, color, center, tooth_len=0.14, sw=2.5):
-                    gp = []
-                    circ = Circle(radius=radius, color=color, stroke_width=sw,
-                                  fill_color=BOX_FILL, fill_opacity=0.4).move_to(center)
-                    gp.append(circ)
-                    gp.append(Dot(radius=0.06, color=color, fill_opacity=0.8).move_to(center))
-                    for ii in range(n_teeth):
-                        a = ii * TAU / n_teeth
-                        ip = np.array(center) + radius * np.array([np.cos(a), np.sin(a), 0])
-                        op = np.array(center) + (radius + tooth_len) * np.array([np.cos(a), np.sin(a), 0])
-                        perp = np.array([-np.sin(a), np.cos(a), 0])
-                        tw = 0.08
-                        tooth = Polygon(ip+perp*tw, ip-perp*tw, op-perp*tw*0.7, op+perp*tw*0.7,
-                                        color=color, stroke_width=sw-0.5, fill_color=color, fill_opacity=0.3)
-                        gp.append(tooth)
-                    return VGroup(*gp)
-
-                g1 = _build_gear(r1, n1, c1, g1_center.tolist(), 0.17)
-                g2 = _build_gear(r2, n2, c2, g2_center.tolist(), 0.14)
-                mob = VGroup(g1, g2)
-                if label_txt:
-                    lbl = Text(label_txt, color=WHITE, font_size=18, weight=BOLD)
-                    lbl.move_to([0, MATH_CENTER_Y - 0.5, 0])
-                    mob.add(lbl)
-
-            if stype == "machine_pipeline":
-                # Vertical two-machine pipeline — top machine → arrow → bottom machine
-                # content = "label1:func1|label2:func2" e.g. "TRIPLE:3x|SQUARE:u^2"
-                # color1/color2 for each machine
-                parts = content.split("|")
-                m1_parts = parts[0].split(":") if len(parts) > 0 else ["Machine 1", "f(x)"]
-                m2_parts = parts[1].split(":") if len(parts) > 1 else ["Machine 2", "g(x)"]
-                c1 = step.get("color1", "#F97316")
-                c2 = step.get("color2", "#22D3EE")
-                m_width = step.get("machine_width", 2.8)
-                m_height = step.get("machine_height", 1.1)
-                m1_y = MATH_CENTER_Y + 0.8
-                m2_y = MATH_CENTER_Y - 1.2
-
-                def _mach(label, sublabel, color, cy):
-                    bx = RoundedRectangle(width=m_width, height=m_height, color=color,
-                                          fill_color=BOX_FILL, fill_opacity=0.7,
-                                          stroke_width=2.5, corner_radius=0.12).move_to([0, cy, 0])
-                    lb = Text(label, font_size=26, color=color, weight=BOLD).move_to(bx.get_center() + UP*0.15)
-                    sb = MathTex(sublabel, font_size=22, color=WHITE).set_opacity(0.8).move_to(bx.get_center() + DOWN*0.22)
-                    return VGroup(bx, lb, sb)
-
-                mach1 = _mach(m1_parts[0], m1_parts[1] if len(m1_parts) > 1 else "", c1, m1_y)
-                mach2 = _mach(m2_parts[0], m2_parts[1] if len(m2_parts) > 1 else "", c2, m2_y)
-                pipe_arr = Arrow(mach1[0].get_bottom() + DOWN*0.1, mach2[0].get_top() + UP*0.1,
-                                 color=WHITE, stroke_width=2.5, buff=0, max_tip_length_to_length_ratio=0.2)
-                in_arr = Arrow([0, m1_y + 1.0, 0], mach1[0].get_top() + UP*0.1,
-                               color=WHITE, stroke_width=2, buff=0, max_tip_length_to_length_ratio=0.2)
-                in_lbl = MathTex("x", font_size=24, color=WHITE).next_to(in_arr, UP, buff=0.08)
-                out_arr = Arrow(mach2[0].get_bottom() + DOWN*0.1, [0, m2_y - 1.0, 0],
-                                color=WHITE, stroke_width=2, buff=0, max_tip_length_to_length_ratio=0.2)
-                out_lbl = MathTex("y", font_size=24, color=WHITE).next_to(out_arr, DOWN, buff=0.08)
-                mob = VGroup(in_arr, in_lbl, mach1, pipe_arr, mach2, out_arr, out_lbl)
-
-            if stype == "number_flow":
-                # Animated number flowing through position — number in glowing circle
-                # content = the number to display, color = circle color
-                val = content.strip()
-                c = step.get("color1", "#22D3EE")
-                fs = step.get("font_size", 28)
-                num_tex = MathTex(val, font_size=fs, color=c)
-                circ = Circle(radius=0.35, color=c, fill_color=c, fill_opacity=0.15, stroke_width=1.5)
-                circ.move_to(num_tex.get_center())
-                mob = VGroup(circ, num_tex)
-                mob.move_to([0, MATH_CENTER_Y, 0])
-
-            if stype == "rate_reveal":
-                # Show a rate of change with derivative work — used for chain rule style
-                # content = the derivative equation, e.g. "\\frac{d}{dx}[3x] = 3"
-                # label = description text, color1 = accent color
-                c = step.get("color1", "#F97316")
-                eq = MathTex(content, font_size=24, color=c)
-                _clamp(eq)
-                eq.move_to([0, MATH_CENTER_Y, 0])
-                parts_list = [eq]
-                if label_txt:
-                    desc = Text(label_txt, font_size=16, color=WHITE)
-                    desc.set_opacity(0.7)
-                    desc.next_to(eq, DOWN, buff=0.3)
-                    parts_list.append(desc)
-                # Rate badge
-                badge_val = step.get("badge", "")
-                if badge_val:
-                    badge = MathTex(badge_val, font_size=22, color=c)
-                    badge_box = SurroundingRectangle(badge, color=c, fill_color=BOX_FILL,
-                                                     fill_opacity=0.8, buff=0.08,
-                                                     corner_radius=0.06, stroke_width=1.5)
-                    badge_grp = VGroup(badge_box, badge)
-                    badge_grp.next_to(eq, UP, buff=0.4)
-                    parts_list.append(badge_grp)
-                mob = VGroup(*parts_list)
-
-            if stype == "neon_graph":
-                # Graph with neon grid background and optional sliding dot
-                # func = lambda string, x_range = [min, max], y_range = [min, max]
-                # color1 = curve color, label = curve label (e.g. "e^x")
-                # dot_track = true to show animated dot sliding along curve
-                # gauge = true to show H/S gauge bars (for slope=height comparison)
-                import types
-                func_str = step.get("func", "lambda x: x**2")
-                x_rng = step.get("x_range", [0, 4])
-                y_rng = step.get("y_range", [0, 10])
-                c1 = step.get("color1", CYAN)
-                grid_col = step.get("grid_color", "#1a1a3a")
-
-                # Neon grid
-                gc = [0, GRAPH_CENTER_Y] if not landscape else [0, 0]
-                gw, gh = (GRAPH_WIDTH, 3.5) if not landscape else (8.0, 4.0)
-                grid_lines = VGroup()
-                sp = 0.5
-                cx, cy = gc[0], gc[1]
-                xp = cx - gw/2
-                while xp <= cx + gw/2:
-                    grid_lines.add(Line([xp, cy-gh/2, 0], [xp, cy+gh/2, 0],
-                                        color=grid_col, stroke_width=0.5, stroke_opacity=0.25))
-                    xp += sp
-                yp = cy - gh/2
-                while yp <= cy + gh/2:
-                    grid_lines.add(Line([cx-gw/2, yp, 0], [cx+gw/2, yp, 0],
-                                        color=grid_col, stroke_width=0.5, stroke_opacity=0.25))
-                    yp += sp
-
-                ax_ng = Axes(
-                    x_range=[x_rng[0], x_rng[1], 1],
-                    y_range=[y_rng[0], y_rng[1], 2],
-                    x_length=gw - 0.4, y_length=gh - 0.4,
-                    tips=False,
-                    axis_config={"color": VIOLET, "stroke_width": 1.5, "stroke_opacity": 0.6},
-                ).move_to(gc)
-
-                fn = eval(func_str)
-                curve_ng = ax_ng.plot(fn, x_range=[x_rng[0], x_rng[1]], color=c1, stroke_width=3)
-
-                parts_list = [grid_lines, ax_ng, curve_ng]
-                if label_txt:
-                    lbl = MathTex(label_txt, font_size=20, color=c1)
-                    lbl.move_to([gc[0] + gw/2 - 0.5, gc[1] + gh/2 - 0.3, 0])
-                    lbl_bx = SurroundingRectangle(lbl, color=c1, fill_color=BOX_FILL,
-                                                   fill_opacity=0.4, buff=0.06,
-                                                   corner_radius=0.06, stroke_width=1.5)
-                    parts_list.extend([lbl_bx, lbl])
-                mob = VGroup(*parts_list)
-
-            if stype == "gauge_compare":
-                # Two vertical gauge bars comparing height vs slope (or any two values)
-                # val1 = first value, val2 = second value, max_val = gauge scale
-                # label1/label2 = gauge labels, color1/color2 = bar colors
-                # match = true if values should show green match, false shows red ≠
-                v1 = step.get("val1", 2.7)
-                v2 = step.get("val2", 2.7)
-                max_v = step.get("max_val", 10.0)
-                c1 = step.get("color1", CYAN)
-                c2 = step.get("color2", GREEN)
-                l1 = step.get("label1", "H")
-                l2 = step.get("label2", "S")
-                is_match = step.get("match", True)
-                gh = 3.2
-                gx1, gx2 = 1.65, 2.0
-                gy = GRAPH_CENTER_Y if not landscape else 0
-
-                track1 = RoundedRectangle(width=0.28, height=gh, color=c1,
-                    fill_color=BOX_FILL, fill_opacity=0.4,
-                    stroke_width=1.5, corner_radius=0.05).move_to([gx1, gy, 0])
-                track2 = RoundedRectangle(width=0.28, height=gh, color=c2,
-                    fill_color=BOX_FILL, fill_opacity=0.4,
-                    stroke_width=1.5, corner_radius=0.05).move_to([gx2, gy, 0])
-                lb1 = Text(l1, font_size=11, color=c1, weight=BOLD).move_to([gx1, gy - gh/2 - 0.2, 0])
-                lb2 = Text(l2, font_size=11, color=c2, weight=BOLD).move_to([gx2, gy - gh/2 - 0.2, 0])
-
-                bh1 = v1 / max_v * gh
-                bh2 = v2 / max_v * gh
-                fill1 = RoundedRectangle(width=0.22, height=max(bh1, 0.05), color=c1,
-                    fill_color=c1, fill_opacity=0.5, stroke_width=0, corner_radius=0.04)
-                fill1.move_to([gx1, gy - gh/2 + max(bh1, 0.05)/2, 0])
-                fill2 = RoundedRectangle(width=0.22, height=max(bh2, 0.05), color=c2,
-                    fill_color=c2, fill_opacity=0.5, stroke_width=0, corner_radius=0.04)
-                fill2.move_to([gx2, gy - gh/2 + max(bh2, 0.05)/2, 0])
-
-                vt1 = Text(f"{v1:.1f}", font_size=12, color=c1, weight=BOLD)
-                vt1.next_to(fill1, UP, buff=0.05)
-                vt2 = Text(f"{v2:.1f}", font_size=12, color=c2, weight=BOLD)
-                vt2.next_to(fill2, UP, buff=0.05)
-
-                sym_color = GREEN if is_match else "#FF4444"
-                sym_tex = r"=" if is_match else r"\neq"
-                sym = MathTex(sym_tex, font_size=28, color=sym_color)
-                sym.move_to([(gx1+gx2)/2, gy + 0.8, 0])
-
-                mob = VGroup(track1, track2, lb1, lb2, fill1, fill2, vt1, vt2, sym)
-
-            if stype == "split_graph":
-                # Split-screen graph showing function from left and right
-                # Useful for limits, asymptotes, divide-by-zero
-                # func = lambda string, split_x = where to split
-                # color_left/color_right = colors for each side
-                # asymptote = true to draw vertical dashed line at split_x
-                func_str = step.get("func", "lambda x: 1/x")
-                split_x = step.get("split_x", 0)
-                x_rng = step.get("x_range", [-4, 4])
-                y_rng = step.get("y_range", [-10, 10])
-                c_left = step.get("color_left", "#FF4444")
-                c_right = step.get("color_right", GREEN)
-                show_asymp = step.get("asymptote", True)
-
-                gc = [0, GRAPH_CENTER_Y] if not landscape else [0, 0]
-                gw, gh = (GRAPH_WIDTH, 3.5) if not landscape else (8.0, 4.0)
-
-                ax_sp = Axes(
-                    x_range=[x_rng[0], x_rng[1], 1],
-                    y_range=[y_rng[0], y_rng[1], 2],
-                    x_length=gw - 0.2, y_length=gh - 0.2,
-                    tips=False,
-                    axis_config={"color": VIOLET, "stroke_width": 1.5, "stroke_opacity": 0.6},
-                ).move_to(gc)
-
-                fn = eval(func_str)
-                # Left side (up to split_x - epsilon)
-                eps = 0.05
-                curve_left = ax_sp.plot(fn, x_range=[x_rng[0], split_x - eps],
-                                         color=c_left, stroke_width=3)
-                # Right side (from split_x + epsilon)
-                curve_right = ax_sp.plot(fn, x_range=[split_x + eps, x_rng[1]],
-                                          color=c_right, stroke_width=3)
-
-                parts_list = [ax_sp, curve_left, curve_right]
-                if show_asymp:
-                    asymp = DashedLine(
-                        ax_sp.c2p(split_x, y_rng[0]),
-                        ax_sp.c2p(split_x, y_rng[1]),
-                        color=ORANGE, stroke_width=2, dash_length=0.1
-                    )
-                    parts_list.append(asymp)
-                mob = VGroup(*parts_list)
-
-            if stype == "contradiction":
-                # Show a logical contradiction — equation that leads to impossibility
-                # steps = list of equation strings shown sequentially
-                # color1 = accent, final step gets red X treatment
-                steps_list = step.get("steps", [r"1 \div 0 = k", r"k \times 0 = 1", r"0 = 1"])
-                c1 = step.get("color1", CYAN)
-                spacing = 0.6
-                start_y = MATH_CENTER_Y + spacing * (len(steps_list) - 1) / 2
-                eq_mobs = []
-                for i, eq_str in enumerate(steps_list):
-                    is_last = (i == len(steps_list) - 1)
-                    col = "#FF4444" if is_last else c1
-                    eq = MathTex(eq_str, font_size=26, color=col)
-                    eq.move_to([0, start_y - i * spacing, 0])
-                    eq_mobs.append(eq)
-                # Red X on last step
-                last_eq = eq_mobs[-1]
-                cross1 = Line(last_eq.get_corner(UL) + LEFT*0.1 + UP*0.1,
-                              last_eq.get_corner(DR) + RIGHT*0.1 + DOWN*0.1,
-                              color="#FF4444", stroke_width=4)
-                cross2 = Line(last_eq.get_corner(UR) + RIGHT*0.1 + UP*0.1,
-                              last_eq.get_corner(DL) + LEFT*0.1 + DOWN*0.1,
-                              color="#FF4444", stroke_width=4)
-                contradiction_lbl = Text("CONTRADICTION", font_size=16, color="#FF4444", weight=BOLD)
-                contradiction_lbl.next_to(last_eq, DOWN, buff=0.3)
-                mob = VGroup(*eq_mobs, cross1, cross2, contradiction_lbl)
-
-            if stype == "number_line_highlight":
-                # Number line with boxed markers at specific points
-                # points = [{val, label, color}], range = [min, max]
-                # highlight = {val, label, color} for the special point
-                pts = step.get("points", [])
-                nl_range = step.get("range", [0, 5])
-                hl = step.get("highlight", None)
-                nl_y = step.get("center_y", MATH_CENTER_Y)
-
-                nl = NumberLine(x_range=[nl_range[0], nl_range[1], 1],
-                                length=3.5, color=WHITE, stroke_width=1.5,
-                                include_numbers=False, include_tip=False)
-                nl.move_to([0, nl_y, 0])
-                parts_list = [nl]
-                for pt in pts:
-                    v, lbl_t, col = pt["val"], pt.get("label", str(pt["val"])), pt.get("color", WHITE)
-                    lbl = MathTex(lbl_t, font_size=18, color=col)
-                    lbl_bx = SurroundingRectangle(lbl, color=col, fill_color=BOX_FILL,
-                                                   fill_opacity=0.3, buff=0.04,
-                                                   corner_radius=0.06, stroke_width=1.5)
-                    VGroup(lbl_bx, lbl).next_to(nl.n2p(v), DOWN, buff=0.12)
-                    parts_list.extend([lbl_bx, lbl])
-                if hl:
-                    hv, hl_t, hc = hl["val"], hl.get("label", ""), hl.get("color", GREEN)
-                    hdot = Dot(nl.n2p(hv), color=hc, radius=0.09)
-                    hdot.set_glow_factor(1.0)
-                    hl_lbl = MathTex(hl_t, font_size=16, color=hc)
-                    hl_bx = SurroundingRectangle(hl_lbl, color=hc, fill_color=BOX_FILL,
-                                                  fill_opacity=0.5, buff=0.06,
-                                                  corner_radius=0.06, stroke_width=1.5)
-                    VGroup(hl_bx, hl_lbl).next_to(nl.n2p(hv), UP, buff=0.15)
-                    parts_list.extend([hdot, hl_bx, hl_lbl])
-                mob = VGroup(*parts_list)
-
             else:
                 # Auto-break long equations at = signs for vertical layout
                 eq_count = content.count('=')
-                has_aligned = 'aligned' in content or 'begin{{' in content
+                has_aligned = 'aligned' in content or 'begin{' in content
                 if eq_count >= 2 and not has_aligned:
                     # Split at = signs, rebuild as aligned with & before each =
                     parts = content.split('=')
@@ -1695,7 +1079,7 @@ class SyncedShortScene(Scene):
                     aligned_lines = [parts[0].strip() + ' &= ' + parts[1].strip()]
                     for p in parts[2:]:
                         aligned_lines.append('&= ' + p.strip())
-                    aligned_content = r'\\begin{{aligned}} ' + r' \\\\[8pt] '.join(aligned_lines) + r' \\end{{aligned}}'
+                    aligned_content = r'\begin{aligned} ' + r' \\[8pt] '.join(aligned_lines) + r' \end{aligned}'
                     mob = MathTex(aligned_content, color=WHITE).scale(MATH_SCALE * scale_override)
                 else:
                     mob = MathTex(content, color=WHITE).scale(MATH_SCALE * scale_override)
@@ -1770,10 +1154,3 @@ class SyncedShortScene(Scene):
         self.play(FadeIn(VGroup(wm_glow, wordmark), shift=UP*0.2), run_time=0.4)
         self.wait(1.2)
         self.play(FadeOut(end_card), run_time=0.3)
-'''
-
-    with open(output_path, "w") as f:
-        f.write(scene_code)
-
-    orient = "16:9 landscape" if landscape else "9:16 portrait"
-    print(f"  ✓ Created {orient} scene: {output_path}")

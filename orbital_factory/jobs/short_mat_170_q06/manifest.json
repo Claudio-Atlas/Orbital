@@ -1,0 +1,107 @@
+[
+  {
+    "type": "box",
+    "content": "Find all zeros and multiplicities",
+    "narration": "Find all zeros and multiplicities for f of x equals 3 x cubed plus 22 x squared plus 15 x minus 100.",
+    "label": "MAT 170 Exam 2 Review",
+    "step": 0,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "f(x) = 3x^3 + 22x^2 + 15x - 100",
+    "narration": "Leading coefficient is 3 and constant is negative 100. Let's find rational roots.",
+    "step": 1,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "algebra_solve",
+    "narration": "",
+    "algebra_solve": {
+      "final_color": "#39FF14",
+      "steps": [
+        {
+          "latex": "\\text{Possible: } \\pm \\frac{\\text{factors of 100}}{\\text{factors of 3}}",
+          "narration": "By the Rational Root Theorem, we test factors of 100 over factors of 3.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "f\\left(\\tfrac{5}{3}\\right) = 3\\left(\\tfrac{125}{27}\\right) + 22\\left(\\tfrac{25}{9}\\right) + 15\\left(\\tfrac{5}{3}\\right) - 100 = 0 \\checkmark",
+          "narration": "Testing x equals 5 thirds. It works out to zero.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "(3x - 5)(x^2 + 9x + 20) = 0",
+          "narration": "Divide out 3 x minus 5. The quotient is x squared plus 9 x plus 20.",
+          "note": "synthetic division",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "(3x - 5)(x + 4)(x + 5) = 0",
+          "narration": "Factor the quadratic: x plus 4 times x plus 5.",
+          "audio_path": "",
+          "duration": 4.0
+        }
+      ]
+    },
+    "step": 2,
+    "audio_path": "",
+    "duration": 16.0
+  },
+  {
+    "type": "box",
+    "content": "x = 5/3 (mult 1),  x = -4 (mult 1),  x = -5 (mult 1)",
+    "narration": "Three zeros, all with multiplicity 1: 5 thirds, negative 4, and negative 5. The graph crosses through each one.",
+    "label": "Final Answer",
+    "step": 3,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "graph",
+    "narration": "All three x-intercepts confirmed on the graph.",
+    "diagram": {
+      "x_range": [
+        -7,
+        4,
+        1
+      ],
+      "y_range": [
+        -120,
+        80,
+        20
+      ],
+      "functions": [
+        {
+          "expr": "3*x**3 + 22*x**2 + 15*x - 100",
+          "color": "#22D3EE"
+        }
+      ],
+      "dots": [
+        {
+          "x": -5,
+          "y": 0,
+          "color": "#39FF14"
+        },
+        {
+          "x": -4,
+          "y": 0,
+          "color": "#39FF14"
+        },
+        {
+          "x": 1.667,
+          "y": 0,
+          "color": "#39FF14"
+        }
+      ]
+    },
+    "duration": 5.0,
+    "step": 4,
+    "audio_path": ""
+  }
+]

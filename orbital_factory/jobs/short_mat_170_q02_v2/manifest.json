@@ -1,0 +1,211 @@
+[
+  {
+    "type": "box",
+    "content": "Solve: 2x\u00b3 + 3x\u00b2 - 89x + 120 = 0",
+    "narration": "Solve 2 x cubed plus 3 x squared minus 89 x plus 120 equals zero.",
+    "label": "MAT 170 Exam 2 Review",
+    "step": 0,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "box",
+    "content": "Rational Root Theorem: possible roots = \u00b1p/q",
+    "narration": "This doesn't factor by grouping, so we use the Rational Root Theorem. Possible rational roots are plus or minus p over q.",
+    "label": "Rational Root Theorem",
+    "step": 1,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "p = \\text{factors of } 120, \\quad q = \\text{factors of } 2",
+    "narration": "p is the factors of the constant term, 120. q is the factors of the leading coefficient, 2.",
+    "step": 2,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "\\text{Possible roots: } \\pm \\left\\{ 1, 2, 3, 4, 5, 6, 8, 10, \\ldots, \\frac{1}{2}, \\frac{3}{2}, \\frac{5}{2}, \\ldots \\right\\}",
+    "narration": "That gives us a long list of candidates. We test them one at a time until we find a zero.",
+    "step": 3,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "algebra_solve",
+    "narration": "",
+    "algebra_solve": {
+      "final_color": "#22D3EE",
+      "steps": [
+        {
+          "latex": "f(5) = 2(125) + 3(25) - 89(5) + 120",
+          "narration": "Let's try x equals 5. Plug it in.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "= 250 + 75 - 445 + 120 = 0 \\checkmark",
+          "narration": "250 plus 75 minus 445 plus 120 equals zero. x equals 5 is a root!",
+          "audio_path": "",
+          "duration": 4.0
+        }
+      ]
+    },
+    "step": 4,
+    "audio_path": "",
+    "duration": 8.0
+  },
+  {
+    "type": "box",
+    "content": "If x = 5 is a zero, then (x - 5) is a factor",
+    "narration": "Since x equals 5 is a zero, that means x minus 5 is a factor of the polynomial. We can divide it out.",
+    "label": "Key Fact",
+    "step": 5,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "algebra_solve",
+    "narration": "",
+    "algebra_solve": {
+      "title": "Synthetic Division by (x - 5)",
+      "final_color": "#22D3EE",
+      "steps": [
+        {
+          "latex": "\\begin{array}{c|cccc} 5 & 2 & 3 & -89 & 120 \\\\ & & 10 & 65 & -120 \\\\ \\hline & 2 & 13 & -24 & 0 \\end{array}",
+          "narration": "Set up synthetic division with 5. Bring down the 2. 5 times 2 is 10. 3 plus 10 is 13. 5 times 13 is 65. Negative 89 plus 65 is negative 24. 5 times negative 24 is negative 120. 120 plus negative 120 is zero. No remainder.",
+          "audio_path": "",
+          "duration": 4.0
+        }
+      ]
+    },
+    "step": 6,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "2x^3 + 3x^2 - 89x + 120 = (x - 5)(2x^2 + 13x - 24)",
+    "narration": "So our polynomial equals x minus 5 times 2 x squared plus 13 x minus 24.",
+    "step": 7,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "box",
+    "content": "Now factor: 2x\u00b2 + 13x - 24",
+    "narration": "Now we need to factor the quadratic. Look for two numbers that multiply to 2 times negative 24, which is negative 48, and add to 13.",
+    "label": "Factor the Quotient",
+    "step": 8,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "2x^2 + 13x - 24 = (2x - 3)(x + 8)",
+    "narration": "That's 2 x minus 3 times x plus 8.",
+    "step": 9,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "math",
+    "content": "(x - 5)(2x - 3)(x + 8) = 0",
+    "narration": "So the fully factored form is x minus 5, times 2 x minus 3, times x plus 8, all equal to zero.",
+    "step": 10,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "box",
+    "content": "Set each factor = 0",
+    "narration": "Now set each factor equal to zero and solve.",
+    "label": "Zero Product Property",
+    "step": 11,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "algebra_solve",
+    "narration": "",
+    "algebra_solve": {
+      "final_color": "#39FF14",
+      "steps": [
+        {
+          "latex": "x - 5 = 0 \\implies x = 5",
+          "narration": "x minus 5 equals zero gives x equals 5.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "2x - 3 = 0 \\implies x = \\frac{3}{2}",
+          "narration": "2 x minus 3 equals zero. Add 3, divide by 2. x equals 3 halves.",
+          "audio_path": "",
+          "duration": 4.0
+        },
+        {
+          "latex": "x + 8 = 0 \\implies x = -8",
+          "narration": "x plus 8 equals zero gives x equals negative 8.",
+          "audio_path": "",
+          "duration": 4.0
+        }
+      ]
+    },
+    "step": 12,
+    "audio_path": "",
+    "duration": 12.0
+  },
+  {
+    "type": "box",
+    "content": "x = 5,  x = 3/2,  x = -8",
+    "narration": "Our three solutions: x equals 5, x equals 3 over 2, and x equals negative 8.",
+    "label": "Final Answer",
+    "step": 13,
+    "audio_path": "",
+    "duration": 4.0
+  },
+  {
+    "type": "graph",
+    "narration": "And the graph confirms all three zeros right where we found them.",
+    "diagram": {
+      "x_range": [
+        -10,
+        7,
+        2
+      ],
+      "y_range": [
+        -200,
+        200,
+        50
+      ],
+      "functions": [
+        {
+          "expr": "2*x**3 + 3*x**2 - 89*x + 120",
+          "color": "#22D3EE"
+        }
+      ],
+      "dots": [
+        {
+          "x": -8,
+          "y": 0,
+          "color": "#39FF14"
+        },
+        {
+          "x": 1.5,
+          "y": 0,
+          "color": "#39FF14"
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "color": "#39FF14"
+        }
+      ]
+    },
+    "duration": 6.0,
+    "step": 14,
+    "audio_path": ""
+  }
+]

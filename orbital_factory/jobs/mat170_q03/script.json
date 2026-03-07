@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "topic": "Solving Cubic Equations by Factor by Grouping",
+    "title": "Solve x³ − 3x² − x + 3 = 0 | MAT 170 Exam 2"
+  },
+  "steps": [
+    {
+      "type": "box",
+      "content": "Solve:  x³ − 3x² − x + 3 = 0",
+      "narration": "Solve x cubed minus 3 x squared minus x plus 3 equals 0.",
+      "label": "MAT 170 Exam 2 Review"
+    },
+    {
+      "type": "box",
+      "content": "Factor by Grouping: Group terms in pairs, factor each group, then factor out the common binomial.",
+      "narration": "This polynomial has four terms, which is a signal to try factor by grouping. We group the terms in pairs, factor each pair, and look for a common binomial.",
+      "label": "Factor by Grouping"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x^3 - 3x^2 - x + 3 = 0",
+            "narration": "We start with x cubed minus 3 x squared minus x plus 3 equals 0."
+          },
+          {
+            "latex": "(x^3 - 3x^2) + (-x + 3) = 0",
+            "narration": "Group the first two terms together and the last two terms together.",
+            "note": "Group in pairs",
+            "note_color": "#22D3EE"
+          },
+          {
+            "latex": "x^2(x - 3) + (-1)(x - 3) = 0",
+            "narration": "From the first group, factor out x squared to get x squared times x minus 3. From the second group, factor out negative 1 to get negative 1 times x minus 3.",
+            "note": "Factor each group",
+            "note_color": "#22D3EE"
+          },
+          {
+            "latex": "(x^2 - 1)(x - 3) = 0",
+            "narration": "Both groups have a common factor of x minus 3. Factor it out to get x squared minus 1 times x minus 3.",
+            "note": "Common binomial (x − 3)",
+            "note_color": "#39FF14"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "Difference of Squares: a² − b² = (a − b)(a + b)",
+      "narration": "Notice that x squared minus 1 is a difference of squares. a squared minus b squared factors as a minus b times a plus b.",
+      "label": "Difference of Squares"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x^2 - 1 = x^2 - 1^2 = (x - 1)(x + 1)",
+            "narration": "x squared minus 1 equals x squared minus 1 squared, which factors as x minus 1 times x plus 1."
+          },
+          {
+            "latex": "(x - 1)(x + 1)(x - 3) = 0",
+            "narration": "So the fully factored form is x minus 1 times x plus 1 times x minus 3 equals 0.",
+            "note": "Fully factored!",
+            "note_color": "#39FF14"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "Zero Product Property: If A · B · C = 0, then A = 0 or B = 0 or C = 0.",
+      "narration": "By the Zero Product Property, we set each factor equal to zero and solve.",
+      "label": "Zero Product Property"
+    },
+    {
+      "type": "algebra_solve",
+      "narration": "",
+      "algebra_solve": {
+        "final_color": "#39FF14",
+        "steps": [
+          {
+            "latex": "x - 1 = 0 \\implies x = 1",
+            "narration": "First factor: x minus 1 equals 0. Add 1. x equals 1.",
+            "note": "✓",
+            "note_color": "#39FF14"
+          },
+          {
+            "latex": "x + 1 = 0 \\implies x = -1",
+            "narration": "Second factor: x plus 1 equals 0. Subtract 1. x equals negative 1.",
+            "note": "✓",
+            "note_color": "#39FF14"
+          },
+          {
+            "latex": "x - 3 = 0 \\implies x = 3",
+            "narration": "Third factor: x minus 3 equals 0. Add 3. x equals 3.",
+            "note": "✓",
+            "note_color": "#39FF14"
+          }
+        ]
+      }
+    },
+    {
+      "type": "box",
+      "content": "x = 1, \\quad x = -1, \\quad x = 3",
+      "narration": "The three solutions are x equals 1, x equals negative 1, and x equals 3.",
+      "label": "Final Answer"
+    },
+    {
+      "type": "graph",
+      "narration": "Here is the graph of x cubed minus 3 x squared minus x plus 3. It crosses the x-axis at negative 1, 1, and 3.",
+      "diagram": {
+        "x_range": [-3, 5, 1],
+        "y_range": [-10, 10, 2],
+        "functions": [
+          {"expr": "x**3 - 3*x**2 - x + 3", "color": "#22D3EE"}
+        ],
+        "dots": [
+          {"x": -1, "y": 0, "color": "#39FF14", "label": "x = −1"},
+          {"x": 1, "y": 0, "color": "#39FF14", "label": "x = 1"},
+          {"x": 3, "y": 0, "color": "#39FF14", "label": "x = 3"}
+        ]
+      },
+      "duration": 6.0
+    }
+  ]
+}

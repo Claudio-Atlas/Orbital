@@ -1,0 +1,88 @@
+[
+  {
+    "type": "box",
+    "content": "Linear Equations",
+    "duration": 3.0,
+    "narration": "Let's solve a linear equations problem.",
+    "metadata": {
+      "role": "intro_header",
+      "difficulty": "easy"
+    },
+    "audio_path": ""
+  },
+  {
+    "type": "math",
+    "content": "3x + 7 = 22",
+    "duration": 3.5,
+    "narration": "We need to solve 3x plus 7 equals 22.",
+    "metadata": {
+      "role": "problem_statement",
+      "raw_equation": "3x + 7 = 22"
+    },
+    "audio_path": ""
+  },
+  {
+    "type": "algebra_solve",
+    "algebra_solve": {
+      "title": "Solve for x",
+      "steps": [
+        {
+          "latex": "3x + 7 = 22",
+          "note": "Starting equation",
+          "note_color": "#22D3EE",
+          "duration": 2.5,
+          "narration": "We start with 3x plus 7 equals 22."
+        },
+        {
+          "latex": "3x + 7 - 7 = 22 - 7",
+          "note": "Subtract 7 from both sides",
+          "note_color": "#F97316",
+          "duration": 3.5,
+          "narration": "Subtract 7 from both sides. That gives us 3x plus 7 minus 7 equals 22 minus 7."
+        },
+        {
+          "latex": "3x = 15",
+          "note": "",
+          "note_color": "#22D3EE",
+          "duration": 3.5,
+          "narration": "Which gives us 3x equals 15."
+        },
+        {
+          "latex": "x = \\frac{15}{3}",
+          "note": "Divide both sides by 3",
+          "note_color": "#F97316",
+          "duration": 3.5,
+          "narration": "Divide both sides by 3. That gives us x equals 15 over 3."
+        },
+        {
+          "latex": "x = 5",
+          "note": "",
+          "note_color": "#22D3EE",
+          "duration": 3.5,
+          "narration": "Which gives us x equals 5."
+        }
+      ],
+      "final_color": "#39FF14"
+    },
+    "duration": 16.5,
+    "narration": "We start with 3x plus 7 equals 22. Subtract 7 from both sides. That gives us 3x plus 7 minus 7 equals 22 minus 7. Which gives us 3x equals 15. Divide both sides by 3. That gives us x equals 15 over 3. Which gives us x equals 5.",
+    "metadata": {
+      "role": "solution_walkthrough",
+      "num_steps": 2,
+      "variable": "x"
+    },
+    "audio_path": ""
+  },
+  {
+    "type": "box",
+    "content": "x = 5",
+    "duration": 4.0,
+    "narration": "The answer is x equals 5.",
+    "metadata": {
+      "role": "answer_reveal",
+      "answer": "5",
+      "variable": "x"
+    },
+    "audio_path": ""
+  }
+]

@@ -27,8 +27,14 @@ from visuals.standards import (
     # Graph standard
     orbital_axes, neon_grid, trace_curve, orbital_graph,
     # Components
-    definition_box, function_machine, animate_machine_example,
-    mapping_arrow_trace, verdict_badge, show_verdict,
+    definition_box, function_machine, animate_machine_example, spin_gears,
+    mapping_arrow_trace, set_to_mapping_diagram,
+    verdict_badge, show_verdict,
+    # Environment cards
+    env_card, animate_env_card, ENV_COLORS,
+    env_definition, env_theorem, env_example, env_warning, env_tip, env_summary, env_property,
+    # Chapter cards
+    chapter_card, animate_chapter_card, CHAPTER_COLORS,
 )
 
 
@@ -235,8 +241,8 @@ class EngineScene(Scene):
         rule = d.get("rule_display", "x^2 + 1")
         examples = d.get("examples", [[3, 10], [-2, 5], [0, 1]])
 
-        # Build machine from standards
-        grp, glow, machine, in_arr, out_arr = function_machine(fn, rule, self.SX)
+        # Build machine from standards (now with gears!)
+        grp, glow, machine, in_arr, out_arr, gear1, gear2 = function_machine(fn, rule, self.SX)
         grp.move_to([0, self.CY + 1.0, 0])
         glow.move_to(machine.get_center())
 
@@ -265,7 +271,8 @@ class EngineScene(Scene):
                 if cue > 0: t = self._sync(cue - 0.3, t)
 
             notation, elapsed = animate_machine_example(
-                self, machine, in_arr, out_arr, inp, outp, fn, t)
+                self, machine, in_arr, out_arr, inp, outp, fn, t,
+                gear1=gear1, gear2=gear2)
             t += elapsed
             notation.move_to([0, self.CB + 1.5 - idx*0.6, 0])
             notations.add(notation)
@@ -578,6 +585,138 @@ class EngineScene(Scene):
         all_c = VGroup(eq_lbl, ngrid, ax, top_b, bot_b, fl, ft, fb,
             tl, bl_m, tracer_t, tracer_b, verdict)
         self._end(all_c, dur, t, is_last)
+
+    # ═══════════════════════════════════════════════════════
+    # ENVIRONMENT CARD (Axiom Reader visual language)
+    # ═══════════════════════════════════════════════════════
+
+    def _do_env_card(self, step, is_last):
+        """
+        Render an Axiom Reader-style environment card.
+        
+        visual_data:
+            env_type: "definition" | "theorem" | "example" | "warning" | "tip" | "summary" | "property"
+            title: Card title (e.g., "Function")
+            number: Optional number (e.g., "1.1")
+            lines: List of {"type": "text"|"math"|"bold", "content": "..."}
+            width: Optional width override
+            position: Optional [x, y] override
+        """
+        w, dur, t = self._start(step)
+        d = step.get("visual_data", {})
+        env_type = d.get("env_type", "definition")
+        title = d.get("title", "")
+        number = d.get("number", None)
+        width = d.get("width", self.SW)
+        pos = d.get("position", [0, self.CY])
+
+        lines = [(l["type"], l["content"]) for l in d.get("lines", [])]
+
+        grp, glow, content_mobs = env_card(env_type, title, lines, width, number)
+        grp.move_to(pos)
+        glow.move_to(grp[0].get_center())
+
+        # Sync to first word cue if available
+        cues = d.get("sync_words", [])
+        if cues and w:
+            cue_t = find_word(w, cues[0], after=0)
+            if cue_t > 0:
+                t = self._sync(cue_t - 0.3, t)
+
+        t = animate_env_card(self, grp, glow, content_mobs, t)
+        self._end(grp, dur, t, is_last, glow=glow)
+
+    # ═══════════════════════════════════════════════════════
+    # CHAPTER CARD (A/B/C section transitions)
+    # ═══════════════════════════════════════════════════════
+
+    def _do_chapter_card(self, step, is_last):
+        """
+        Render a chapter transition card for A/B/C sections.
+        
+        visual_data:
+            chapter_type: "concepts" | "skills" | "extensions"
+            section: Section number (e.g., "1.1")
+            title: Subtitle/hook text
+            duration: Optional hold duration override
+        """
+        w, dur, t = self._start(step)
+        d = step.get("visual_data", {})
+        chapter_type = d.get("chapter_type", "concepts")
+        section = d.get("section", self.manifest.get("section", ""))
+        title = d.get("title", "")
+        card_dur = d.get("duration", min(dur, 4.0))
+
+        # Clear previous before showing full-screen card
+        if self.previous is not None:
+            self.play(FadeOut(self.previous, shift=UP * 0.3), run_time=0.4)
+            self.previous = None
+
+        grp, glow, liss = chapter_card(section, title, chapter_type)
+        t = animate_chapter_card(self, grp, glow, liss, duration=card_dur, t=t)
+
+        # chapter_card handles its own fade out, so no previous to track
+        rem = max(0, dur - t)
+        if rem > 0.1:
+            self.wait(rem)
+        if not is_last:
+            self.wait(EXTRA_HOLD)
+
+    # ═══════════════════════════════════════════════════════
+    # SET NOTATION → MAPPING DIAGRAM
+    # ═══════════════════════════════════════════════════════
+
+    def _do_set_to_mapping(self, step, is_last):
+        """
+        Animate set notation transforming into a mapping diagram.
+        
+        visual_data:
+            domain: List of domain elements (e.g., [1, 2, 3])
+            range: List of range elements (e.g., ["a", "b"])
+            mappings: List of [domain_idx, range_idx] pairs
+            is_function: bool — show verdict after
+            title: Optional header text
+        """
+        w, dur, t = self._start(step)
+        d = step.get("visual_data", {})
+        domain = d.get("domain", [1, 2, 3])
+        range_vals = d.get("range", ["a", "b"])
+        raw_mappings = d.get("mappings", [[0, 0], [1, 1], [2, 1]])
+        is_fn = d.get("is_function", True)
+        title = d.get("title", "")
+
+        mappings = [(m[0], m[1]) for m in raw_mappings]
+
+        if title:
+            title_mob = tier4_title(title)
+            title_mob.move_to([0, self.HY, 0])
+            self.play(FadeIn(title_mob, shift=DOWN * 0.2), run_time=0.3); t += 0.3
+
+        # Sync to "set" or "notation" in audio
+        tc = find_word(w, "set", after=0) if w else -1
+        if tc <= 0 and w:
+            tc = find_word(w, "elements", after=0)
+        if tc > 0:
+            t = self._sync(tc - 0.3, t)
+
+        diagram, arrows, t = set_to_mapping_diagram(
+            self, domain, range_vals, mappings, t,
+            center=[0, self.CY - 0.3],
+            oval_w=2.5, oval_h=3.5, gap=3.5)
+
+        # Verdict
+        tv = find_word(w, "function", after=dur * 0.5) if w else -1
+        if tv > 0:
+            t = self._sync(tv - 0.2, t)
+
+        verdict = verdict_badge(is_fn)
+        verdict.move_to([0, self.FY, 0])
+        t = show_verdict(self, verdict, t)
+
+        all_parts = VGroup(diagram, arrows, verdict)
+        if title:
+            all_parts.add(title_mob)
+        self._end(all_parts, dur, t, is_last)
 
     # ═══════════════════════════════════════════════════════
     # CLOSE CARD

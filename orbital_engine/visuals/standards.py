@@ -285,9 +285,33 @@ def definition_box(term, equation_tex, key_phrase_parts, width=5.5, height=4.0):
 # FUNCTION MACHINE — Animated I/O box
 # ═══════════════════════════════════════════════════════
 
+def _build_gear(center, radius, n_teeth, color, tooth_len=0.14, sw=2.0):
+    """Build a single gear with teeth (polygon-based, from gen1)."""
+    parts = []
+    circ = Circle(radius=radius, color=color, stroke_width=sw,
+                  fill_color=BOX_FILL, fill_opacity=0.4).move_to(center)
+    parts.append(circ)
+    parts.append(Dot(radius=0.05, color=color, fill_opacity=0.8).move_to(center))
+    for i in range(n_teeth):
+        a = i * TAU / n_teeth
+        c_arr = np.array(center)
+        ip = c_arr + radius * np.array([np.cos(a), np.sin(a), 0])
+        op = c_arr + (radius + tooth_len) * np.array([np.cos(a), np.sin(a), 0])
+        perp = np.array([-np.sin(a), np.cos(a), 0])
+        tw = 0.07
+        tooth = Polygon(
+            ip + perp*tw, ip - perp*tw,
+            op - perp*tw*0.7, op + perp*tw*0.7,
+            color=color, stroke_width=sw-0.5,
+            fill_color=color, fill_opacity=0.25)
+        parts.append(tooth)
+    return VGroup(*parts)
+
+
 def function_machine(fn_name="f", rule_tex="x^2 + 1", safe_x=6.5):
     """
-    Build a function machine. Returns (machine_group, glow).
+    Build a function machine WITH interlocking gears.
+    Returns (machine_group, glow, machine_rect, in_arrow, out_arrow, gear1, gear2).
     Caller animates examples separately using animate_machine_example().
     """
     machine = RoundedRectangle(width=5.0, height=2.8, corner_radius=0.2,
@@ -296,11 +320,18 @@ def function_machine(fn_name="f", rule_tex="x^2 + 1", safe_x=6.5):
     glow = make_glow(machine, VIOLET, 8, 0.15)
 
     rule = MathTex(f"{fn_name}(x) = {rule_tex}",
-        font_size=28, color=WHITE)  # tier 2 size
-    rule.move_to(machine.get_center())
+        font_size=28, color=WHITE)
+    rule.move_to(machine.get_center() + DOWN * 0.3)
 
     label = Text("FUNCTION", font_size=14, color=VIOLET, weight=BOLD)
     label.next_to(machine, UP, buff=0.12)
+
+    # ── Interlocking gears inside the machine ──
+    mc = machine.get_center()
+    g1_center = [mc[0] - 0.55, mc[1] + 0.5, 0]
+    g2_center = [mc[0] + 0.65, mc[1] + 0.5, 0]
+    gear1 = _build_gear(g1_center, 0.55, 10, VIOLET, tooth_len=0.12, sw=1.8)
+    gear2 = _build_gear(g2_center, 0.4, 7, ORBITAL_CYAN, tooth_len=0.10, sw=1.8)
 
     in_arrow = Arrow(LEFT*safe_x, machine.get_left() + LEFT*0.1,
         color=ORBITAL_CYAN, stroke_width=2.5, buff=0,
@@ -314,12 +345,23 @@ def function_machine(fn_name="f", rule_tex="x^2 + 1", safe_x=6.5):
     out_lbl = MathTex(r"\text{output}", font_size=24, color=GOLD)
     out_lbl.next_to(out_arrow, UP, buff=0.08)
 
-    grp = VGroup(machine, rule, label, in_arrow, in_lbl, out_arrow, out_lbl)
-    return grp, glow, machine, in_arrow, out_arrow
+    grp = VGroup(machine, rule, label, gear1, gear2, in_arrow, in_lbl, out_arrow, out_lbl)
+    return grp, glow, machine, in_arrow, out_arrow, gear1, gear2
+
+
+def spin_gears(scene, gear1, gear2, duration=0.6, revolutions=0.5):
+    """Spin interlocking gears (opposite directions) inside the function machine."""
+    g1c = gear1[0].get_center()
+    g2c = gear2[0].get_center()
+    scene.play(
+        Rotate(gear1, angle=revolutions * TAU, about_point=g1c),
+        Rotate(gear2, angle=-revolutions * TAU * 0.7, about_point=g2c),
+        run_time=duration, rate_func=smooth)
 
 
 def animate_machine_example(scene, machine, in_arrow, out_arrow,
-                            inp_val, out_val, fn_name="f", t=0):
+                            inp_val, out_val, fn_name="f", t=0,
+                            gear1=None, gear2=None):
     """
     Animate one input→output through the function machine.
     Returns (notation_mob, time_elapsed).
@@ -328,6 +370,7 @@ def animate_machine_example(scene, machine, in_arrow, out_arrow,
     - Glowing input dot with value label
     - Dot travels along arrow with rush_into easing
     - Machine border FLASHES cyan on contact
+    - GEARS SPIN while processing (if gear1/gear2 provided)
     - Glowing output dot emerges with rush_from easing
     - Output dot PULSES at end
     - Notation fades in below
@@ -346,14 +389,26 @@ def animate_machine_example(scene, machine, in_arrow, out_arrow,
         inp_mob.animate.move_to(machine.get_left() + RIGHT*0.3 + UP*0.4),
         run_time=0.6, rate_func=rush_into); t += 0.6
 
-    # Machine FLASHES
-    scene.play(
+    # Machine FLASHES + GEARS SPIN
+    flash_anims = [
         machine.animate.set_stroke(color=ORBITAL_CYAN, width=4),
         FadeOut(inp_dot), FadeOut(inp_mob),
-        run_time=0.15); t += 0.15
-    scene.play(
-        machine.animate.set_stroke(color=VIOLET, width=2),
-        run_time=0.15); t += 0.15
+    ]
+    scene.play(*flash_anims, run_time=0.15); t += 0.15
+
+    # Gears spin while "processing"
+    if gear1 is not None and gear2 is not None:
+        g1c = gear1[0].get_center()
+        g2c = gear2[0].get_center()
+        scene.play(
+            Rotate(gear1, angle=0.5 * TAU, about_point=g1c),
+            Rotate(gear2, angle=-0.35 * TAU, about_point=g2c),
+            machine.animate.set_stroke(color=VIOLET, width=2),
+            run_time=0.5, rate_func=smooth); t += 0.5
+    else:
+        scene.play(
+            machine.animate.set_stroke(color=VIOLET, width=2),
+            run_time=0.15); t += 0.15
 
     # Output dot emerges
     out_dot = Dot(color=GOLD, radius=0.1).set_glow_factor(2.0)
@@ -386,6 +441,109 @@ def animate_machine_example(scene, machine, in_arrow, out_arrow,
 # ═══════════════════════════════════════════════════════
 # MAPPING DIAGRAM — Animated set diagram
 # ═══════════════════════════════════════════════════════
+
+def set_to_mapping_diagram(scene, domain_elements, range_elements,
+                           mappings, t=0, center=ORIGIN,
+                           oval_w=2.5, oval_h=3.5, gap=3.5):
+    """
+    Animate set notation → mapping diagram transformation.
+    
+    Shows A = {1, 2, 3} as text, then morphs elements into an oval diagram.
+    
+    Args:
+        scene: Manim scene
+        domain_elements: List of domain values (e.g., [1, 2, 3])
+        range_elements: List of range values (e.g., ["a", "b"])
+        mappings: List of (domain_idx, range_idx) pairs for arrows
+        t: current time
+        center: center position
+        oval_w, oval_h: oval dimensions
+        gap: horizontal gap between ovals
+    
+    Returns: (diagram_group, arrows, t)
+    """
+    # Phase 1: Show set notation
+    d_str = ", ".join(str(e) for e in domain_elements)
+    r_str = ", ".join(str(e) for e in range_elements)
+    set_a = MathTex(r"A = \{" + d_str + r"\}", font_size=28, color=ORBITAL_CYAN)
+    set_b = MathTex(r"B = \{" + r_str + r"\}", font_size=28, color=VIOLET)
+    sets = VGroup(set_a, set_b).arrange(RIGHT, buff=1.5)
+    sets.move_to(center + UP * 1.5)
+
+    scene.play(FadeIn(set_a, shift=RIGHT * 0.3), run_time=0.3); t += 0.3
+    scene.play(FadeIn(set_b, shift=LEFT * 0.3), run_time=0.3); t += 0.3
+    scene.wait(0.5); t += 0.5
+
+    # Phase 2: Build oval diagram below
+    d_ov = Ellipse(width=oval_w, height=oval_h, color=ORBITAL_CYAN,
+        fill_color=ORBITAL_CYAN, fill_opacity=0.05, stroke_width=1.5)
+    d_ov.move_to(center + LEFT * gap/2)
+    r_ov = Ellipse(width=oval_w, height=oval_h, color=VIOLET,
+        fill_color=VIOLET, fill_opacity=0.05, stroke_width=1.5)
+    r_ov.move_to(center + RIGHT * gap/2)
+
+    d_lbl = Text("A", font_size=20, color=ORBITAL_CYAN, weight=BOLD)
+    d_lbl.next_to(d_ov, UP, buff=0.12)
+    r_lbl = Text("B", font_size=20, color=VIOLET, weight=BOLD)
+    r_lbl.next_to(r_ov, UP, buff=0.12)
+
+    # Create dots for each element
+    d_dots, d_labels = VGroup(), VGroup()
+    uh = oval_h - 1.0
+    nd = len(domain_elements)
+    for i, val in enumerate(domain_elements):
+        y = uh/2 - i*(uh/max(1, nd-1)) if nd > 1 else 0
+        p = d_ov.get_center() + UP * y
+        dot = Dot(p, color=ORBITAL_CYAN, radius=0.07).set_glow_factor(1.5)
+        lbl = Text(str(val), font_size=14, color=WHITE)
+        lbl.next_to(dot, LEFT, buff=0.12)
+        d_dots.add(dot)
+        d_labels.add(lbl)
+
+    r_dots, r_labels = VGroup(), VGroup()
+    nr = len(range_elements)
+    for i, val in enumerate(range_elements):
+        y = uh/2 - i*(uh/max(1, nr-1)) if nr > 1 else 0
+        p = r_ov.get_center() + UP * y
+        dot = Dot(p, color=VIOLET, radius=0.07).set_glow_factor(1.5)
+        lbl = Text(str(val), font_size=14, color=WHITE)
+        lbl.next_to(dot, RIGHT, buff=0.12)
+        r_dots.add(dot)
+        r_labels.add(lbl)
+
+    # Phase 2a: Ovals appear
+    scene.play(Create(d_ov), Create(r_ov), FadeIn(d_lbl), FadeIn(r_lbl),
+        run_time=0.4); t += 0.4
+
+    # Phase 2b: Set notation elements TRANSFORM into dots
+    # Each element from the set text flies to its dot position
+    for i, dot in enumerate(d_dots):
+        scene.play(FadeIn(dot, scale=2.0), FadeIn(d_labels[i]),
+            run_time=0.2, rate_func=smooth)
+        t += 0.2
+
+    for i, dot in enumerate(r_dots):
+        scene.play(FadeIn(dot, scale=2.0), FadeIn(r_labels[i]),
+            run_time=0.2, rate_func=smooth)
+        t += 0.2
+
+    # Phase 2c: Fade out set notation text
+    scene.play(FadeOut(sets, shift=UP * 0.3), run_time=0.3); t += 0.3
+
+    # Phase 3: Draw arrows with tracer dots
+    arrows = VGroup()
+    for d_idx, r_idx in mappings:
+        start = d_dots[d_idx].get_center()
+        end = r_dots[r_idx].get_center()
+        arr = Arrow(start, end, buff=0.12,
+            color=ORBITAL_CYAN, stroke_width=1.8,
+            max_tip_length_to_length_ratio=0.08, tip_length=0.12)
+        arrows.add(arr)
+        mapping_arrow_trace(scene, arr, run_time=0.25); t += 0.33
+
+    diagram = VGroup(d_ov, r_ov, d_lbl, r_lbl, d_dots, d_labels, r_dots, r_labels)
+    return diagram, arrows, t
+
 
 def mapping_arrow_trace(scene, arrow, run_time=0.3):
     """Create an arrow with a glowing tracer dot traveling along it."""
